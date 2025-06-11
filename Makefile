@@ -6,13 +6,13 @@
 #    By: algadea <algadea@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/06 20:09:14 by algadea           #+#    #+#              #
-#    Updated: 2025/06/06 20:09:34 by algadea          ###   ########.fr        #
+#    Updated: 2025/06/07 13:41:49 by algadea          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 ###########################          TARGET         ###########################
 
-NAME                = prog
+NAME                = webserv
 
 ###########################           FLAG          ###########################
 
@@ -79,7 +79,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all pp asm clean fclean re
 
 ###########################     ESCAPE SEQUENCE     ###########################
 
@@ -87,11 +87,8 @@ DEFAULT=\033[0m
 BOLD=\033[1m
 ITALIC=\033[3m
 
-BLACK=\033[30m
 RED=\033[31m
 GREEN=\033[32m
 YELLOW=\033[33m
 BLUE=\033[34m
 MAGENTA=\033[35m
-CYAN=\033[36m
-WHITE=\033[37m
