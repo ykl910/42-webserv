@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: algadea <algadea@student.42.fr>            +#+  +:+       +#+         #
+#    By: kyang <kyang@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/06 20:09:14 by algadea           #+#    #+#              #
-#    Updated: 2025/06/07 13:41:49 by algadea          ###   ########.fr        #
+#    Updated: 2025/06/17 12:04:47 by kyang            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,13 +22,13 @@ FLAGS               = -g -Wall -Wextra -Werror -std=c++98
 ###########################          INCLUDE        ###########################
 
 INCLUDE_DIR         := include
-INCLUDE             := webserv.hpp
+INCLUDE             := ServerSocket.hpp
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
 ###########################          SOURCE         ###########################
 
 SRC_DIR             := src
-SRC                 := main.cpp
+SRC                 := main.cpp ServerSocket.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
 ###########################       COMPILATION       ###########################
