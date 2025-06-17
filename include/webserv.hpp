@@ -6,11 +6,12 @@
 /*   By: algadea <algadea@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 20:10:14 by algadea           #+#    #+#             */
-/*   Updated: 2025/06/06 20:11:25 by algadea          ###   ########.fr       */
+/*   Updated: 2025/06/16 12:32:35 by algadea          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
+
 
 #endif
