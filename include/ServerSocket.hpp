@@ -1,7 +1,11 @@
 #pragma once
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include <iostream>
 #include <cstring>
@@ -12,7 +16,7 @@
 class ServerSocket {
 	private:
 		int serverFd;
-		int clientFd;
+		std::vector<int> clientFds;
 		struct sockaddr_in serverAddress;
 		int addrlen;
 		bool isBound;
@@ -21,7 +25,7 @@ class ServerSocket {
 	public:
 		ServerSocket();
 		~ServerSocket();
-		int getServerFd() const { return serverFd;};
-		void bindAndListen(int port);
-		int acceptClient();
+		int getServerFd() const;
+		void bindAndListen();
+		void acceptClient();
 };
