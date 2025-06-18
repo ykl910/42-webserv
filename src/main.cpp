@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: algadea <algadea@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kyang <kyang@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 20:10:23 by algadea           #+#    #+#             */
-/*   Updated: 2025/06/17 18:34:30 by algadea          ###   ########.fr       */
+/*   Updated: 2025/06/18 12:32:18 by kyang            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/webserv.hpp"
+#include "../include/ServerSocket.hpp"
 
 /* Authorized functions
 int execve(const char *pathname, char *const argv[], char *const envp[]);
@@ -61,8 +62,11 @@ struct dirent *readdir(DIR *dirp);
 int closedir(DIR *dirp);
 */
 
-int main(int argc, char **argv) {
-    (void)argc;
-    (void)argv;
+
+int main() {
+    ServerSocket server;
+    server.bindAndListen();
+    std::cout << "Server listening on port 8080..." << std::endl;
+    server.acceptClient();
     return 0;
 }
