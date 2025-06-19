@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <link rel="stylesheet" href="style.css">
+      <link rel="icon" href="../assets/webserve.png" type="image/png">
+      <title>Upload</title>
+      </head>
+
+   <body>
+      <header>   
+      <h1>Let's Upload !</h1>
+      </header>
+      <main>
+            <div class=gif>
+               <img src="../assets/upload.gif" alt="Animated GIF" width="300">
+            </div>
+            <div class="upload">
+               <h3>Upload a File</h3>
+               <form action="/upload" method="POST" enctype="multipart/form-data">
+                  <div class="file-upload">
+                        <input type="file" name="uploadFile" id="uploadFile" class="file-input">
+                        <label for="uploadFile" class="file-label">Choose a file</label>
+                        <span id="file-chosen">No file chosen</span>
+                  </div>
+                  <button type="submit" class="upload-btn">Upload File</button>
+               </form>
+            </div>
+      </main>
+      <footer>
+         <a href="/index">home</a>
+      </footer>
+      <script>
+         const fileInput = document.getElementById('uploadFile');
+         const fileChosen = document.getElementById('file-chosen');
+         
+         fileInput.addEventListener('change', function() {
+            if(this.files && this.files.length > 0) {
+            fileChosen.textContent = this.files[0].name;
+            } else {
+            fileChosen.textContent = 'No file chosen';
+            }
+         });
+      </script>
+    </body>
+</html>
