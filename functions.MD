@@ -179,10 +179,18 @@
 
 - **`int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)`**
   Ajoute / modifie / supprime un fd surveillé dans un `epoll`
+  epfd = descripteur de l’instance epoll
+  op = type d’opération (EPOLL_CTL_ADD, EPOLL_CTL_MOD ou EPOLL_CTL_DEL)
+  fd = descripteur de fichier à gérer
+  event = pointeur vers struct epoll_event (sauf pour DEL où il peut être NULL)
   Retourne 0 si succès, -1 sinon + set errno
 
 - **`int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)`**
   Attend qu’au moins un fd soit prêt
+  epfd = descripteur de l’instance epoll
+  events = tableau de epoll_event alloué par l’utilisateur et qui sera rempli
+  maxevents = taille du tableau events[]
+  timeout = temps d’attente en millisecondes (0 = bloque pas, -1 = attend indéfiniment, >0 = attend ce nb de ms)
   Retourne le nb d’événements prêts, 0 si timeout, -1 si erreur
 
 ---
