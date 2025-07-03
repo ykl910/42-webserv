@@ -24,6 +24,8 @@ class ServerSocket {
 
 		typedef std::vector<int>::iterator fdsIterator;
 
+		void printError();
+
 	public:
 		ServerSocket();
 		~ServerSocket();
