@@ -1,23 +1,41 @@
 #include "../include/ServerSocket.hpp"
-#include <vector>
 
 ServerSocket::ServerSocket() {
+
+	//* Create a new socket
+	//* AF_INET = IPv4
+	//* SOCK_STREAM = TCP protocol
+	//* 0 = default protocol
+
 	errno = 0;
-	if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-		strerror(errno);
+	if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+		printError();
 		exit(EXIT_FAILURE);
 	}
+
+	//* Set socket options to reuse the same port each time
+	//* SOL_SOCKET = general options
+	//* SO_REUSEADDR = allow to reuse (IP:port) already used
+	//* opt = activate/desactivate
+
+	errno = 0;
 	int opt = 1;
-	errno = 0;
 	if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-		strerror(errno);
+		printError();
 		exit(EXIT_FAILURE);
 	}
+
+	//* AF_INET = IPv4
+	//* INADDR_ANY = accept all network interfaces connexions
+	//* PORT = 8080 (-> macro)
+
 	serverAddress.sin_family = AF_INET;
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 	serverAddress.sin_port = htons(PORT);
-	isBound = 0;
-	isListening = 0;
+
+	isBound = false;
+	isListening = false;
+
 	addrlen = sizeof(serverAddress);
 }
 
@@ -26,8 +44,11 @@ ServerSocket::~ServerSocket() {
 		close(serverFd);
 	for (fdsIterator it = clientFds.begin(); it != clientFds.end(); ++it)
 		close(*it);
+}
 
-
+void ServerSocket::printError()
+{
+	std::cerr << "Error: " << strerror(errno) << std::endl;
 }
 
 int ServerSocket::getServerFd() const {
@@ -35,21 +56,28 @@ int ServerSocket::getServerFd() const {
 }
 
 void ServerSocket::bindAndListen() {
+
+	//* Bind the socket to the IP:port from serverAddress
+
 	errno = 0;
 	if (bind(serverFd, (struct sockaddr *)&serverAddress, addrlen) < 0)
 	{
-		strerror(errno);
+		printError();
 		close(serverFd);
 		exit(EXIT_FAILURE);
 	}
-	isBound = 1;
+	isBound = true;
+
+	//* Set the socket in listening mode (accepting connexions)
+	//* SOMAXCONN = macro for max connexion (4096)
+
 	errno = 0;
 	if (listen(serverFd, SOMAXCONN) < 0) {
-		strerror(errno);
+		printError();
 		close(serverFd);
 		exit(EXIT_FAILURE);
 	}
-	isListening = 1;
+	isListening = true;
 }
 
 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
@@ -63,29 +91,42 @@ void ServerSocket::acceptClient() {
 
 	while (true)
 	{
+		//* FD_ZERO = empty readFds set
+		//* FD_SET = add server socket to detect new connexions
+
 		FD_ZERO(&readFds);
 		FD_SET(serverFd, &readFds);
+
+		//* Add everyt client sockets to readFds and add maxFd if necessary
+
 		for (fdsIterator it = clientFds.begin(); it != clientFds.end(); ++it)
 		{
 			FD_SET(*it, &readFds);
 			if (*it > maxFd)
 				maxFd = *it;
 		}
+
 		tv.tv_sec = 10;
 		tv.tv_usec = 0;
+
+		//* wait for event in a socket
+
 		errno = 0;
 		int activity = select(maxFd + 1, &readFds, NULL, NULL, &tv);
 		if (activity < 0)
 		{
-			strerror(errno);
+			printError();
 			continue;
 		}
+
+		//* new connexion -> accept connexion and add client to the list
+
 		if (FD_ISSET(serverFd, &readFds))
 		{
 			errno = 0;
 			int newClient = accept(serverFd, NULL, NULL);
 			if (newClient < 0) {
-				strerror(errno);
+				printError();
 				continue;
 			}
 			else
@@ -94,10 +135,14 @@ void ServerSocket::acceptClient() {
 				std::cout << "New client connected: FD " << newClient << std::endl;
 			}
 		}
+
+		//* loop on every actives clients and seek for data to read
+
 		for (fdsIterator it = clientFds.begin(); it != clientFds.end();)
 		{
 			char buf[4096];
 			int bytes = 0;
+
 			if (FD_ISSET(*it, &readFds))
 			{
 				bytes = recv(*it, buf, sizeof(buf), 0);
@@ -108,6 +153,7 @@ void ServerSocket::acceptClient() {
 					it = clientFds.erase(it);
 					continue;
 				}
+
 				std::string request(buf, bytes);
 				std::cout << "Received request:\n" << request << std::endl;
 				send(*it, response.c_str(), response.size(), 0);
