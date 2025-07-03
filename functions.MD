@@ -4,54 +4,54 @@
 
 ### FILE MANAGEMENT
 
-- **int stat(const char *pathname, struct stat *statbuf)**
+-**int stat(const char *pathname, struct stat *statbuf)**
 
     Obtenir des infos sur un fichier ou répertoire (taille, perms, type, date, etc.)
     retourne 0 si succès et -1 si échec + set errno
     cf. struct stat
 
-- **int fcntl(int fd, int cmd, ...arg(s))**
+-**int fcntl(int fd, int cmd, ...arg(s))**
 
     Fonction polyvalente, permet de gérer des options sur des fd. (non bloquant,
     gérer des verrous, dupliquer, etc.)
 
 ### DIRECTORY MANAGEMENT
 
-- **DIR *opendir(const char *name)**
+-**DIR *opendir(const char *name)**
 
     Ouvrir un répertoire et retourne un pointeur qui peut être utilisé pour lire
     son contenu avec readdir();
     retourne NULL + set errno si erreur
 
-- **struct dirent *readdir(DIR *dirp)**
+-**struct dirent *readdir(DIR *dirp)**
 
     Lit une entrée ouverte avec opendir(). Permet d’itérer sur toutes les entrées.
     Retourne un pointeur vers struct dirent. Retourne NULL à la fin du dossier
     si erreur retourne NULL + set errno
     cf. struct dirent
 
-- **int closedir(DIR *dirp)**
+-**int closedir(DIR *dirp)**
 
     Ferme un répertoire ouvert avec opendir();
     retourne 0 si succès et -1 si échec + set errno
 
-- **int chdir(const char *path)**
+-**int chdir(const char *path)**
 
     Sert à changer le répertoire de travail courant du processus
     retourne 0 si succès et -1 si échec + set errno
 
 ### ERROR MANAGEMENT
 
-- **#include <errno.h>**
+-**#include <errno.h>**
 
     Variable globale qui sera mise à jour avec un code d’erreur quand une fonction
     standard ou système échoue. Doit être réinitialisée à zéro avant chaque appel de fonction
 
-- **char *strerror(int errnum)**
+-**char *strerror(int errnum)**
 
     Convertir la valeur de errno en chaîne de caractères
 
-- **const char *gai_strerror(int errcode)**
+-**const char *gai_strerror(int errcode)**
 
     Convertir un code d’erreur de la fonction getaddrinfo() en chaîne de caractères
 
@@ -59,7 +59,7 @@
 
 ### SOCKET CREATION & CONFIGURATION
 
-- **int socket(int domain, int type, int protocol)**
+-**int socket(int domain, int type, int protocol)**
 
     Créer un descripteur de socket. Renvoie un fd qui peut être utilisé avec bind(),
     connect(), send(), recv(), etc.
@@ -68,7 +68,7 @@
     protocol = souvent 0
     retourne un socket descriptor si succès et -1 si échec + set errno
 
-- **int socketpair(int domain, int type, int protocol, int sv[2])**
+-**int socketpair(int domain, int type, int protocol, int sv[2])**
 
     Crée deux sockets connectées entre elles pour communication bidirectionnelle
     entre deux processus ou threads sur la même machine.
@@ -79,7 +79,7 @@
     sv[2] = tableau des deux descripteurs de sockets à lier
     retourne 0 si succès et -1 si échec + set errno
 
-- **int setsockopt(int sockfd, int level, int option_name, const void *option_value, socklen_t option_len)**
+-**int setsockopt(int sockfd, int level, int option_name, const void *option_value, socklen_t option_len)**
 
     Permet de configurer une option d’une socket afin de : modifier son comportement,
     réutiliser un port, activer/désactiver des fonctionnalités spécifiques
@@ -90,7 +90,7 @@
     option_len = taille en octets de option_value
     retourne 0 si succès et -1 si échec + set errno
 
-- **int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)**
+-**int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)**
 
     Associer une socket à une adresse locale (IP + port)
     Obligatoire côté serveur pour indiquer sur quelle IP écouter
@@ -99,7 +99,7 @@
     addrlen = taille de la structure pointée (sizeof(struct sockaddr_in))
     retourne un socket descriptor si succès et -1 si échec + set errno
 
-- **int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)**
+-**int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)**
 
     Permet à un socket côté client d’établir une connexion avec un serveur distant (IP + port)
     sockfd = descripteur du socket obtenu avec socket()
@@ -109,7 +109,7 @@
     ou échoue
     retourne un socket descriptor si succès et -1 si échec + set errno
 
-- **int listen(int sockfd, int backlog)**
+-**int listen(int sockfd, int backlog)**
 
     Met la socket créée avec socket() et liée avec bind() en mode passive. Prête
     à accepter les connexions via accept(). Fonctionne seulement avec des sockets TCP
@@ -117,7 +117,7 @@
     backlog = taille de la file d’attente des connexions en attente
     retourne 0 si succès et -1 si échec + set errno
 
-- **int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)**
+-**int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)**
 
     Accepte une connexion TCP entrante sur un socket qui écoute avec listen()
     Crée un nouveau socket dédié à la communication avec ce client
@@ -127,7 +127,7 @@
     addrlen = taille de la structure pointée
     retourne un socket descriptor si succès et -1 si échec + set errno
 
-- **int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen)**
+-**int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen)**
 
     Permet de récupérer l’adresse locale (IP + port) à laquelle un socket est lié
     sockfd = descripteur du socket obtenu avec socket()
@@ -135,7 +135,7 @@
     addrlen = taille de la structure pointée
     retourne 0 si succès et -1 si échec + set errno
 
-- **struct protoent *getprotobyname(const char *name)**
+-**struct protoent *getprotobyname(const char *name)**
 
     Recherche dans une base de données des protocoles réseaux l’entrée correspondante
     à ce nom et retourne une structure protoent qui contient les infos
@@ -145,7 +145,7 @@
 
 ### COMMUNICATION
 
-- **ssize_t send(int sockfd, const void *buf, size_t len, int flags)**
+-**ssize_t send(int sockfd, const void *buf, size_t len, int flags)**
 
     Envoie des données à travers une socket réseau
     sockfd = descripteur du socket obtenu avec socket()
@@ -154,7 +154,7 @@
     flags = options supp (souvent 0)
     retourne le nb d’octets envoyés si succès et -1 si échec + set errno
 
-- **ssize_t recv(int sockfd, void *buf, size_t len, int flags)**
+-**ssize_t recv(int sockfd, void *buf, size_t len, int flags)**
 
     Reçoit des données venant d’un socket
     sockfd = descripteur du socket connecté obtenu après accept() ou connect()
@@ -165,7 +165,7 @@
 
 ### DNS/IP
 
-- **int getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res)**
+-**int getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res)**
 
     Traduit un nom d’hôte (ou adresse IP) et un service (port) en une ou plusieurs
     structures sockaddr utilisables avec socket(), connect(), bind()
@@ -177,28 +177,28 @@
     retourne 0 si succès sinon code d’erreur à traduire avec gai_strerror()
     cf. struct addrinfo
 
-- **void freeaddrinfo(struct addrinfo *res)**
+-**void freeaddrinfo(struct addrinfo *res)**
 
     Libère la mémoire allouée par getaddrinfo()
     res = pointeur retourné par getaddrinfo()
 
 ### ENDIAN CONVERSIONS
 
-- **uint16_t htons(uint16_t hostshort)**
+-**uint16_t htons(uint16_t hostshort)**
 
     Convertir un entier 16 bits de l’ordre des octets de la machine (little endian)
     locale vers l’ordre des octets utilisé sur le réseau (big endian)
     retourne le même entier mais converti
 
-- **uint32_t htonl(uint32_t hostlong)**
+-**uint32_t htonl(uint32_t hostlong)**
 
     Idem que pour htons mais pour un entier 32 bits
 
-- **uint16_t ntohs(uint16_t netshort)**
+-**uint16_t ntohs(uint16_t netshort)**
 
     Idem que pour htons mais cette fois-ci conversion réseau → machine locale
 
-- **uint32_t ntohl(uint32_t netlong)**
+-**uint32_t ntohl(uint32_t netlong)**
 
     Idem que pour htonl mais cette fois-ci conversion réseau → machine locale
 
@@ -206,7 +206,7 @@
 
 ### POSIX CLASSIC
 
-- **int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)**
+-**int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)**
 
     Permet de surveiller plusieurs fds (socket, pipes, stdin) pour savoir quand
     ils sont prêts à lire, écrire ou signaler une erreur, sans bloquer.
@@ -217,7 +217,7 @@
     timeout = délai d’attente maximum (ou NULL pour bloquer indéfiniment)
     retourne le nb de descripteurs prêts sinon 0 si rien n’est prêt ou -1 erreur + set errno
 
-- **int poll(struct pollfd fds[], nfds_t nfds, int timeout)**
+-**int poll(struct pollfd fds[], nfds_t nfds, int timeout)**
 
     Comme select mais en mieux (pas de limite de fd, tableau à la place de struct,
     meilleures perfs)
@@ -229,13 +229,13 @@
 
 ### LINUX SPECIFIC
 
-- **int epoll_create(int size)**
+-**int epoll_create(int size)**
 
     Crée un descripteur d’objet epoll
     size = nb max de fds à surveiller (plus d’actualité, doit être mis à 0)
     renvoie >=0 (descripteur d’objet epoll) ou -1 si échec + set errno
 
-- **int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)**
+-**int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)**
 
     Permet de gérer la liste de descripteurs surveillés par une instance epoll
     Utilisé pour ajouter, modifier ou retirer un fd (socket, fd, etc.) dans l’instance
@@ -246,7 +246,7 @@
     event = pointeur vers struct epoll_event (sauf pour DEL où il peut être NULL)
     renvoie 0 si succès sinon -1 + set errno
 
-- **int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)**
+-**int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)**
 
     Bloque (ou non) et attend qu’un ou plusieurs fds surveillés par epoll deviennent
     prêts
