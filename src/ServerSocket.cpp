@@ -2,13 +2,15 @@
 #include <vector>
 
 ServerSocket::ServerSocket() {
+	errno = 0;
 	if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-		perror("socket failed");
+		strerror(errno);
 		exit(EXIT_FAILURE);
 	}
 	int opt = 1;
+	errno = 0;
 	if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-		perror("setsockopt");
+		strerror(errno);
 		exit(EXIT_FAILURE);
 	}
 	serverAddress.sin_family = AF_INET;
@@ -22,7 +24,7 @@ ServerSocket::ServerSocket() {
 ServerSocket::~ServerSocket() {
 	if (serverFd)
 		close(serverFd);
-	for (std::vector<int>::iterator it = clientFds.begin(); it != clientFds.end(); ++it)
+	for (fdsIterator it = clientFds.begin(); it != clientFds.end(); ++it)
 		close(*it);
 
 
@@ -33,15 +35,17 @@ int ServerSocket::getServerFd() const {
 }
 
 void ServerSocket::bindAndListen() {
+	errno = 0;
 	if (bind(serverFd, (struct sockaddr *)&serverAddress, addrlen) < 0)
 	{
-		perror("bind");
+		strerror(errno);
 		close(serverFd);
 		exit(EXIT_FAILURE);
 	}
 	isBound = 1;
+	errno = 0;
 	if (listen(serverFd, SOMAXCONN) < 0) {
-		perror("listen");
+		strerror(errno);
 		close(serverFd);
 		exit(EXIT_FAILURE);
 	}
@@ -61,7 +65,7 @@ void ServerSocket::acceptClient() {
 	{
 		FD_ZERO(&readFds);
 		FD_SET(serverFd, &readFds);
-		for (std::vector<int>::iterator it = clientFds.begin(); it != clientFds.end(); ++it)
+		for (fdsIterator it = clientFds.begin(); it != clientFds.end(); ++it)
 		{
 			FD_SET(*it, &readFds);
 			if (*it > maxFd)
@@ -69,17 +73,19 @@ void ServerSocket::acceptClient() {
 		}
 		tv.tv_sec = 10;
 		tv.tv_usec = 0;
+		errno = 0;
 		int activity = select(maxFd + 1, &readFds, NULL, NULL, &tv);
 		if (activity < 0)
 		{
-			perror("select");
+			strerror(errno);
 			continue;
 		}
 		if (FD_ISSET(serverFd, &readFds))
 		{
+			errno = 0;
 			int newClient = accept(serverFd, NULL, NULL);
 			if (newClient < 0) {
-				perror("accept");
+				strerror(errno);
 				continue;
 			}
 			else
@@ -88,7 +94,7 @@ void ServerSocket::acceptClient() {
 				std::cout << "New client connected: FD " << newClient << std::endl;
 			}
 		}
-		for (std::vector<int>::iterator it = clientFds.begin(); it != clientFds.end();)
+		for (fdsIterator it = clientFds.begin(); it != clientFds.end();)
 		{
 			char buf[4096];
 			int bytes = 0;
@@ -106,7 +112,7 @@ void ServerSocket::acceptClient() {
 				std::cout << "Received request:\n" << request << std::endl;
 				send(*it, response.c_str(), response.size(), 0);
 				close(*it);
-				it = clientFds.erase(it);				
+				it = clientFds.erase(it);
 			}
 			else
 				++it;

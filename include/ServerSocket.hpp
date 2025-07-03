@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <cstdio>
 #include <cstdlib>
-
+#include <cerrno>
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -21,6 +21,8 @@ class ServerSocket {
 		int addrlen;
 		bool isBound;
 		bool isListening;
+
+		typedef std::vector<int>::iterator fdsIterator;
 
 	public:
 		ServerSocket();
