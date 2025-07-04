@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <cstdio>
 #include <cstdlib>
-
+#include <cerrno>
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -22,10 +22,14 @@ class ServerSocket {
         bool isBound;
         bool isListening;
 
-    public:
-        ServerSocket();
-        ~ServerSocket();
-        int getServerFd() const;
-        void bindAndListen();
-        void acceptClient();
+		typedef std::vector<int>::iterator fdsIterator;
+
+		void printError();
+
+	public:
+		ServerSocket();
+		~ServerSocket();
+		int getServerFd() const;
+		void bindAndListen();
+		void acceptClient();
 };
