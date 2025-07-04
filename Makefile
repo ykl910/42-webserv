@@ -40,7 +40,7 @@ asm: $(ASM)
 
 $(NAME): $(OBJ)
 	$(CC) $(FLAGS) $^ $(LFLAGS) -o $@
-	@echo "$(GREEN)> $(NAME) creation successful!$(DEFAULT)"
+	@echo "$(BOLD)$(ITALIC)$(GREEN)> $(NAME) creation successful!$(DEFAULT)"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDE)
 	@mkdir -p $(dir $@)
@@ -58,12 +58,12 @@ $(ASM_DIR)/%.s: $(SRC_DIR)/%.cpp
 
 clean:
 	$(RM) -rf $(OBJ) $(PP) $(ASM)
-	@echo "$(YELLOW)> $(NAME) objects removed!$(DEFAULT)"
+	@echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) objects removed!$(DEFAULT)"
 
 fclean: clean
 	$(RM) -rf $(OBJ_DIR) $(PP_DIR) $(ASM_DIR)
 	$(RM) $(NAME)
-	@echo "$(YELLOW)> $(NAME) entirely cleaned!$(DEFAULT)"
+	@echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) entirely cleaned!$(DEFAULT)"
 
 re: fclean all
 
@@ -72,8 +72,7 @@ re: fclean all
 ###########################     TEXT FORMATTING     ###########################
 
 DEFAULT=\033[0m
-RED=\033[31m
+BOLD=\033[1m
+ITALIC=\033[3m
 GREEN=\033[32m
 YELLOW=\033[33m
-BLUE=\033[34m
-MAGENTA=\033[35m
