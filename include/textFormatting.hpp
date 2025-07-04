@@ -1,5 +1,4 @@
-#ifndef TEXT_FORMATTING_HPP
-#define TEXT_FORMATTING_HPP
+#pragma once
 
 #define DEFAULT "\033[0m"
 #define BOLD "\033[1m"
@@ -11,5 +10,3 @@
 #define MAGENTA "\033[35m"
 #define CYAN "\033[36m"
 #define WHITE "\033[37m"
-
-#endif
