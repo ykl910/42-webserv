@@ -10,13 +10,17 @@ FLAGS               = -g -Wall -Wextra -Werror -std=c++98
 ###########################          INCLUDE        ###########################
 
 INCLUDE_DIR         := include
-INCLUDE             := ServerSocket.hpp
+INCLUDE             := multiplexer.hpp \
+                    ServerSocket.hpp
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
 ###########################          SOURCE         ###########################
 
 SRC_DIR             := src
-SRC                 := main.cpp \
+SRC                 := multiplexer/epoll.cpp \
+                    multiplexer/poll.cpp \
+                    multiplexer/select.cpp \
+                    main.cpp \
                     ServerSocket.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 

@@ -22,7 +22,8 @@ public:
     int getServerFd() const;
 
     ServerSocket();
-    ServerSocket(char *config_file, char *multiplexer);
+    ServerSocket(const char *config_file);
+    ServerSocket(const char *config_file, const char *multiplexer);
     ~ServerSocket();
 
 private:
