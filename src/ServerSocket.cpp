@@ -52,7 +52,7 @@ void ServerSocket::printError()
 }
 
 int ServerSocket::getServerFd() const {
-    return serverFd;
+	return serverFd;
 }
 
 void ServerSocket::bindAndListen() {
@@ -83,11 +83,11 @@ void ServerSocket::bindAndListen() {
 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
 
 void ServerSocket::acceptClient() {
-    fd_set readFds;
-    struct timeval tv;
-    tv.tv_sec = 10;
-    tv.tv_usec = 0;
-    int maxFd = serverFd;
+	fd_set readFds;
+	struct timeval tv;
+	tv.tv_sec = 10;
+	tv.tv_usec = 0;
+	int maxFd = serverFd;
 
 	while (true)
 	{
