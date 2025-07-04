@@ -4,8 +4,41 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="8zPTQfDyXzK2nGU-uvjh-1" value="&lt;font face=&quot;Helvetica&quot; style=&quot;color: rgb(128, 128, 128); font-size: 36px;&quot;&gt;&lt;i style=&quot;&quot;&gt;Webserv&lt;/i&gt;&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+        <mxCell id="8zPTQfDyXzK2nGU-uvjh-1" value="&lt;font face=&quot;Helvetica&quot; style=&quot;color: rgb(128, 128, 128); font-size: 36px;&quot;&gt;&lt;i style=&quot;&quot;&gt;Webserv&lt;/i&gt;&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
           <mxGeometry x="50" y="40" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="cXPCc7lVcVTiwkPZh7FL-3" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="55" y="228" width="150" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-1" value="select" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="155" y="108" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-2" value="poll" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="100" y="138" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-3" value="epoll" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="255" y="148" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-4" value="&lt;span&gt;Socket&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="365" y="178" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-5" value="Client" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="65" y="198" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-6" value="Server" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="660" y="198" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-7" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="645" y="228" width="150" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-8" value="AF_INET&amp;nbsp; - IPv4" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="220" width="135" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-9" value="&lt;code data-start=&quot;723&quot; data-end=&quot;733&quot;&gt;AF_INET6 - IPv6&lt;/code&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="260" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="kOuLoXwdrEf6nRUhGtBZ-10" value="&lt;code data-start=&quot;1243&quot; data-end=&quot;1256&quot;&gt;SOCK_STREAM - TCP&lt;/code&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="300" width="160" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
