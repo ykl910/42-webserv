@@ -37,5 +37,4 @@ private:
     typedef std::vector<int>::iterator fdsIterator;
 
     void printError();
-
 };
