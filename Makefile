@@ -16,7 +16,8 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 ###########################          SOURCE         ###########################
 
 SRC_DIR             := src
-SRC                 := main.cpp ServerSocket.cpp
+SRC                 := main.cpp \
+                    ServerSocket.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
 ###########################       COMPILATION       ###########################
