@@ -14,18 +14,18 @@
 #define PORT 8080
 
 class ServerSocket {
-	private:
-		int serverFd;
-		std::vector<int> clientFds;
-		struct sockaddr_in serverAddress;
-		int addrlen;
-		bool isBound;
-		bool isListening;
+    private:
+        int serverFd;
+        std::vector<int> clientFds;
+        struct sockaddr_in serverAddress;
+        int addrlen;
+        bool isBound;
+        bool isListening;
 
-	public:
-		ServerSocket();
-		~ServerSocket();
-		int getServerFd() const;
-		void bindAndListen();
-		void acceptClient();
+    public:
+        ServerSocket();
+        ~ServerSocket();
+        int getServerFd() const;
+        void bindAndListen();
+        void acceptClient();
 };

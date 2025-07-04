@@ -1,4 +1,4 @@
-#include "../include/webserv.hpp"
+#include "../include/WebServ.hpp"
 #include "../include/ServerSocket.hpp"
 
 /* Authorized functions
@@ -50,11 +50,17 @@ struct dirent *readdir(DIR *dirp);
 int closedir(DIR *dirp);
 */
 
+bool    got_config_file(int argc, char **argv) {
+    return argc == 2;
+}
 
-int main() {
-    ServerSocket server;
-    server.bindAndListen();
-    std::cout << "Server listening on port 8080..." << std::endl;
-    server.acceptClient();
-    return 0;
+int main(int argc, char **argv) {
+    if (got_config_file(argc, argv)) {
+        ServerSocket server;
+
+        server.bindAndListen();
+        std::cout << "Server listening on port 8080..." << std::endl;
+        server.acceptClient();
+    }
+    return EXIT_SUCCESS;
 }
