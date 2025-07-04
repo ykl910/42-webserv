@@ -1,5 +1,14 @@
 #include "../include/ServerSocket.hpp"
 
+ServerSocket::ServerSocket(const char *config_file) {
+    (void)config_file;
+}
+
+ServerSocket::ServerSocket(const char *config_file, const char *multiplexer) {
+    (void)config_file;
+    (void)multiplexer;
+}
+
 ServerSocket::ServerSocket() {
 
     //* Create a new socket

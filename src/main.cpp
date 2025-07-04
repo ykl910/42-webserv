@@ -1,4 +1,5 @@
 #include "../include/ServerSocket.hpp"
+#include "../include/multiplexer.hpp"
 
 bool    got_config_file(int argc, char *argv) {
     if (argc == 2) {
@@ -19,25 +20,48 @@ bool    got_config_file(int argc, char *argv) {
     return false;
 }
 
-bool    choosed_multiplexer(char *input) {
-    (void)input;
+bool    had_choosen_multiplexer(const char *input) {
+    std::string multiplexer(input);
+
+    if (multiplexer.empty() || multiplexer != "select"
+        || multiplexer != "poll" || multiplexer != "epoll")
         return false;
     return true;
+}
+
+void    launch_specific_multiplexer(const char *config_file,
+                                    const char *multiplexer) {
+    std::string string_multiplexer(multiplexer);
+
+    if (string_multiplexer == "select")
+        run_with_select(config_file);
+    else if (string_multiplexer == "poll")
+        run_with_poll(config_file);
+    else if (string_multiplexer == "epoll")
+        run_with_epoll(config_file);
+    ServerSocket server(config_file, multiplexer);
+
+    server.bindAndListen();
+    std::cout << BOLD WHITE << "Server listening on port: "
+    << BOLD BLUE << "8080" << DEFAULT << std::endl;
+    server.acceptClient();
 }
 
 int main(int argc, char **argv) {
     if (got_config_file(argc, argv[1])) {
         try {
-            // if (choosed_multiplexer()) // choose between select | poll | epoll
-            //     ServerSocket server(argv[2], argv[3]);
-            // else
-            //     ServerSocket server(argv[2]);
-            ServerSocket server;
+            // choose between select | poll | epoll
+            if (had_choosen_multiplexer(argv[3]))
+                launch_specific_multiplexer(argv[2], argv[3]);
+            else {
+                //  ServerSocket server(argv[2]);
+                ServerSocket server;
 
-            server.bindAndListen();
-            std::cout << BOLD WHITE << "Server listening on port: "
-            << BOLD BLUE << "8080" << DEFAULT << std::endl;
-            server.acceptClient();
+                server.bindAndListen();
+                std::cout << BOLD WHITE << "Server listening on port: "
+                << BOLD BLUE << "8080" << DEFAULT << std::endl;
+                server.acceptClient();
+            }
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             return EXIT_FAILURE;
