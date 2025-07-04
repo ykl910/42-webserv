@@ -1,0 +1,111 @@
+🌐 Webserver Flow Diagram
+
+ ┌──────────────────────────────┐
+ │         CONFIG PARSING       │
+ │ ──────────────────────────── │
+ │ Parse webserv.conf           │
+ │ → server blocks              │
+ │ → location blocks            │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │     CREATE SERVER SOCKET     │
+ │ ──────────────────────────── │
+ │ socket()                     │
+ │ bind()                       │
+ │ listen()                     │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │        MAIN SERVER LOOP      │
+ │ ──────────────────────────── │
+ │ while (true):                │
+ │   poll() for activity        │
+ │   if server socket ready:    │
+ │     accept() → client_fd     │
+ │   if client_fd ready:        │
+ │     recv() HTTP request      │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │      PARSE HTTP REQUEST      │
+ │ ──────────────────────────── │
+ │ Extract:                     │
+ │ → Method (GET/POST/...)      │
+ │ → Path (/upload, /img)       │
+ │ → Host (localhost:8080)      │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │     SELECT SERVER BLOCK      │
+ │ ──────────────────────────── │
+ │ Match `Host` + `listen`      │
+ │ Use correct server config    │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │   MATCH LOCATION BLOCK       │
+ │ ──────────────────────────── │
+ │ Match `path` to a `location` │
+ │ Check: methods, root, CGI    │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │     GENERATE RESPONSE        │
+ │ ──────────────────────────── │
+ │ → File read from disk        │
+ │ → CGI script executed        │
+ │ → Upload file stored         │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │        SEND RESPONSE         │
+ │ ──────────────────────────── │
+ │ send(client_fd, response)    │
+ └────────────┬────────────────┘
+              │
+              ▼
+ ┌──────────────────────────────┐
+ │        CLOSE SOCKET          │
+ │ ──────────────────────────── │
+ │ close(client_fd)             │
+ └──────────────────────────────┘
+
+
+🌐 CGI Flow Diagram (to serve dynamic content)
+
+Client sends:  GET /hello.py?name=Sam HTTP/1.1
+                          │
+                      webserv
+                          │
+       ┌──────────────────┴───────────────────┐
+       │ It sees `.py` + matching location    │
+       │ CGI is enabled for that extension    │
+       └──────────────────┬───────────────────┘
+                          │
+        ┌─────────────────▼────────────────┐
+        │  webserv forks a child process   │
+        │  and execs: ./hello.py           │
+        │  (like system("./hello.py"))     │
+        └─────────────────┬────────────────┘
+                          │
+        ┌─────────────────▼────────────────┐
+        │   Script writes to `stdout`      │
+        │   e.g.:                          │
+        │   print("Content-Type: text/html") │
+        │   print()                        │
+        │   print("<h1>Hello Sam</h1>")    │
+        └─────────────────┬────────────────┘
+                          │
+            webserv reads stdout from CGI
+                          │
+       ┌──────────────────▼──────────────────┐
+       │  It sends that as HTTP response     │
+       └─────────────────────────────────────┘
