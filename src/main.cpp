@@ -1,7 +1,7 @@
 #include "../include/ServerSocket.hpp"
 #include "../include/multiplexer.hpp"
 
-bool    got_config_file(int argc, char *argv) {
+bool    got_config_file(const int argc, const char *argv) {
     if (argc == 2) {
         try {
             std::string input_file(argv);
@@ -23,10 +23,8 @@ bool    got_config_file(int argc, char *argv) {
 bool    had_choosen_multiplexer(const char *input) {
     std::string multiplexer(input);
 
-    if (multiplexer.empty() || multiplexer != "select"
-        || multiplexer != "poll" || multiplexer != "epoll")
-        return false;
-    return true;
+    return (multiplexer.empty() || multiplexer != "select"
+        || multiplexer != "poll" || multiplexer != "epoll");
 }
 
 void    launch_specific_multiplexer(const char *config_file,
@@ -39,8 +37,8 @@ void    launch_specific_multiplexer(const char *config_file,
         run_with_poll(config_file);
     else if (string_multiplexer == "epoll")
         run_with_epoll(config_file);
-    ServerSocket server(config_file, multiplexer);
 
+    ServerSocket server(config_file, multiplexer);
     server.bindAndListen();
     std::cout << BOLD WHITE << "Server listening on port: "
     << BOLD BLUE << "8080" << DEFAULT << std::endl;
