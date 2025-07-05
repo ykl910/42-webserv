@@ -1,5 +1,8 @@
-#include "../../include/multiplexer.hpp"
+#include "../../include/ServerSocket.hpp"
 
-void    run_with_select(const char *config_file) {
-    (void)config_file;
+void    run_using_select(ServerSocket& server) {
+    server.bindAndListen();
+    std::cout << BOLD WHITE << "Server listening on port: "
+    << BOLD BLUE << "8080" << DEFAULT << std::endl;
+    server.acceptClient();
 }
