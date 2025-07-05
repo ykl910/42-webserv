@@ -1,7 +1,7 @@
 #include "../include/ServerSocket.hpp"
 
 bool    got_config_file(const int argc, const char* argv) {
-    if (argc == 2) {
+    if (argc == 2 || argc == 3) {
         try {
             std::string config_file(argv);
             if (config_file.empty())
@@ -30,7 +30,6 @@ void    run_specific_multiplexer(ServerSocket& server,
                                     const std::string& multiplexer) {
     std::string string_multiplexer(multiplexer);
 
-    std::cout << "here\n";
     if (string_multiplexer == "select")
         run_using_select(server);
     else if (string_multiplexer == "poll")

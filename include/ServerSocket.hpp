@@ -4,20 +4,23 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/poll.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cerrno>
 #include <iostream>
+#include <cstdlib>
+#include <fcntl.h>
 #include <cstring>
+#include <cstdio>
+#include <cerrno>
 #include <vector>
 
 #define PORT 8080
 
 class ServerSocket {
 public:
-    void printError();
+    void printError() const;
+    void printServerStatus(const char* multiplexer) const;
     void executeCGI();
     void bindAndListen();
     int getServerFd() const;
@@ -26,6 +29,7 @@ public:
     void acceptClientEpoll();
     void acceptClientSelect();
 
+    void initSignalHandler();
     void initServer(const std::string& config_file);
 
     ServerSocket(const char* config_file);

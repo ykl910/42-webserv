@@ -1,7 +1,17 @@
 #include "../include/ServerSocket.hpp"
 
-void    ServerSocket::printError() {
+void    ServerSocket::printError() const {
     std::cerr << "Error: " << strerror(errno) << std::endl;
+}
+
+void    ServerSocket::printServerStatus(const char* multiplexer) const {
+    std::cout << BOLD WHITE << "Server status: "
+    << BOLD ITALIC GREEN << "running\n" << DEFAULT
+    << BOLD WHITE << "Port: "
+    << BOLD ITALIC BLUE  << "8080\n" << DEFAULT
+    << BOLD WHITE << "Multiplexer: "
+    << BOLD ITALIC BLUE  << multiplexer << DEFAULT
+    << std::endl;
 }
 
 int ServerSocket::getServerFd() const {
@@ -11,7 +21,6 @@ int ServerSocket::getServerFd() const {
 void    ServerSocket::bindAndListen() {
 
     //* Bind the socket to the IP:port from serverAddress
-
     errno = 0;
     if (bind(serverFd, (struct sockaddr *)&serverAddress, addrlen) < 0) {
         printError();
@@ -22,7 +31,6 @@ void    ServerSocket::bindAndListen() {
 
     //* Set the socket in listening mode (accepting connexions)
     //* SOMAXCONN = macro for max connexion (4096)
-
     errno = 0;
     if (listen(this->serverFd, SOMAXCONN) < 0) {
         printError();
@@ -36,10 +44,20 @@ std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html>
 
 void    ServerSocket::acceptClientPoll() {
     // int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+    while (true) {
+
+    }
 }
 
 void    ServerSocket::acceptClientEpoll() {
-    // int epoll_create(int size);
+    int epoll_fd = epoll_create(1);
+    if (epoll_fd == -1)
+        throw std::runtime_error("Error: epoll create");
+
+    while (true) {
+
+    }
+
     // int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     // int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 }
@@ -52,14 +70,13 @@ void    ServerSocket::acceptClientSelect() {
     int maxFd = this->serverFd;
 
     while (true) {
+
         //* FD_ZERO = empty readFds set
         //* FD_SET = add server socket to detect new connexions
-
         FD_ZERO(&readFds);
         FD_SET(this->serverFd, &readFds);
 
         //* Add everyt client sockets to readFds and add maxFd if necessary
-
         for (fdsIterator it = this->clientFds.begin();
             it != this->clientFds.end(); ++it) {
             FD_SET(*it, &readFds);
@@ -71,7 +88,6 @@ void    ServerSocket::acceptClientSelect() {
         tv.tv_usec = 0;
 
         //* wait for event in a socket
-
         errno = 0;
         int activity = select(maxFd + 1, &readFds, NULL, NULL, &tv);
         if (activity < 0) {
@@ -80,7 +96,6 @@ void    ServerSocket::acceptClientSelect() {
         }
 
         //* new connexion -> accept connexion and add client to the list
-
         if (FD_ISSET(this->serverFd, &readFds)) {
             errno = 0;
             int newClient = accept(this->serverFd, NULL, NULL);
@@ -94,7 +109,6 @@ void    ServerSocket::acceptClientSelect() {
         }
 
         //* loop on every actives clients and seek for data to read
-
         for (fdsIterator it = this->clientFds.begin(); it != this->clientFds.end();) {
             char buf[4096];
             int bytes = 0;
@@ -130,7 +144,6 @@ ServerSocket::ServerSocket(const char* config_file) : config_file(config_file) {
     //* AF_INET = IPv4
     //* SOCK_STREAM = TCP protocol
     //* 0 = default protocol
-
     errno = 0;
     if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         printError();
@@ -141,7 +154,6 @@ ServerSocket::ServerSocket(const char* config_file) : config_file(config_file) {
     //* SOL_SOCKET = general options
     //* SO_REUSEADDR = allow to reuse (IP:port) already used
     //* opt = activate/desactivate
-
     errno = 0;
     int opt = 1;
     if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
@@ -152,7 +164,6 @@ ServerSocket::ServerSocket(const char* config_file) : config_file(config_file) {
     //* AF_INET = IPv4
     //* INADDR_ANY = accept all network interfaces connexions
     //* PORT = 8080 (-> macro)
-
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     serverAddress.sin_port = htons(PORT);
