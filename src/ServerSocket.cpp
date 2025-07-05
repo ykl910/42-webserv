@@ -1,4 +1,5 @@
 #include "../include/ServerSocket.hpp"
+#include "../include/httpRequest.hpp"
 
 void ServerSocket::printError()
 {
@@ -109,6 +110,7 @@ void ServerSocket::acceptClient() {
                 }
 
                 std::string request(buf, bytes);
+                httpRequest httpReq(request);
                 std::cout << "Received request:\n" << request << std::endl;
                 send(*it, response.c_str(), response.size(), 0);
                 close(*it);

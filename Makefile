@@ -20,7 +20,8 @@ SRC                 := multiplexer/epoll.cpp \
                     multiplexer/poll.cpp \
                     multiplexer/select.cpp \
                     main.cpp \
-                    ServerSocket.cpp
+                    ServerSocket.cpp \
+					httpRequest.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
 ###########################       COMPILATION       ###########################
