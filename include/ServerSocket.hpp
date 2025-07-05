@@ -17,17 +17,17 @@
 
 class ServerSocket {
 public:
+    void initServer(const std::string& config_file);
     void acceptClient();
     void bindAndListen();
     int getServerFd() const;
 
-    ServerSocket();
-    ServerSocket(const char *config_file);
-    ServerSocket(const char *config_file, const char *multiplexer);
+    ServerSocket(const char* config_file);
     ~ServerSocket();
 
 private:
     int serverFd;
+    std::string config_file;
     std::vector<int> clientFds;
     struct sockaddr_in serverAddress;
     int addrlen;
@@ -38,3 +38,7 @@ private:
 
     void printError();
 };
+
+void    run_using_select(ServerSocket& server);
+void    run_using_poll(ServerSocket& server);
+void    run_using_epoll(ServerSocket& server);

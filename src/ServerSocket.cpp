@@ -1,60 +1,5 @@
 #include "../include/ServerSocket.hpp"
 
-ServerSocket::ServerSocket(const char *config_file) {
-    (void)config_file;
-}
-
-ServerSocket::ServerSocket(const char *config_file, const char *multiplexer) {
-    (void)config_file;
-    (void)multiplexer;
-}
-
-ServerSocket::ServerSocket() {
-
-    //* Create a new socket
-    //* AF_INET = IPv4
-    //* SOCK_STREAM = TCP protocol
-    //* 0 = default protocol
-
-    errno = 0;
-    if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        printError();
-        exit(EXIT_FAILURE);
-    }
-
-    //* Set socket options to reuse the same port each time
-    //* SOL_SOCKET = general options
-    //* SO_REUSEADDR = allow to reuse (IP:port) already used
-    //* opt = activate/desactivate
-
-    errno = 0;
-    int opt = 1;
-    if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-        printError();
-        exit(EXIT_FAILURE);
-    }
-
-    //* AF_INET = IPv4
-    //* INADDR_ANY = accept all network interfaces connexions
-    //* PORT = 8080 (-> macro)
-
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-    serverAddress.sin_port = htons(PORT);
-
-    isBound = false;
-    isListening = false;
-
-    addrlen = sizeof(serverAddress);
-}
-
-ServerSocket::~ServerSocket() {
-    if (serverFd)
-        close(serverFd);
-    for (fdsIterator it = clientFds.begin(); it != clientFds.end(); ++it)
-        close(*it);
-}
-
 void ServerSocket::printError()
 {
     std::cerr << "Error: " << strerror(errno) << std::endl;
@@ -173,4 +118,55 @@ void ServerSocket::acceptClient() {
                 ++it;
         }
     }
+}
+
+void    ServerSocket::initServer(const std::string& config_file) {
+    (void)config_file;
+
+}
+
+ServerSocket::ServerSocket(const char* config_file) : config_file(config_file) {
+
+    //* Create a new socket
+    //* AF_INET = IPv4
+    //* SOCK_STREAM = TCP protocol
+    //* 0 = default protocol
+
+    errno = 0;
+    if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+        printError();
+        exit(EXIT_FAILURE);
+    }
+
+    //* Set socket options to reuse the same port each time
+    //* SOL_SOCKET = general options
+    //* SO_REUSEADDR = allow to reuse (IP:port) already used
+    //* opt = activate/desactivate
+
+    errno = 0;
+    int opt = 1;
+    if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        printError();
+        exit(EXIT_FAILURE);
+    }
+
+    //* AF_INET = IPv4
+    //* INADDR_ANY = accept all network interfaces connexions
+    //* PORT = 8080 (-> macro)
+
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    serverAddress.sin_port = htons(PORT);
+
+    isBound = false;
+    isListening = false;
+
+    addrlen = sizeof(serverAddress);
+}
+
+ServerSocket::~ServerSocket() {
+    if (serverFd)
+        close(serverFd);
+    for (fdsIterator it = clientFds.begin(); it != clientFds.end(); ++it)
+        close(*it);
 }
