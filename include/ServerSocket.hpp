@@ -17,26 +17,32 @@
 
 class ServerSocket {
 public:
-    void initServer(const std::string& config_file);
-    void acceptClient();
+    void printError();
+    void executeCGI();
     void bindAndListen();
     int getServerFd() const;
+
+    void acceptClientPoll();
+    void acceptClientEpoll();
+    void acceptClientSelect();
+
+    void initServer(const std::string& config_file);
 
     ServerSocket(const char* config_file);
     ~ServerSocket();
 
 private:
-    int serverFd;
-    std::string config_file;
-    std::vector<int> clientFds;
-    struct sockaddr_in serverAddress;
-    int addrlen;
     bool isBound;
     bool isListening;
 
-    typedef std::vector<int>::iterator fdsIterator;
+    int addrlen;
+    int serverFd;
 
-    void printError();
+    std::string config_file;
+    std::vector<int> clientFds;
+
+    struct sockaddr_in serverAddress;
+    typedef std::vector<int>::iterator fdsIterator;
 };
 
 void    run_using_select(ServerSocket& server);
