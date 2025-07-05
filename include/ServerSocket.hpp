@@ -4,39 +4,49 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/poll.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cerrno>
 #include <iostream>
+#include <cstdlib>
+#include <fcntl.h>
 #include <cstring>
+#include <cstdio>
+#include <cerrno>
 #include <vector>
 
 #define PORT 8080
 
 class ServerSocket {
 public:
-    void initServer(const std::string& config_file);
-    void acceptClient();
+    void printError() const;
+    void printServerStatus(const char* multiplexer) const;
+    void executeCGI();
     void bindAndListen();
     int getServerFd() const;
+
+    void acceptClientPoll();
+    void acceptClientEpoll();
+    void acceptClientSelect();
+
+    void initSignalHandler();
+    void initServer(const std::string& config_file);
 
     ServerSocket(const char* config_file);
     ~ServerSocket();
 
 private:
-    int serverFd;
-    std::string config_file;
-    std::vector<int> clientFds;
-    struct sockaddr_in serverAddress;
-    int addrlen;
     bool isBound;
     bool isListening;
 
-    typedef std::vector<int>::iterator fdsIterator;
+    int addrlen;
+    int serverFd;
 
-    void printError();
+    std::string config_file;
+    std::vector<int> clientFds;
+
+    struct sockaddr_in serverAddress;
+    typedef std::vector<int>::iterator fdsIterator;
 };
 
 void    run_using_select(ServerSocket& server);
