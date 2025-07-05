@@ -2,7 +2,6 @@
 
 void    run_using_epoll(ServerSocket& server) {
     server.bindAndListen();
-    std::cout << BOLD WHITE << "Server listening on port: "
-    << BOLD BLUE << "8080" << DEFAULT << std::endl;
-    server.acceptClient();
+    server.printServerStatus("epoll");
+    server.acceptClientEpoll();
 }

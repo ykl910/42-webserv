@@ -1,8 +1,8 @@
 #include "../include/ServerSocket.hpp"
 #include "../include/httpRequest.hpp"
 
-bool    got_config_file(const int argc, const char *argv) {
-    if (argc == 2) {
+bool    got_config_file(const int argc, const char* argv) {
+    if (argc == 2 || argc == 3) {
         try {
             std::string config_file(argv);
             if (config_file.empty())
@@ -20,14 +20,14 @@ bool    got_config_file(const int argc, const char *argv) {
     return false;
 }
 
-bool    had_choosen_multiplexer(const char *input) {
+bool    had_choosen_multiplexer(const char* input) {
     std::string multiplexer(input);
 
     return multiplexer.empty() || multiplexer != "select"
         || multiplexer != "poll" || multiplexer != "epoll";
 }
 
-void    launch_specific_multiplexer(ServerSocket& server,
+void    run_specific_multiplexer(ServerSocket& server,
                                     const std::string& multiplexer) {
     std::string string_multiplexer(multiplexer);
 
@@ -45,9 +45,9 @@ int main(int argc, char **argv) {
             ServerSocket    server(argv[1]);
             // choose between select | poll | epoll
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
-                launch_specific_multiplexer(server, argv[2]);
+                run_specific_multiplexer(server, argv[2]);
             else {
-                run_using_epoll(server);
+                run_using_select(server);
             }
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
