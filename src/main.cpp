@@ -23,8 +23,8 @@ bool    got_config_file(const int argc, const char* argv) {
 bool    had_choosen_multiplexer(const char* input) {
     std::string multiplexer(input);
 
-    return multiplexer.empty() || multiplexer != "select"
-        || multiplexer != "poll" || multiplexer != "epoll";
+    return !multiplexer.empty() && (multiplexer == "select"
+        || multiplexer == "poll" || multiplexer == "epoll");
 }
 
 void    run_specific_multiplexer(ServerSocket& server,
@@ -46,9 +46,8 @@ int main(int argc, char **argv) {
             // choose between select | poll | epoll
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
                 run_specific_multiplexer(server, argv[2]);
-            else {
+            else
                 run_using_select(server);
-            }
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             return EXIT_FAILURE;
@@ -60,7 +59,7 @@ int main(int argc, char **argv) {
 
 //test request parsing
 // int main() {
-//     std::string raw_request = 
+//     std::string raw_request =
 //         "GET /index.html HTTP/1.1\r\n"
 //         "Host: localhost:8080\r\n"
 //         "User-Agent: curl/7.64.1\r\n"

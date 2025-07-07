@@ -5,12 +5,14 @@
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <sys/epoll.h>
+#include <sys/types.h>
 #include <sys/poll.h>
 #include <unistd.h>
 #include <iostream>
 #include <cstdlib>
 #include <fcntl.h>
 #include <cstring>
+#include <netdb.h>
 #include <cstdio>
 #include <cerrno>
 #include <vector>
@@ -21,6 +23,7 @@ class ServerSocket {
 public:
     void printError() const;
     void printServerStatus(const char* multiplexer) const;
+
     void executeCGI();
     void bindAndListen();
     int getServerFd() const;
@@ -45,6 +48,7 @@ private:
     std::string config_file;
     std::vector<int> clientFds;
 
+    struct addrinfo socketInfo;
     struct sockaddr_in serverAddress;
     typedef std::vector<int>::iterator fdsIterator;
 };
