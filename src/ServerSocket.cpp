@@ -44,6 +44,8 @@ void    ServerSocket::bindAndListen() {
 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
 
 void    ServerSocket::acceptClientPoll() {
+
+    // struct pollfd = poll(pollfds, )
     // int poll(struct pollfd *fds, nfds_t nfds, int timeout);
     while (true) {
 
