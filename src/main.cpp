@@ -39,7 +39,8 @@ void    run_specific_multiplexer(ServerSocket& server,
         run_using_epoll(server);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     if (got_config_file(argc, argv[1]))
     {
         try
@@ -54,7 +55,6 @@ int main(int argc, char **argv) {
         catch (std::exception& e)
         {
             std::cerr << e.what() << std::endl;
-            //TODO cleanup routine
             return EXIT_FAILURE;
         }
         return EXIT_SUCCESS;

@@ -34,11 +34,8 @@ int ServerSocket::getServerFd() const {
 void    ServerSocket::bindAndListen() {
 
     //* Bind the socket to the IP:port from serverAddress
-    errno = 0;
     if (bind(this->_serverFd, this->_servInfos->ai_addr, this->_servInfos->ai_addrlen) < 0) {
-        std::ostringstream oss;
-        oss << "bind() failed: " << strerror(errno);
-        throw std::runtime_error(oss.str());
+        printErrorAndThrow("bind");
     }
     this->_isBound = true;
 
@@ -46,9 +43,7 @@ void    ServerSocket::bindAndListen() {
     //* SOMAXCONN = macro for max connexion (4096)
     errno = 0;
     if (listen(this->_serverFd, SOMAXCONN) < 0) {
-        std::ostringstream oss;
-        oss << "listen() failed: " << strerror(errno);
-        throw std::runtime_error(oss.str());
+        printGaiErrorAndThrow("listen");
     }
     this->_isListening = true;
 }
