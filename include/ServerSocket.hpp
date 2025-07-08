@@ -53,7 +53,10 @@ private:
     struct addrinfo _hints;
     struct addrinfo *_servInfos;
     struct sockaddr_in _serverAddress;
+
     typedef std::vector<int>::iterator fdsIterator;
+
+    bool receivedCompleteRequest(std::string &rawData) const;
 };
 
 void    run_using_select(ServerSocket& server);

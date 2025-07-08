@@ -11,10 +11,10 @@
 #include <vector>
 #include <map>
 
-class httpRequest {
+class HttpRequest {
 
 	public:
-        httpRequest(const std::string &request);
+        HttpRequest(const std::string &request);
         const std::string &getMethod() const;
         const std::string &getPath() const;
         const std::string &getHttpVersion() const;
