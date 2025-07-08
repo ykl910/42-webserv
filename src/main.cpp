@@ -1,4 +1,4 @@
-#include "../include/ServerSocket.hpp"
+#include "../include/WebServ.hpp"
 #include "../include/HttpRequest.hpp"
 
 bool    got_config_file(const int argc, const char* argv) {
@@ -27,7 +27,7 @@ bool    had_choosen_multiplexer(const char* input) {
         || multiplexer == "poll" || multiplexer == "epoll");
 }
 
-void    run_specific_multiplexer(ServerSocket& server,
+void    run_specific_multiplexer(WebServ& server,
                                  const std::string& multiplexer) {
     std::string string_multiplexer(multiplexer);
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     {
         try
         {
-            ServerSocket    server(argv[1]);
+            WebServ    server(argv[1]);
             // choose between select | poll | epoll
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
                 run_specific_multiplexer(server, argv[2]);

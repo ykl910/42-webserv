@@ -19,7 +19,7 @@
 
 #define PORT 8080
 
-class ServerSocket {
+class WebServ {
 public:
     void printError() const;
     void printErrorAndThrow(std::string const &context) const;
@@ -37,8 +37,8 @@ public:
     void initSignalHandler();
     void initServer(const std::string& config_file);
 
-    ServerSocket(const char* config_file);
-    ~ServerSocket();
+    WebServ(const char* config_file);
+    ~WebServ();
 
 private:
     bool _isBound;
@@ -57,8 +57,11 @@ private:
     typedef std::vector<int>::iterator fdsIterator;
 
     bool receivedCompleteRequest(std::string &rawData) const;
+    void receiveHttpRequest();
+    void sendHttpResponse();
+
 };
 
-void    run_using_select(ServerSocket& server);
-void    run_using_poll(ServerSocket& server);
-void    run_using_epoll(ServerSocket& server);
+void    run_using_select(WebServ& server);
+void    run_using_poll(WebServ& server);
+void    run_using_epoll(WebServ& server);
