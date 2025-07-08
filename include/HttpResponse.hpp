@@ -11,16 +11,18 @@
 #include <vector>
 #include <map>
 
-#include "../include/httpRequest.hpp"
+#include "../include/HttpRequest.hpp"
 
-class response {
+class HttpResponse {
 
 	public:
-        response(httpRequest &request);
+        HttpResponse(HttpRequest &request);
         void setCode(int code);
         void setHeaders(std::string &key, std::string &value);
         void setBody(std::string &body);
-    
+        std::string getResponse() const;   //TODO
+        size_t getResponseLength() const; //TODO
+
     private:
         void    build();
         std::string statusLine;

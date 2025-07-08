@@ -1,5 +1,5 @@
 #include "../include/ServerSocket.hpp"
-#include "../include/httpRequest.hpp"
+#include "../include/HttpRequest.hpp"
 
 bool    got_config_file(const int argc, const char* argv) {
     if (argc == 2 || argc == 3) {

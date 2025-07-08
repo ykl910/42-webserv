@@ -1,10 +1,10 @@
-#include "../include/httpRequest.hpp"
+#include "../include/HttpRequest.hpp"
 
-httpRequest::httpRequest(const std::string &request) {
+HttpRequest::HttpRequest(const std::string &request) {
     parse(request);
 }
 
-void    httpRequest::parse(const std::string &request)
+void    HttpRequest::parse(const std::string &request)
 {
     std::stringstream ss(request);
     std::string line;
@@ -36,27 +36,27 @@ void    httpRequest::parse(const std::string &request)
     }
 }
 
-const std::string &httpRequest::getMethod() const
+const std::string &HttpRequest::getMethod() const
 {
     return method;
 }
 
-const std::string &httpRequest::getPath() const
+const std::string &HttpRequest::getPath() const
 {
     return path;
 }
 
-const std::string &httpRequest::getHttpVersion() const
+const std::string &HttpRequest::getHttpVersion() const
 {
     return http_version;
 }
 
-const std::map<std::string, std::string> &httpRequest::getHeaders() const
+const std::map<std::string, std::string> &HttpRequest::getHeaders() const
 {
     return headers;
 }
 
-const std::string &httpRequest::getBody() const
+const std::string &HttpRequest::getBody() const
 {
     return body;
 }
