@@ -3,5 +3,5 @@
 void    run_using_poll(WebServ& server) {
     server.bindAndListen();
     server.printServerStatus("poll");
-    server.acceptClientPoll();
+    server.multiplexPoll();
 }
