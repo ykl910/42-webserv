@@ -34,17 +34,16 @@ int ServerSocket::getServerFd() const {
 void    ServerSocket::bindAndListen() {
 
     //* Bind the socket to the IP:port from serverAddress
-    if (bind(this->_serverFd, this->_servInfos->ai_addr, this->_servInfos->ai_addrlen) < 0) {
+    if (bind(this->_serverFd, this->_servInfos->ai_addr, this->_servInfos->ai_addrlen) < 0)
         printErrorAndThrow("bind");
-    }
     this->_isBound = true;
 
     //* Set the socket in listening mode (accepting connexions)
     //* SOMAXCONN = macro for max connexion (4096)
     errno = 0;
-    if (listen(this->_serverFd, SOMAXCONN) < 0) {
+    if (listen(this->_serverFd, SOMAXCONN) < 0)
         printGaiErrorAndThrow("listen");
-    }
+
     this->_isListening = true;
 }
 
