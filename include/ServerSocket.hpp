@@ -22,6 +22,7 @@
 class ServerSocket {
 public:
     void printError() const;
+    void printGaiError(int status) const;
     void printServerStatus(const char* multiplexer) const;
 
     void executeCGI();
@@ -48,7 +49,8 @@ private:
     std::string _config_file;
     std::vector<int> _clientFds;
 
-    struct addrinfo _socketInfo;
+    struct addrinfo _hints;
+    struct addrinfo *_servInfos;
     struct sockaddr_in _serverAddress;
     typedef std::vector<int>::iterator fdsIterator;
 };
