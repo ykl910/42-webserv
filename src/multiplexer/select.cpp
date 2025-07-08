@@ -3,5 +3,5 @@
 void    run_using_select(WebServ& server) {
     server.bindAndListen();
     server.printServerStatus("select");
-    server.acceptClientSelect();
+    server.multiplexSelect();
 }

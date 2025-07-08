@@ -16,23 +16,21 @@
 #include <cstdio>
 #include <cerrno>
 #include <vector>
+#include "../include/HttpRequest.hpp"
 
 #define PORT 8080
+#define BUFFERSIZE 4096
 
 class WebServ {
 public:
-    void printError() const;
-    void printErrorAndThrow(std::string const &context) const;
-    void printGaiErrorAndThrow(std::string const &context) const;
     void printServerStatus(const char* multiplexer) const;
-
     void executeCGI();
     void bindAndListen();
     int getServerFd() const;
 
-    void acceptClientPoll();
-    void acceptClientEpoll();
-    void acceptClientSelect();
+    void multiplexPoll();
+    void multiplexEpoll();
+    void multiplexSelect();
 
     void initSignalHandler();
     void initServer(const std::string& config_file);
@@ -56,9 +54,14 @@ private:
 
     typedef std::vector<int>::iterator fdsIterator;
 
+    void printError() const;
+    void printErrorAndThrow(std::string const &context) const;
+    void printGaiErrorAndThrow(std::string const &context) const;
+
     bool receivedCompleteRequest(std::string &rawData) const;
-    void receiveHttpRequest();
-    void sendHttpResponse();
+    void acceptClient();
+    HttpRequest receiveHttpRequest(int &clientFd);
+    void sendHttpResponse(int &clientFd, HttpRequest &request);
 
 };
 

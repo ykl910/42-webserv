@@ -58,9 +58,14 @@ WebServ::WebServ(const char* config_file) : _config_file(config_file) {
     if(status != 0)
         printGaiErrorAndThrow("getaddrinfo");
 
-    if ((this->_serverFd = socket(this->_servInfos->ai_family, this->_servInfos->ai_socktype,
-            this->_servInfos->ai_protocol)) == -1)
-        printErrorAndThrow("socket");
+    for(struct addrinfo *p = this->_servInfos; p != NULL; p = p->ai_next)
+    {
+        if ((this->_serverFd = socket(this->_servInfos->ai_family,
+            this->_servInfos->ai_socktype, this->_servInfos->ai_protocol)) == -1){
+            printError();
+            continue;
+        }
+    }
 
     int opt = 1;
     if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
@@ -74,6 +79,8 @@ void    WebServ::bindAndListen() {
         printErrorAndThrow("bind");
     this->_isBound = true;
 
+    freeaddrinfo(this->_servInfos);
+
     //* Set the socket in listening mode (accepting connexions)
     //* SOMAXCONN = macro for max connexion (4096)
     if (listen(this->_serverFd, SOMAXCONN) == -1)
@@ -81,83 +88,62 @@ void    WebServ::bindAndListen() {
     this->_isListening = true;
 }
 
-std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
 
-void WebServ::receiveHttpRequest()
-{
-    //TODO: refacto from acceptClientEpoll =>
-
-    // while(!receivedCompleteRequest(rawData))
-    // {
-    //     bytesReceived = recv(clientFd, buffer, sizeof(buffer), 0);
-    //     if(bytesReceived == -1)
-    //         printErrorAndThrow("recv");
-    //     rawData.append(buffer, bytesReceived);
-    // }
-    // close(clientFd);
-    // HttpRequest Request(rawData);
-}
-void WebServ::sendHttpResponse()
-{
-    //TODO: refacto from acceptClientEpoll =>
-
-    // HttpResponse Response(Request);
-    // size_t totalBytesSent = 0;
-    // std::string response = Response.getResponse();
-    // size_t responseLen = Response.getResponseLength();
-    // while(totalBytesSent < responseLen)
-    // {
-    //     ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
-    //     if(bytesSent == -1)
-    //         printErrorAndThrow("send");
-    //     totalBytesSent += bytesSent;
-    // }
-}
-void    WebServ::acceptClientPoll(){}
-
-void    WebServ::acceptClientEpoll() {
+void WebServ::acceptClient(){
 
     struct sockaddr_storage clientAddr;
     socklen_t clientAddrSize;
 
     clientAddrSize = sizeof(clientAddr);
+
     int clientFd = accept(this->_serverFd, reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
     if(clientFd == -1)
         printErrorAndThrow("accept");
 
+    this->_clientFds.push_back(clientFd);
+}
+
+HttpRequest WebServ::receiveHttpRequest(int &clientFd)
+{
     int bytesReceived = 0;
-    char buffer[4096];
+    char buffer[BUFFERSIZE];
     std::string rawData;
 
-    while(!receivedCompleteRequest(rawData))
-    {
+    while(!receivedCompleteRequest(rawData)){
         bytesReceived = recv(clientFd, buffer, sizeof(buffer), 0);
         if(bytesReceived == -1)
             printErrorAndThrow("recv");
         rawData.append(buffer, bytesReceived);
     }
     close(clientFd);
-    HttpRequest Request(rawData);
+    HttpRequest request(rawData);
 
-    HttpResponse Response(Request);
+    return request;
+}
+
+void WebServ::sendHttpResponse(int &clientFd, HttpRequest &request)
+{
+    HttpResponse Response(request);
     size_t totalBytesSent = 0;
     std::string response = Response.getResponse();
     size_t responseLen = response.length();
-    while(totalBytesSent < responseLen)
-    {
+
+    while(totalBytesSent < responseLen){
         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
         if(bytesSent == -1)
             printErrorAndThrow("send");
         totalBytesSent += bytesSent;
     }
+}
 
+void    WebServ::multiplexEpoll() {
 
     // int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     // int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 }
 
 
-void    WebServ::acceptClientSelect() {
+void    WebServ::multiplexSelect() {
     fd_set readFds;
     struct timeval tv;
     tv.tv_sec = 10;
@@ -220,6 +206,7 @@ void    WebServ::acceptClientSelect() {
                 std::string request(buf, bytes);
                 HttpRequest httpReq(request);
                 std::cout << "Received request:\n" << request << std::endl;
+                std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
                 send(*it, response.c_str(), response.size(), 0);
                 close(*it);
                 it = this->_clientFds.erase(it);
@@ -229,6 +216,8 @@ void    WebServ::acceptClientSelect() {
         }
     }
 }
+
+void    WebServ::multiplexPoll(){}
 
 WebServ::~WebServ() {
     if(this->_servInfos)
