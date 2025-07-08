@@ -5,6 +5,10 @@ void    ServerSocket::printError() const {
     std::cerr << "Error: " << strerror(errno) << std::endl;
 }
 
+void ServerSocket::printGaiError(int status) const {
+    std::cerr << "Error: " << gai_strerror(status) << std::endl;
+}
+
 void    ServerSocket::printServerStatus(const char* multiplexer) const {
     std::cout << BOLD WHITE << "Server status: "
     << BOLD ITALIC GREEN << "running\n" << DEFAULT
@@ -142,45 +146,77 @@ void    ServerSocket::initServer(const std::string& config_file) {
     (void)config_file;
 }
 
+// ServerSocket::ServerSocket(const char* config_file) : _config_file(config_file) {
+
+//     //* Create a new socket
+//     //* AF_INET = IPv4
+//     //* SOCK_STREAM = TCP protocol
+//     //* 0 = default protocol
+//     errno = 0;
+//     if ((this->_serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+//         printError();
+//         exit(EXIT_FAILURE);
+//     }
+
+//     //* Set socket options to reuse the same port each time
+//     //* SOL_SOCKET = general options
+//     //* SO_REUSEADDR = allow to reuse (IP:port) already used
+//     //* opt = activate/desactivate
+//     errno = 0;
+//     int opt = 1;
+//     if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+//         printError();
+//         exit(EXIT_FAILURE);
+//     }
+
+//     //* AF_INET = IPv4
+//     //* INADDR_ANY = accept all network interfaces connexions
+//     //* PORT = 8080 (-> macro)
+
+//     bzero(&this->_serverAddress, sizeof(struct sockaddr_in));
+//     this->_serverAddress.sin_family = AF_INET;
+//     this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
+//     this->_serverAddress.sin_port = htons(PORT);
+
+//     this->_isBound = false;
+//     this->_isListening = false;
+
+//     this->_addrlen = sizeof(this->_serverAddress);
+// }
+
 ServerSocket::ServerSocket(const char* config_file) : _config_file(config_file) {
 
-    //* Create a new socket
-    //* AF_INET = IPv4
-    //* SOCK_STREAM = TCP protocol
-    //* 0 = default protocol
+    bzero(&this->_hints, sizeof(this->_hints));
+    this->_hints.ai_family = AF_INET;
+    this->_hints.ai_socktype = SOCK_STREAM;
+    this->_hints.ai_flags = AI_PASSIVE;
+
+    //* Must define a status, because getaddrinfo() doesn't use errno
+    int status;
+    status = getaddrinfo(NULL, "8080", &this->_hints, &this->_servInfos);
+    if(status != 0) {
+        printGaiError(status);
+        exit(EXIT_FAILURE);
+    }
+
     errno = 0;
-    if ((this->_serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    if ((this->_serverFd = socket(this->_servInfos->ai_family, this->_servInfos->ai_socktype,
+            this->_servInfos->ai_protocol)) == -1) {
         printError();
         exit(EXIT_FAILURE);
     }
 
-    //* Set socket options to reuse the same port each time
-    //* SOL_SOCKET = general options
-    //* SO_REUSEADDR = allow to reuse (IP:port) already used
-    //* opt = activate/desactivate
     errno = 0;
     int opt = 1;
     if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         printError();
         exit(EXIT_FAILURE);
     }
-
-    //* AF_INET = IPv4
-    //* INADDR_ANY = accept all network interfaces connexions
-    //* PORT = 8080 (-> macro)
-
-    bzero(&this->_serverAddress, sizeof(struct sockaddr_in));
-    this->_serverAddress.sin_family = AF_INET;
-    this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
-    this->_serverAddress.sin_port = htons(PORT);
-
-    this->_isBound = false;
-    this->_isListening = false;
-
-    this->_addrlen = sizeof(this->_serverAddress);
 }
 
 ServerSocket::~ServerSocket() {
+    if(this->_servInfos)
+        freeaddrinfo(_servInfos);
     if (this->_serverFd)
         close(this->_serverFd);
     for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end(); ++it)
