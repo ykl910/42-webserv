@@ -40,16 +40,21 @@ void    run_specific_multiplexer(ServerSocket& server,
 }
 
 int main(int argc, char **argv) {
-    if (got_config_file(argc, argv[1])) {
-        try {
+    if (got_config_file(argc, argv[1]))
+    {
+        try
+        {
             ServerSocket    server(argv[1]);
             // choose between select | poll | epoll
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
                 run_specific_multiplexer(server, argv[2]);
             else
                 run_using_select(server);
-        } catch (std::exception& e) {
+        }
+        catch (std::exception& e)
+        {
             std::cerr << e.what() << std::endl;
+            //TODO cleanup routine
             return EXIT_FAILURE;
         }
         return EXIT_SUCCESS;

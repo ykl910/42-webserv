@@ -1,12 +1,20 @@
 #include "../include/ServerSocket.hpp"
 #include "../include/httpRequest.hpp"
 
-void    ServerSocket::printError() const {
+void ServerSocket::printError() const {
     std::cerr << "Error: " << strerror(errno) << std::endl;
 }
 
-void ServerSocket::printGaiError(int status) const {
-    std::cerr << "Error: " << gai_strerror(status) << std::endl;
+void ServerSocket::printErrorAndThrow(std::string const &context) const {
+        std::ostringstream oss;
+        oss << context << "() failed: " << strerror(errno);
+        throw std::runtime_error(oss.str());
+}
+
+void ServerSocket::printGaiErrorAndThrow(std::string const &context) const {
+        std::ostringstream oss;
+        oss << context << "() failed: " << gai_strerror(errno);
+        throw std::runtime_error(oss.str());
 }
 
 void    ServerSocket::printServerStatus(const char* multiplexer) const {
@@ -27,10 +35,10 @@ void    ServerSocket::bindAndListen() {
 
     //* Bind the socket to the IP:port from serverAddress
     errno = 0;
-    if (bind(this->_serverFd, (struct sockaddr *)&this->_serverAddress, this->_addrlen) < 0) {
-        printError();
-        close(this->_serverFd);
-        exit(EXIT_FAILURE);
+    if (bind(this->_serverFd, this->_servInfos->ai_addr, this->_servInfos->ai_addrlen) < 0) {
+        std::ostringstream oss;
+        oss << "bind() failed: " << strerror(errno);
+        throw std::runtime_error(oss.str());
     }
     this->_isBound = true;
 
@@ -38,9 +46,9 @@ void    ServerSocket::bindAndListen() {
     //* SOMAXCONN = macro for max connexion (4096)
     errno = 0;
     if (listen(this->_serverFd, SOMAXCONN) < 0) {
-        printError();
-        close(this->_serverFd);
-        exit(EXIT_FAILURE);
+        std::ostringstream oss;
+        oss << "listen() failed: " << strerror(errno);
+        throw std::runtime_error(oss.str());
     }
     this->_isListening = true;
 }
@@ -194,24 +202,16 @@ ServerSocket::ServerSocket(const char* config_file) : _config_file(config_file) 
     //* Must define a status, because getaddrinfo() doesn't use errno
     int status;
     status = getaddrinfo(NULL, "8080", &this->_hints, &this->_servInfos);
-    if(status != 0) {
-        printGaiError(status);
-        exit(EXIT_FAILURE);
-    }
+    if(status != 0)
+        printGaiErrorAndThrow("getaddrinfo");
 
-    errno = 0;
     if ((this->_serverFd = socket(this->_servInfos->ai_family, this->_servInfos->ai_socktype,
-            this->_servInfos->ai_protocol)) == -1) {
-        printError();
-        exit(EXIT_FAILURE);
-    }
+            this->_servInfos->ai_protocol)) == -1)
+        printErrorAndThrow("socket");
 
-    errno = 0;
     int opt = 1;
-    if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-        printError();
-        exit(EXIT_FAILURE);
-    }
+    if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+        printErrorAndThrow("setsockopt");
 }
 
 ServerSocket::~ServerSocket() {

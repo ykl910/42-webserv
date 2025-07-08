@@ -22,7 +22,8 @@
 class ServerSocket {
 public:
     void printError() const;
-    void printGaiError(int status) const;
+    void printErrorAndThrow(std::string const &context) const;
+    void printGaiErrorAndThrow(std::string const &context) const;
     void printServerStatus(const char* multiplexer) const;
 
     void executeCGI();
