@@ -17,11 +17,11 @@ class HttpResponse {
 
 	public:
         HttpResponse(HttpRequest &request);
+        ~HttpResponse();
         void setCode(int code);
         void setHeaders(std::string &key, std::string &value);
         void setBody(std::string &body);
-        std::string getResponse() const;   //TODO
-        size_t getResponseLength() const; //TODO
+        std::string getResponse() const;
 
     private:
         void    build();

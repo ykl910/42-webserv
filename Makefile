@@ -10,7 +10,7 @@ FLAGS               = -g -Wall -Wextra -Werror -std=c++98
 ###########################          INCLUDE        ###########################
 
 INCLUDE_DIR         := include
-INCLUDE             := ServerSocket.hpp
+INCLUDE             := WebServ.hpp HttpRequest.hpp HttpResponse.hpp
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
 ###########################          SOURCE         ###########################
@@ -20,8 +20,10 @@ SRC                 := multiplexer/epoll.cpp \
                     multiplexer/poll.cpp \
                     multiplexer/select.cpp \
                     main.cpp \
-                    ServerSocket.cpp \
-					httpRequest.cpp
+                    WebServ.cpp \
+					HttpRequest.cpp \
+					HttpResponse.cpp \
+
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
 ###########################       COMPILATION       ###########################
