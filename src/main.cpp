@@ -28,7 +28,7 @@ bool    had_choosen_multiplexer(const char* input) {
 }
 
 void    run_specific_multiplexer(ServerSocket& server,
-                                    const std::string& multiplexer) {
+                                 const std::string& multiplexer) {
     std::string string_multiplexer(multiplexer);
 
     if (string_multiplexer == "select")
