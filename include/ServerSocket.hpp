@@ -39,17 +39,17 @@ public:
     ~ServerSocket();
 
 private:
-    bool isBound;
-    bool isListening;
+    bool _isBound;
+    bool _isListening;
 
-    int addrlen;
-    int serverFd;
+    int _addrlen;
+    int _serverFd;
 
-    std::string config_file;
-    std::vector<int> clientFds;
+    std::string _config_file;
+    std::vector<int> _clientFds;
 
-    struct addrinfo socketInfo;
-    struct sockaddr_in serverAddress;
+    struct addrinfo _socketInfo;
+    struct sockaddr_in _serverAddress;
     typedef std::vector<int>::iterator fdsIterator;
 };
 

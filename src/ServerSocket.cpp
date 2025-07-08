@@ -16,29 +16,29 @@ void    ServerSocket::printServerStatus(const char* multiplexer) const {
 }
 
 int ServerSocket::getServerFd() const {
-    return serverFd;
+    return this->_serverFd;
 }
 
 void    ServerSocket::bindAndListen() {
 
     //* Bind the socket to the IP:port from serverAddress
     errno = 0;
-    if (bind(serverFd, (struct sockaddr *)&serverAddress, addrlen) < 0) {
+    if (bind(this->_serverFd, (struct sockaddr *)&this->_serverAddress, this->_addrlen) < 0) {
         printError();
-        close(serverFd);
+        close(this->_serverFd);
         exit(EXIT_FAILURE);
     }
-    this->isBound = true;
+    this->_isBound = true;
 
     //* Set the socket in listening mode (accepting connexions)
     //* SOMAXCONN = macro for max connexion (4096)
     errno = 0;
-    if (listen(this->serverFd, SOMAXCONN) < 0) {
+    if (listen(this->_serverFd, SOMAXCONN) < 0) {
         printError();
-        close(this->serverFd);
+        close(this->_serverFd);
         exit(EXIT_FAILURE);
     }
-    isListening = true;
+    this->_isListening = true;
 }
 
 std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
@@ -70,18 +70,18 @@ void    ServerSocket::acceptClientSelect() {
     struct timeval tv;
     tv.tv_sec = 10;
     tv.tv_usec = 0;
-    int maxFd = this->serverFd;
+    int maxFd = this->_serverFd;
 
     while (true) {
 
         //* FD_ZERO = empty readFds set
         //* FD_SET = add server socket to detect new connexions
         FD_ZERO(&readFds);
-        FD_SET(this->serverFd, &readFds);
+        FD_SET(this->_serverFd, &readFds);
 
         //* Add everyt client sockets to readFds and add maxFd if necessary
-        for (fdsIterator it = this->clientFds.begin();
-            it != this->clientFds.end(); ++it) {
+        for (fdsIterator it = this->_clientFds.begin();
+            it != this->_clientFds.end(); ++it) {
             FD_SET(*it, &readFds);
             if (*it > maxFd)
                 maxFd = *it;
@@ -99,20 +99,20 @@ void    ServerSocket::acceptClientSelect() {
         }
 
         //* new connexion -> accept connexion and add client to the list
-        if (FD_ISSET(this->serverFd, &readFds)) {
+        if (FD_ISSET(this->_serverFd, &readFds)) {
             errno = 0;
-            int newClient = accept(this->serverFd, NULL, NULL);
+            int newClient = accept(this->_serverFd, NULL, NULL);
             if (newClient < 0) {
                 printError();
                 continue;
             } else {
-                this->clientFds.push_back(newClient);
+                this->_clientFds.push_back(newClient);
                 std::cout << "New client connected: FD " << newClient << std::endl;
             }
         }
 
         //* loop on every actives clients and seek for data to read
-        for (fdsIterator it = this->clientFds.begin(); it != this->clientFds.end();) {
+        for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end();) {
             char buf[4096];
             int bytes = 0;
 
@@ -121,7 +121,7 @@ void    ServerSocket::acceptClientSelect() {
                 if (bytes <= 0) {
                     close(*it);
                     std::cout << "Client disconnected: FD " << *it << std::endl;
-                    it = clientFds.erase(it);
+                    it = this->_clientFds.erase(it);
                     continue;
                 }
 
@@ -130,7 +130,7 @@ void    ServerSocket::acceptClientSelect() {
                 std::cout << "Received request:\n" << request << std::endl;
                 send(*it, response.c_str(), response.size(), 0);
                 close(*it);
-                it = clientFds.erase(it);
+                it = this->_clientFds.erase(it);
             }
             else
                 ++it;
@@ -142,14 +142,14 @@ void    ServerSocket::initServer(const std::string& config_file) {
     (void)config_file;
 }
 
-ServerSocket::ServerSocket(const char* config_file) : config_file(config_file) {
+ServerSocket::ServerSocket(const char* config_file) : _config_file(config_file) {
 
     //* Create a new socket
     //* AF_INET = IPv4
     //* SOCK_STREAM = TCP protocol
     //* 0 = default protocol
     errno = 0;
-    if ((serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    if ((this->_serverFd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         printError();
         exit(EXIT_FAILURE);
     }
@@ -160,7 +160,7 @@ ServerSocket::ServerSocket(const char* config_file) : config_file(config_file) {
     //* opt = activate/desactivate
     errno = 0;
     int opt = 1;
-    if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+    if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         printError();
         exit(EXIT_FAILURE);
     }
@@ -168,19 +168,21 @@ ServerSocket::ServerSocket(const char* config_file) : config_file(config_file) {
     //* AF_INET = IPv4
     //* INADDR_ANY = accept all network interfaces connexions
     //* PORT = 8080 (-> macro)
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-    serverAddress.sin_port = htons(PORT);
 
-    isBound = false;
-    isListening = false;
+    bzero(&this->_serverAddress, sizeof(struct sockaddr_in));
+    this->_serverAddress.sin_family = AF_INET;
+    this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
+    this->_serverAddress.sin_port = htons(PORT);
 
-    addrlen = sizeof(serverAddress);
+    this->_isBound = false;
+    this->_isListening = false;
+
+    this->_addrlen = sizeof(this->_serverAddress);
 }
 
 ServerSocket::~ServerSocket() {
-    if (serverFd)
-        close(serverFd);
-    for (fdsIterator it = clientFds.begin(); it != clientFds.end(); ++it)
+    if (this->_serverFd)
+        close(this->_serverFd);
+    for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end(); ++it)
         close(*it);
 }
