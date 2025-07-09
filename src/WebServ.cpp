@@ -12,9 +12,9 @@ void WebServ::printErrorAndThrow(std::string const &context) const {
         throw std::runtime_error(oss.str());
 }
 
-void WebServ::printGaiErrorAndThrow(std::string const &context) const {
+void WebServ::printGaiErrorAndThrow(std::string const &context, int &status) const {
         std::ostringstream oss;
-        oss << context << "() failed: " << gai_strerror(errno);
+        oss << context << "() failed: " << gai_strerror(status);
         throw std::runtime_error(oss.str());
 }
 
@@ -32,8 +32,8 @@ int WebServ::getServerFd() const {
     return this->_serverFd;
 }
 
-void    WebServ::initServer(const std::string& config_file) {
-    (void)config_file;
+void    WebServ::parseConfigFile(const std::string& configFile) {
+    (void)configFile;
     //TODO: Parse the conf_file and extract the port we will use (ex: 8080)
 }
 
@@ -42,9 +42,9 @@ bool WebServ::receivedCompleteRequest(std::string &rawData) const {
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
-WebServ::WebServ(const char* config_file) : _config_file(config_file) {
+WebServ::WebServ(const char* configFile) : _config_file(configFile) {
 
-    initServer(config_file);
+    parseConfigFile(configFile);
 
     bzero(&this->_hints, sizeof(this->_hints));
     this->_hints.ai_family = AF_INET;
@@ -56,7 +56,7 @@ WebServ::WebServ(const char* config_file) : _config_file(config_file) {
     int status;
     status = getaddrinfo(NULL, "8080", &this->_hints, &this->_servInfos);
     if(status != 0)
-        printGaiErrorAndThrow("getaddrinfo");
+        printGaiErrorAndThrow("getaddrinfo", status);
 
     for(struct addrinfo *p = this->_servInfos; p != NULL; p = p->ai_next)
     {
