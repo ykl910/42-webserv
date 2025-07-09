@@ -23,6 +23,9 @@ SRC                 := multiplexer/epoll.cpp \
                     multiplexer/select.cpp \
                     main.cpp \
                     WebServ.cpp \
+                    WebServErrors.cpp \
+                    WebServInit.cpp \
+                    WebServMultiplex.cpp \
 					HttpRequest.cpp \
 					HttpResponse.cpp \
 					Signal.cpp
