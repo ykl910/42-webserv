@@ -1,6 +1,8 @@
 #pragma once
 
 #include "textFormatting.hpp"
+#include "HttpRequest.hpp"
+#include "Signal.hpp"
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <netinet/in.h>
@@ -16,7 +18,6 @@
 #include <cstdio>
 #include <cerrno>
 #include <vector>
-#include "../include/HttpRequest.hpp"
 
 #define PORT 8080
 #define BUFFERSIZE 4096
@@ -24,7 +25,6 @@
 class WebServ {
 public:
     void printServerStatus(const char* multiplexer) const;
-    void executeCGI();
     void bindAndListen();
     int getServerFd() const;
 
@@ -32,7 +32,6 @@ public:
     void multiplexEpoll();
     void multiplexSelect();
 
-    void initSignalHandler();
     void parseConfigFile(const std::string& configFile);
 
     WebServ(const char* configFile);
@@ -42,7 +41,7 @@ private:
     bool _isBound;
     bool _isListening;
 
-    int _addrlen;
+    // int _addrlen;
     int _serverFd;
 
     std::string _config_file;
@@ -50,7 +49,7 @@ private:
 
     struct addrinfo _hints;
     struct addrinfo *_servInfos;
-    struct sockaddr_in _serverAddress;
+    // struct sockaddr_in _serverAddress;
 
     typedef std::vector<int>::iterator fdsIterator;
 
@@ -58,13 +57,12 @@ private:
     void printErrorAndThrow(std::string const &context) const;
     void printGaiErrorAndThrow(std::string const &context, int &status) const;
 
-    bool receivedCompleteRequest(std::string &rawData) const;
+    Signal _signal;
     void acceptClient();
     HttpRequest receiveHttpRequest(int &clientFd);
+    bool receivedCompleteRequest(std::string &rawData) const;
     void sendHttpResponse(int &clientFd, HttpRequest &request);
 };
-
-void    initSignalHandler(void);
 
 void    run_using_select(WebServ& server);
 void    run_using_poll(WebServ& server);
