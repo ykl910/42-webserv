@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Error.hpp"
 #include <string>
 
-class Config {
+class Config : public Error {
 public:
 
     Config();
