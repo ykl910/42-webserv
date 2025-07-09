@@ -7,6 +7,16 @@ bool WebServ::receivedCompleteRequest(std::string &rawData) const {
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
+void WebServ::addServerToEpoll(){
+
+    struct epoll_event server_ev;
+    server_ev.events = EPOLLIN;
+    server_ev.data.fd = this->_serverFd;
+
+    if(epoll_ctl(this->_epollFd, EPOLL_CTL_ADD,this->_serverFd, &server_ev) == -1)
+        printErrorAndThrow("epoll_ctl");
+}
+
 void WebServ::acceptClient(){
 
     struct sockaddr_storage clientAddr;
@@ -18,7 +28,13 @@ void WebServ::acceptClient(){
     if(clientFd == -1)
         printErrorAndThrow("accept");
 
-    this->_clientFds.push_back(clientFd);
+    struct epoll_event client_ev;
+    client_ev.events = EPOLLIN;
+    client_ev.data.fd = clientFd;
+
+    if(epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
+        printErrorAndThrow("epoll_ctl");
+
 }
 
 HttpRequest WebServ::receiveHttpRequest(int &clientFd)
@@ -56,16 +72,33 @@ void WebServ::sendHttpResponse(int &clientFd, HttpRequest &request)
 
 void    WebServ::multiplexEpoll() {
 
-    this->_epollFd = epoll_create1(FD_CLOEXEC);
+    std::vector<struct epoll_event> events(4096); //!This server is not for pussies
+
+    this->_epollFd = epoll_create1(0);
     if(this->_epollFd == -1)
         printErrorAndThrow("epoll_create1");
 
-    struct epoll_event event;
-    event.events = EPOLLIN;
-    event.data.fd = this->_serverFd;
+    addServerToEpoll();
+
+    while(true){
+
+        int nbEvents = epoll_wait(_epollFd, events.data(), events.size(), -1);
+        if(nbEvents == -1)
+            printErrorAndThrow("epoll_wait");
+        for(int i = 0; i < nbEvents; ++i){
+
+            int fd = events[i].data.fd;
+
+            if(fd == this->_serverFd)
+                acceptClient();
+           // else
+                //Do some shit
+        }
+
+    }
+
 
     // int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
-    // int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
     close(this->_epollFd);
 }
 
