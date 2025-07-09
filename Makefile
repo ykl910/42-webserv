@@ -19,6 +19,7 @@ INCLUDE             := CGI.hpp \
                     Poll.hpp \
                     Select.hpp \
                     Signal.hpp \
+					Socket.hpp \
                     textFormatting.hpp \
                     WebServ.hpp
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
@@ -36,8 +37,8 @@ SRC                 := CGI.cpp \
                     Poll.cpp \
                     Select.cpp \
                     Signal.cpp \
+					Socket.cpp \
                     WebServ.cpp \
-                    WebServInit.cpp \
                     WebServMultiplex.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
@@ -66,26 +67,26 @@ $(NAME): $(OBJ)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDE)
 	@mkdir -p $(dir $@)
-	@$(CC) $(FLAGS) -c $< -o $@
+	$(CC) $(FLAGS) -c $< -o $@
 
 # PREPROCESSING
 $(PP_DIR)/%.i: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC) $(FLAGS) -E $< -o $@
+	$(CC) $(FLAGS) -E $< -o $@
 
 # ASSEMBLY
 $(ASM_DIR)/%.s: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	@$(CC) $(FLAGS) -S $< -o $@
+	$(CC) $(FLAGS) -S $< -o $@
 
 clean:
 	$(RM) -rf $(OBJ) $(PP) $(ASM)
-	@echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) objects removed!$(DEFAULT)"
+	echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) objects removed!$(DEFAULT)"
 
 fclean: clean
 	$(RM) -rf $(OBJ_DIR) $(PP_DIR) $(ASM_DIR)
 	$(RM) $(NAME)
-	@echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) entirely cleaned!$(DEFAULT)"
+	echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) entirely cleaned!$(DEFAULT)"
 
 re: fclean all
 

@@ -9,13 +9,8 @@ void    Signal::sigHandler(int signum) {
         case SIGINT:
             std::cout << BOLD WHITE << "\nSIGINT catched" << DEFAULT
             << std::endl;
-            exit(0);
+            throw std::runtime_error("");
             break;
-
-        // Ctrl-Z
-        // case SIGSTOP:
-        //     std::cout << BOLD WHITE << "\nSIGSTOP catched" << DEFAULT << std::endl;
-        //     break;
 
         // Ctrl-
         case SIGQUIT:

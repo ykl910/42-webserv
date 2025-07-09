@@ -44,7 +44,6 @@ int main(int argc, char **argv) {
         try {
             WebServ    server(argv[1]);
 
-            server.initServer();
             // choose between select | poll | epoll
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
                 run_specific_multiplexer(server, argv[2]);
