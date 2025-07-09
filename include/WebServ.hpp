@@ -61,6 +61,8 @@ private:
     struct addrinfo _hints;
     struct sockaddr_in _serverAddress;
 
+    int _epollFd;
+
     typedef std::vector<int>::iterator fdsIterator;
 
     CGI     _cgi;

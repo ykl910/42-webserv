@@ -3,6 +3,33 @@
 
 void    Epoll::run(WebServ& server) {
     server.printServerStatus("epoll");
+    std::vector<struct epoll_event> events(4096); //!This server is not for pussies
+
+    this->_epollFd = epoll_create1(0);
+    if (this->_epollFd == -1)
+        printErrorAndThrow("epoll_create1");
+
+    addServerToEpoll();
+
+    while(true){
+
+        int nbEvents = epoll_wait(_epollFd, events.data(), events.size(), -1);
+        if(nbEvents == -1)
+            printErrorAndThrow("epoll_wait");
+        for(int i = 0; i < nbEvents; ++i){
+
+            int fd = events[i].data.fd;
+
+            if(fd == this->_serverFd)
+                acceptClient();
+           // else
+                //Do some shit
+        }
+
+    }
+
+    // int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+    close(this->_epollFd);
 }
 
 Epoll::Epoll() {

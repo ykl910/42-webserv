@@ -7,6 +7,16 @@ bool WebServ::receivedCompleteRequest(std::string &rawData) const {
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
+void WebServ::addServerToEpoll(){
+
+    struct epoll_event server_ev;
+    server_ev.events = EPOLLIN;
+    server_ev.data.fd = this->_serverFd;
+
+    if(epoll_ctl(this->_epollFd, EPOLL_CTL_ADD,this->_serverFd, &server_ev) == -1)
+        printErrorAndThrow("epoll_ctl");
+}
+
 void WebServ::acceptClient(){
 
     struct sockaddr_storage clientAddr;
@@ -18,7 +28,13 @@ void WebServ::acceptClient(){
     if (clientFd == -1)
         printErrorAndThrow("accept");
 
-    this->_clientFds.push_back(clientFd);
+    struct epoll_event client_ev;
+    client_ev.events = EPOLLIN;
+    client_ev.data.fd = clientFd;
+
+    if(epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
+        printErrorAndThrow("epoll_ctl");
+
 }
 
 HttpRequest WebServ::receiveHttpRequest(int &clientFd)
