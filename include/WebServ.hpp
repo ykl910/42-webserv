@@ -25,7 +25,6 @@ class WebServ {
 public:
     void printServerStatus(const char* multiplexer) const;
     void executeCGI();
-    void bindAndListen();
     int getServerFd() const;
 
     void multiplexPoll();
@@ -33,23 +32,25 @@ public:
     void multiplexSelect();
 
     void initSignalHandler();
+    void initServer();
     void parseConfigFile(const std::string& configFile);
 
     WebServ(const char* configFile);
     ~WebServ();
 
 private:
+
     bool _isBound;
     bool _isListening;
 
     int _addrlen;
     int _serverFd;
 
-    std::string _config_file;
+    std::string _configFile;
     std::vector<int> _clientFds;
 
+    std::string _portServie;
     struct addrinfo _hints;
-    struct addrinfo *_servInfos;
     struct sockaddr_in _serverAddress;
 
     typedef std::vector<int>::iterator fdsIterator;
