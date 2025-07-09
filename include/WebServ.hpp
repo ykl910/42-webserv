@@ -54,7 +54,6 @@ private:
     struct addrinfo _hints;
     struct sockaddr_in _serverAddress;
 
-    struct epoll_event _epollEvents;
     int _epollFd;
 
     typedef std::vector<int>::iterator fdsIterator;
@@ -68,6 +67,8 @@ private:
     HttpRequest receiveHttpRequest(int &clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
     void sendHttpResponse(int &clientFd, HttpRequest &request);
+
+    void addServerToEpoll();
 };
 
 void    run_using_select(WebServ& server);
