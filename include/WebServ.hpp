@@ -62,8 +62,9 @@ private:
     void acceptClient();
     HttpRequest receiveHttpRequest(int &clientFd);
     void sendHttpResponse(int &clientFd, HttpRequest &request);
-
 };
+
+void    initSignalHandler(void);
 
 void    run_using_select(WebServ& server);
 void    run_using_poll(WebServ& server);

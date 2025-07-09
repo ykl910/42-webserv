@@ -109,7 +109,7 @@ HttpRequest WebServ::receiveHttpRequest(int &clientFd)
     char buffer[BUFFERSIZE];
     std::string rawData;
 
-    while(!receivedCompleteRequest(rawData)){
+    while (!receivedCompleteRequest(rawData)){
         bytesReceived = recv(clientFd, buffer, sizeof(buffer), 0);
         if(bytesReceived == -1)
             printErrorAndThrow("recv");
@@ -217,7 +217,7 @@ void    WebServ::multiplexSelect() {
     }
 }
 
-void    WebServ::multiplexPoll(){}
+void    WebServ::multiplexPoll() {}
 
 WebServ::~WebServ() {
     if(this->_servInfos)

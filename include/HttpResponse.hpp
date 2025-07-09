@@ -1,4 +1,5 @@
 #pragma once
+
 #include <netinet/in.h>
 #include <unistd.h>
 #include <cstdio>
@@ -14,19 +15,17 @@
 #include "../include/HttpRequest.hpp"
 
 class HttpResponse {
+public:
+    HttpResponse(HttpRequest &request);
+    ~HttpResponse();
+    void setCode(int code);
+    void setHeaders(std::string &key, std::string &value);
+    void setBody(std::string &body);
+    std::string getResponse() const;
 
-	public:
-        HttpResponse(HttpRequest &request);
-        ~HttpResponse();
-        void setCode(int code);
-        void setHeaders(std::string &key, std::string &value);
-        void setBody(std::string &body);
-        std::string getResponse() const;
-
-    private:
-        void    build();
-        std::string statusLine;
-        std::map<std::string, std::string> headers;
-        std::string body;
-
+private:
+    void    build();
+    std::string statusLine;
+    std::map<std::string, std::string> headers;
+    std::string body;
 };
