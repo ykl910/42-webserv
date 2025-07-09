@@ -7,7 +7,8 @@ void    Signal::sigHandler(int signum) {
     switch (signum) {
         // Ctrl-C
         case SIGINT:
-            std::cout << BOLD WHITE << "\nSIGINT catched" << DEFAULT << std::endl;
+            std::cout << BOLD WHITE << "\nSIGINT catched" << DEFAULT
+            << std::endl;
             exit(0);
             break;
 
@@ -18,7 +19,8 @@ void    Signal::sigHandler(int signum) {
 
         // Ctrl-
         case SIGQUIT:
-            std::cout << BOLD WHITE << "\nSIGQUIT catched" << DEFAULT << std::endl;
+            std::cout << BOLD WHITE << "\nSIGQUIT catched" << DEFAULT
+            << std::endl;
             break;
     }
 }
@@ -30,6 +32,4 @@ Signal::Signal() {
     }
 }
 
-Signal::~Signal() {
-
-}
+Signal::~Signal() {}
