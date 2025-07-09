@@ -33,9 +33,9 @@ public:
     void multiplexSelect();
 
     void initSignalHandler();
-    void initServer(const std::string& config_file);
+    void parseConfigFile(const std::string& configFile);
 
-    WebServ(const char* config_file);
+    WebServ(const char* configFile);
     ~WebServ();
 
 private:
@@ -56,7 +56,7 @@ private:
 
     void printError() const;
     void printErrorAndThrow(std::string const &context) const;
-    void printGaiErrorAndThrow(std::string const &context) const;
+    void printGaiErrorAndThrow(std::string const &context, int &status) const;
 
     bool receivedCompleteRequest(std::string &rawData) const;
     void acceptClient();
