@@ -33,8 +33,8 @@ WebServ::WebServ(const char* configFile) : _configFile(configFile), _portServie(
 WebServ::~WebServ() {
     if (this->_serverFd)
         close(this->_serverFd);
+    if(this->_epollFd);
+        close(this->_epollFd);
     for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end(); ++it)
         close(*it);
 }
-
-
