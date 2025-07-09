@@ -32,28 +32,25 @@ void    run_specific_multiplexer(WebServ& server,
     std::string string_multiplexer(multiplexer);
 
     if (string_multiplexer == "select")
-        run_using_select(server);
+        server.runSelect();
     else if (string_multiplexer == "poll")
-        run_using_poll(server);
+        server.runPoll();
     else if (string_multiplexer == "epoll")
-        run_using_epoll(server);
+        server.runEpoll();
 }
 
-int main(int argc, char **argv)
-{
-    if (got_config_file(argc, argv[1]))
-    {
-        try
-        {
+int main(int argc, char **argv) {
+    if (got_config_file(argc, argv[1])) {
+        try {
             WebServ    server(argv[1]);
+
+            server.initServer();
             // choose between select | poll | epoll
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
                 run_specific_multiplexer(server, argv[2]);
             else
-                run_using_select(server);
-        }
-        catch (std::exception& e)
-        {
+                server.runSelect();
+        } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             return EXIT_FAILURE;
         }

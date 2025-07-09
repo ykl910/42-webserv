@@ -1,11 +1,9 @@
 #!/bin/bash
 
-PORT=8080
 URL="http://localhost:8080"
 RUN=0
 
 if [ $# -eq 1 ]; then
-    echo $1
     RUN=$1
 fi
 

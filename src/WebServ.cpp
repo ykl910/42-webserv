@@ -14,13 +14,25 @@ int WebServ::getServerFd() const {
     return this->_serverFd;
 }
 
-
 void    WebServ::parseConfigFile(const std::string& configFile) {
     (void)configFile;
     //TODO: Parse the conf_file and extract the port we will use (ex: 8080)
 }
 
-WebServ::WebServ(const char* configFile) : _configFile(configFile), _portServie("8080"){
+void    WebServ::runEpoll() {
+    this->_epoll.run(*this);
+}
+
+void    WebServ::runPoll() {
+    this->_poll.run(*this);
+}
+
+void    WebServ::runSelect() {
+    this->_select.run(*this);
+}
+
+WebServ::WebServ(const char* configFile)
+    : _configFile(configFile), _portServie("8080"){
 
     parseConfigFile(this->_configFile);
 
@@ -36,5 +48,3 @@ WebServ::~WebServ() {
     for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end(); ++it)
         close(*it);
 }
-
-

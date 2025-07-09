@@ -3,12 +3,14 @@
 #include "textFormatting.hpp"
 #include "HttpRequest.hpp"
 #include "Signal.hpp"
+#include "Select.hpp"
+#include "Config.hpp"
+#include "Epoll.hpp"
+#include "Poll.hpp"
+#include "CGI.hpp"
 #include <sys/socket.h>
-#include <sys/select.h>
 #include <netinet/in.h>
-#include <sys/epoll.h>
 #include <sys/types.h>
-#include <sys/poll.h>
 #include <unistd.h>
 #include <iostream>
 #include <cstdlib>
@@ -24,23 +26,28 @@
 
 class WebServ {
 public:
+    void printError() const;
+    void printErrorAndThrow(std::string const &context) const;
+    void printGaiErrorAndThrow(std::string const &context, int &status) const;
     void printServerStatus(const char* multiplexer) const;
-    void executeCGI();
-    int getServerFd() const;
 
-    void multiplexPoll();
-    void multiplexEpoll();
-    void multiplexSelect();
+    void runPoll();
+    void runEpoll();
+    void runSelect();
 
-    void initSignalHandler();
+    void acceptClient();
+    HttpRequest receiveHttpRequest(int &clientFd);
+    bool receivedCompleteRequest(std::string &rawData) const;
+    void sendHttpResponse(int &clientFd, HttpRequest &request);
+
     void initServer();
+    int  getServerFd() const;
     void parseConfigFile(const std::string& configFile);
 
     WebServ(const char* configFile);
     ~WebServ();
 
 private:
-
     bool _isBound;
     bool _isListening;
 
@@ -56,17 +63,10 @@ private:
 
     typedef std::vector<int>::iterator fdsIterator;
 
-    void printError() const;
-    void printErrorAndThrow(std::string const &context) const;
-    void printGaiErrorAndThrow(std::string const &context, int &status) const;
-
-    Signal _signal;
-    void acceptClient();
-    HttpRequest receiveHttpRequest(int &clientFd);
-    bool receivedCompleteRequest(std::string &rawData) const;
-    void sendHttpResponse(int &clientFd, HttpRequest &request);
+    CGI     _cgi;
+    Poll    _poll;
+    Epoll   _epoll;
+    Select  _select;
+    Signal  _signal;
+    Config  _config;
 };
-
-void    run_using_select(WebServ& server);
-void    run_using_poll(WebServ& server);
-void    run_using_epoll(WebServ& server);
