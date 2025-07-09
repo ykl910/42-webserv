@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
   <diagram name="Page-1" id="OH3NMs44CPt9Rq75w--1">
-    <mxGraphModel dx="2066" dy="1208" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#E6E6E6" math="0" shadow="0">
+    <mxGraphModel dx="3727" dy="2242" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#E6E6E6" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -14,13 +14,13 @@
           <mxGeometry x="50" y="200" width="150" height="700" as="geometry" />
         </mxCell>
         <mxCell id="kOuLoXwdrEf6nRUhGtBZ-1" value="select (bitmaps)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=16;" parent="1" vertex="1">
-          <mxGeometry x="1360" y="400" width="140" height="30" as="geometry" />
+          <mxGeometry x="1350" y="400" width="140" height="30" as="geometry" />
         </mxCell>
         <mxCell id="kOuLoXwdrEf6nRUhGtBZ-2" value="poll" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=16;" parent="1" vertex="1">
-          <mxGeometry x="1377" y="180" width="50" height="30" as="geometry" />
+          <mxGeometry x="1320" y="170" width="50" height="30" as="geometry" />
         </mxCell>
         <mxCell id="kOuLoXwdrEf6nRUhGtBZ-3" value="epoll" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=16;" parent="1" vertex="1">
-          <mxGeometry x="1340" y="268" width="60" height="30" as="geometry" />
+          <mxGeometry x="1320" y="238" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="kOuLoXwdrEf6nRUhGtBZ-5" value="Client" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=16;" parent="1" vertex="1">
           <mxGeometry x="60" y="170" width="60" height="30" as="geometry" />
@@ -44,7 +44,7 @@
           <mxGeometry x="880" y="228" width="160" height="40" as="geometry" />
         </mxCell>
         <mxCell id="pwoIBLLlNiOvloinaJ-3-1" value="&lt;b&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;Multiplexer&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="1450" y="90" width="140" height="40" as="geometry" />
+          <mxGeometry x="1310" y="80" width="140" height="40" as="geometry" />
         </mxCell>
         <mxCell id="pwoIBLLlNiOvloinaJ-3-2" value="&lt;b&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;Socket&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="860" y="80" width="100" height="40" as="geometry" />
@@ -53,10 +53,10 @@
           <mxGeometry x="1360" y="420" width="320" height="140" as="geometry" />
         </mxCell>
         <mxCell id="06huNiMjzyWmcbX7VSCy-2" value="int poll(struct pollfd *fds, nfds_t nfds, int timeout);&#xa;" style="text;whiteSpace=wrap;" parent="1" vertex="1">
-          <mxGeometry x="1390" y="200" width="290" height="40" as="geometry" />
+          <mxGeometry x="1333" y="190" width="290" height="40" as="geometry" />
         </mxCell>
         <mxCell id="06huNiMjzyWmcbX7VSCy-3" value="&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;int epoll_create(int size);&lt;/div&gt;&lt;div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;int epoll_wait(int epfd, struct epoll_event *events,&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; int maxevents, int timeout);&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="1330" y="290" width="360" height="70" as="geometry" />
+          <mxGeometry x="1310" y="260" width="360" height="70" as="geometry" />
         </mxCell>
         <mxCell id="8QbDJdxlAY5IskxIAdEW-1" value="&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;int socket(int domain, int type, int protocol);" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="860" y="120" width="270" height="30" as="geometry" />
@@ -88,8 +88,20 @@
         <mxCell id="8QbDJdxlAY5IskxIAdEW-10" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="8QbDJdxlAY5IskxIAdEW-7" vertex="1">
           <mxGeometry y="60" width="160" height="26" as="geometry" />
         </mxCell>
+        <mxCell id="5ENci0pFsEnvgzooTRlK-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="8QbDJdxlAY5IskxIAdEW-11" target="cXPCc7lVcVTiwkPZh7FL-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5ENci0pFsEnvgzooTRlK-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="8QbDJdxlAY5IskxIAdEW-11" target="kOuLoXwdrEf6nRUhGtBZ-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="8QbDJdxlAY5IskxIAdEW-11" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="330" y="534" width="200" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="8t3Y-BrNVPwQPzws7OH_-1" value="&lt;b&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;CGI&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="1840" y="90" width="60" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="seSegbDJFOzhZ2cM8ICl-1" value="&lt;b&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;Cookies&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="2280" y="80" width="110" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
