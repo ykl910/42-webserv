@@ -45,8 +45,6 @@ private:
     // int _addrlen;
     int _serverFd;
 
-    std::string _configFile;
-
     std::string _portServie;
 
     CGI     _cgi;

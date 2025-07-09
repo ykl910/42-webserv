@@ -32,15 +32,8 @@ void    WebServ::runSelect() {
 }
 
 WebServ::WebServ(const char* configFile)
-    : _config(configFile), _portServie("8080"){
-
-    parseConfigFile(this->_configFile);
-
+    : _portServie("8080"), _config(configFile) {
 }
 
 WebServ::~WebServ() {
-    if (this->_serverFd)
-        close(this->_serverFd);
-    if(this->_epoll.getEpollFd())
-        close(this->_epoll.getEpollFd());
 }

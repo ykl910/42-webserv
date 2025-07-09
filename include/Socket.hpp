@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Error.hpp"
+#include <unistd.h>
 
 class Socket : public Error {
 public:
