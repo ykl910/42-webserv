@@ -32,14 +32,10 @@ void    WebServ::runSelect() {
 }
 
 WebServ::WebServ(const char* configFile)
-    : _configFile(configFile), _portServie("8080"){
+    : _config(configFile), _portServie("8080"){
 
     parseConfigFile(this->_configFile);
 
-    bzero(&this->_hints, sizeof(this->_hints));
-    this->_hints.ai_family = AF_INET;
-    this->_hints.ai_socktype = SOCK_STREAM;
-    this->_hints.ai_flags = AI_PASSIVE;
 }
 
 WebServ::~WebServ() {

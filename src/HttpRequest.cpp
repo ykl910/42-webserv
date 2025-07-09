@@ -30,33 +30,27 @@ void    HttpRequest::parse(const std::string &request)
 
     // parse body
     std::string bodyLine;
-    while (std::getline(ss, bodyLine))
-    {
+    while (std::getline(ss, bodyLine)) {
         body += bodyLine + "\n";
     }
 }
 
-const std::string &HttpRequest::getMethod() const
-{
+const std::string &HttpRequest::getMethod() const {
     return method;
 }
 
-const std::string &HttpRequest::getPath() const
-{
+const std::string &HttpRequest::getPath() const {
     return path;
 }
 
-const std::string &HttpRequest::getHttpVersion() const
-{
+const std::string &HttpRequest::getHttpVersion() const {
     return http_version;
 }
 
-const std::map<std::string, std::string> &HttpRequest::getHeaders() const
-{
+const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
     return headers;
 }
 
-const std::string &HttpRequest::getBody() const
-{
+const std::string &HttpRequest::getBody() const {
     return body;
 }
