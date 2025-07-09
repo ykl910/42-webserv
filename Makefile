@@ -13,6 +13,7 @@ INCLUDE_DIR         := include
 INCLUDE             := CGI.hpp \
                     Config.hpp \
                     Epoll.hpp \
+					Error.hpp \
                     HttpRequest.hpp \
                     HttpResponse.hpp \
                     Poll.hpp \
@@ -28,6 +29,7 @@ SRC_DIR             := src
 SRC                 := CGI.cpp \
                     Config.cpp \
                     Epoll.cpp \
+					Error.cpp \
                     HttpRequest.cpp \
                     HttpResponse.cpp \
                     main.cpp \
@@ -35,7 +37,6 @@ SRC                 := CGI.cpp \
                     Select.cpp \
                     Signal.cpp \
                     WebServ.cpp \
-                    WebServErrors.cpp \
                     WebServInit.cpp \
                     WebServMultiplex.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))

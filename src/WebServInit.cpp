@@ -7,7 +7,7 @@ void WebServ::initServer(){
     int status;
     status = getaddrinfo(NULL, "8080", &this->_hints, &servInfosLst);
     if(status != 0)
-        printGaiErrorAndThrow("getaddrinfo", status);
+        this->_error.printGaiErrorAndThrow("getaddrinfo", status);
 
     struct addrinfo *chosenAddr = servInfosLst;
 
@@ -15,27 +15,26 @@ void WebServ::initServer(){
     {
         this->_serverFd = socket(chosenAddr->ai_family, chosenAddr->ai_socktype, chosenAddr->ai_protocol);
         if(this->_serverFd == -1){
-            printError();
+            this->_error.printError();
             chosenAddr = chosenAddr->ai_next;
             continue;
         }
         break;
     }
     if(!chosenAddr)
-        printErrorAndThrow("socket");
+        this->_error.printErrorAndThrow("socket");
 
     int opt = 1;
     if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-        printErrorAndThrow("setsockopt");
+        this->_error.printErrorAndThrow("setsockopt");
 
     if (bind(this->_serverFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
-        printErrorAndThrow("bind");
+        this->_error.printErrorAndThrow("bind");
     this->_isBound = true;
 
     freeaddrinfo(servInfosLst);
 
     if (listen(this->_serverFd, SOMAXCONN) == -1)
-        printErrorAndThrow("listen");
+        this->_error.printErrorAndThrow("listen");
     this->_isListening = true;
 }
-

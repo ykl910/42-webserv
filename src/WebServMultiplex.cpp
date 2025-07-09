@@ -7,17 +7,7 @@ bool WebServ::receivedCompleteRequest(std::string &rawData) const {
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
-void WebServ::addServerToEpoll(){
-
-    struct epoll_event server_ev;
-    server_ev.events = EPOLLIN;
-    server_ev.data.fd = this->_serverFd;
-
-    if(epoll_ctl(this->_epollFd, EPOLL_CTL_ADD,this->_serverFd, &server_ev) == -1)
-        printErrorAndThrow("epoll_ctl");
-}
-
-void WebServ::acceptClient(){
+void WebServ::acceptClient() {
 
     struct sockaddr_storage clientAddr;
     socklen_t clientAddrSize;
@@ -26,14 +16,14 @@ void WebServ::acceptClient(){
 
     int clientFd = accept(this->_serverFd, reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
     if (clientFd == -1)
-        printErrorAndThrow("accept");
+        this->_error.printErrorAndThrow("accept");
 
     struct epoll_event client_ev;
     client_ev.events = EPOLLIN;
     client_ev.data.fd = clientFd;
 
-    if(epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
-        printErrorAndThrow("epoll_ctl");
+    if (epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
+        this->_error.printErrorAndThrow("epoll_ctl");
 
 }
 
@@ -45,8 +35,8 @@ HttpRequest WebServ::receiveHttpRequest(int &clientFd)
 
     while (!receivedCompleteRequest(rawData)){
         bytesReceived = recv(clientFd, buffer, sizeof(buffer), 0);
-        if(bytesReceived == -1)
-            printErrorAndThrow("recv");
+        if (bytesReceived == -1)
+            this->_error.printErrorAndThrow("recv");
         rawData.append(buffer, bytesReceived);
     }
     close(clientFd);
@@ -64,8 +54,8 @@ void WebServ::sendHttpResponse(int &clientFd, HttpRequest &request)
 
     while (totalBytesSent < responseLen){
         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
-        if(bytesSent == -1)
-            printErrorAndThrow("send");
+        if (bytesSent == -1)
+            this->_error.printErrorAndThrow("send");
         totalBytesSent += bytesSent;
     }
 }

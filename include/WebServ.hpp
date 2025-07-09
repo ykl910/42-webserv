@@ -6,6 +6,7 @@
 #include "Select.hpp"
 #include "Config.hpp"
 #include "Epoll.hpp"
+#include "Error.hpp"
 #include "Poll.hpp"
 #include "CGI.hpp"
 #include <sys/socket.h>
@@ -26,11 +27,6 @@
 
 class WebServ {
 public:
-    void printError() const;
-    void printErrorAndThrow(std::string const &context) const;
-    void printGaiErrorAndThrow(std::string const &context, int &status) const;
-    void printServerStatus(const char* multiplexer) const;
-
     void runPoll();
     void runEpoll();
     void runSelect();
@@ -43,6 +39,7 @@ public:
     void initServer();
     int  getServerFd() const;
     void parseConfigFile(const std::string& configFile);
+    void printServerStatus(const char* multiplexer) const;
 
     WebServ(const char* configFile);
     ~WebServ();
@@ -55,19 +52,17 @@ private:
     int _serverFd;
 
     std::string _configFile;
-    std::vector<int> _clientFds;
 
     std::string _portServie;
     struct addrinfo _hints;
     struct sockaddr_in _serverAddress;
 
-    int _epollFd;
-
-    typedef std::vector<int>::iterator fdsIterator;
+    // typedef std::vector<int>::iterator fdsIterator;
 
     CGI     _cgi;
     Poll    _poll;
     Epoll   _epoll;
+    Error   _error;
     Select  _select;
     Signal  _signal;
     Config  _config;

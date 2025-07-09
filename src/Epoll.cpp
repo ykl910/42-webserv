@@ -1,27 +1,36 @@
 #include "../include/Epoll.hpp"
 #include "../include/WebServ.hpp"
 
+const int&    Epoll::getEpollFd(void) const {
+    return this->_epollFd;
+}
+
 void    Epoll::run(WebServ& server) {
     server.printServerStatus("epoll");
     std::vector<struct epoll_event> events(4096); //!This server is not for pussies
 
     this->_epollFd = epoll_create1(0);
     if (this->_epollFd == -1)
-        printErrorAndThrow("epoll_create1");
+        this->printErrorAndThrow("epoll_create1");
 
-    addServerToEpoll();
+    // addServerToEpoll
+    server_ev.events = EPOLLIN;
+    server_ev.data.fd = server.getServerFd();
 
-    while(true){
+    if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, server.getServerFd(), &server_ev) == -1)
+        this->printErrorAndThrow("epoll_ctl");
 
-        int nbEvents = epoll_wait(_epollFd, events.data(), events.size(), -1);
+    while(true) {
+
+        int nbEvents = epoll_wait(this->_epollFd, events.data(), events.size(), -1);
         if(nbEvents == -1)
-            printErrorAndThrow("epoll_wait");
+            this->printErrorAndThrow("epoll_wait");
         for(int i = 0; i < nbEvents; ++i){
 
             int fd = events[i].data.fd;
 
-            if(fd == this->_serverFd)
-                acceptClient();
+            if(fd == server.getServerFd())
+                server.acceptClient();
            // else
                 //Do some shit
         }

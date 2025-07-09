@@ -8,13 +8,14 @@ void    Select::run(WebServ& server) {
     tv.tv_sec = 10;
     tv.tv_usec = 0;
     int maxFd = server.getServerFd();
+    int serverFd = server.getServerFd();
 
     while (true) {
 
         //* FD_ZERO = empty readFds set
         //* FD_SET = add server socket to detect new connexions
         FD_ZERO(&readFds);
-        FD_SET(server.getServerFd(), &readFds);
+        FD_SET(serverFd, &readFds);
 
         //* Add everyt client sockets to readFds and add maxFd if necessary
         for (fdsIterator it = this->_clientFds.begin();
@@ -31,16 +32,16 @@ void    Select::run(WebServ& server) {
         errno = 0;
         int activity = select(maxFd + 1, &readFds, NULL, NULL, &tv);
         if (activity < 0) {
-            printError();
+            this->printError();
             continue;
         }
 
         //* new connexion -> accept connexion and add client to the list
-        if (FD_ISSET(this->_serverFd, &readFds)) {
+        if (FD_ISSET(serverFd, &readFds)) {
             errno = 0;
-            int newClient = accept(this->_serverFd, NULL, NULL);
+            int newClient = accept(serverFd, NULL, NULL);
             if (newClient < 0) {
-                printError();
+                this->printError();
                 continue;
             } else {
                 this->_clientFds.push_back(newClient);
@@ -81,5 +82,7 @@ Select::Select() {
 }
 
 Select::~Select() {
+    for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end(); ++it)
+        close(*it);
 
 }
