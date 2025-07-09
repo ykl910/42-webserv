@@ -56,8 +56,17 @@ void WebServ::sendHttpResponse(int &clientFd, HttpRequest &request)
 
 void    WebServ::multiplexEpoll() {
 
+    this->_epollFd = epoll_create1(FD_CLOEXEC);
+    if(this->_epollFd == -1)
+        printErrorAndThrow("epoll_create1");
+
+    struct epoll_event event;
+    event.events = EPOLLIN;
+    event.data.fd = this->_serverFd;
+
     // int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     // int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+    close(this->_epollFd);
 }
 
 

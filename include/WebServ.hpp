@@ -54,6 +54,9 @@ private:
     struct addrinfo _hints;
     struct sockaddr_in _serverAddress;
 
+    struct epoll_event _epollEvents;
+    int _epollFd;
+
     typedef std::vector<int>::iterator fdsIterator;
 
     void printError() const;
