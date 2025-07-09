@@ -3,6 +3,8 @@
 #include "Error.hpp"
 #include <string>
 
+class WebServ;
+
 class Config : public Error {
 public:
 

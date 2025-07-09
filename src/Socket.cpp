@@ -43,5 +43,6 @@ Socket::Socket() {
 }
 
 Socket::~Socket() {
-
+    if (this->_serverFd)
+        close(this->_serverFd);
 }

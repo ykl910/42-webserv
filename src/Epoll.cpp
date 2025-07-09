@@ -47,5 +47,7 @@ Epoll::Epoll() {
 }
 
 Epoll::~Epoll() {
+    if (this->_epoll.getEpollFd())
+        close(this->_epoll.getEpollFd());
 
 }
