@@ -41,7 +41,6 @@ void    run_specific_multiplexer(const std::string& multiplexer) {
 int main(int argc, char **argv) {
     if (got_config_file(argc, argv[1])) {
         try {
-            // choose between select | poll | epoll
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
                 run_specific_multiplexer(argv[2]);
             else

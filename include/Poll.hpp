@@ -6,7 +6,7 @@
 template <class Multiplexer>
 class WebServ;
 
-class Poll : public AError {
+class Poll : public Socket {
 public:
     void run(WebServ<Poll>& server);
 
@@ -14,5 +14,6 @@ public:
     ~Poll();
 
 private:
+    struct pollfd _fd;
 
 };
