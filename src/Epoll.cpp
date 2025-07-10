@@ -7,6 +7,8 @@ const int&    Epoll::getEpollFd(void) const {
 
 int Epoll::acceptClient() {
 
+    std::cout << "New connexion" << std::endl;
+
     struct sockaddr_storage clientAddr;
     socklen_t clientAddrSize;
 
@@ -21,12 +23,16 @@ int Epoll::acceptClient() {
 
 void Epoll::createEpollInstance(){
 
+    std::cout << "Creating new epool instance" << std::endl;
+
     this->_epollFd = epoll_create1(0);
     if (this->_epollFd == -1)
         this->printErrorAndThrow("epoll_create1");
 }
 
 void Epoll::addServerToEpool(){
+
+    std::cout << "Adding server to epoll instance" << std::endl;
 
     epoll_ev server_ev;
     server_ev.events = EPOLLIN;
@@ -38,12 +44,52 @@ void Epoll::addServerToEpool(){
 
 void Epoll::addClientToEpool(int const &clientFd){
 
+    std::cout << "Adding client to epoll instance" << std::endl;
+
     epoll_ev client_ev;
     client_ev.events = EPOLLIN;
     client_ev.data.fd = clientFd;
 
     if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
         this->printErrorAndThrow("epoll_ctl");
+}
+
+bool Epoll::receivedCompleteRequest(std::string &rawData) const {
+    //TODO : check if it's a non POST request, otherwise check the content-lenght
+    return rawData.find("\r\n\r\n") != std::string::npos;
+}
+
+HttpRequest Epoll::receiveHttpRequest(int &clientFd)
+{
+    int bytesReceived = 0;
+    char buffer[BUFFERSIZE];
+    std::string rawData;
+
+    while (!receivedCompleteRequest(rawData)){
+        bytesReceived = recv(clientFd, buffer, sizeof(buffer), 0);
+        if (bytesReceived == -1)
+            this->printErrorAndThrow("recv");
+        rawData.append(buffer, bytesReceived);
+    }
+    close(clientFd);
+    HttpRequest request(rawData);
+
+    return request;
+}
+
+void Epoll::sendHttpResponse(int &clientFd, HttpRequest &request)
+{
+    HttpResponse Response(request);
+    size_t totalBytesSent = 0;
+    std::string response = Response.getResponse();
+    size_t responseLen = response.length();
+
+    while (totalBytesSent < responseLen){
+        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
+        if (bytesSent == -1)
+            this->printErrorAndThrow("send");
+        totalBytesSent += bytesSent;
+    }
 }
 
 void    Epoll::run(WebServ& server) {
@@ -65,22 +111,22 @@ void    Epoll::run(WebServ& server) {
             int fd = eventsQueue[i].data.fd;
 
             if(fd == this->getServerFd()){
+
                 int clientFd = this->acceptClient();
                 this->addClientToEpool(clientFd);
             }
-           // else
-                //Do some shit
+            else{
+
+                HttpRequest request = this->receiveHttpRequest(fd);
+                this->sendHttpResponse(fd, request);
+            }
         }
-
     }
-
-    // int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     close(this->_epollFd);
 }
 
 Epoll::Epoll() {
-    // int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
-    // int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+
 }
 
 Epoll::~Epoll() {
