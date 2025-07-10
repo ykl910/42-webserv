@@ -1,7 +1,7 @@
 #include "../include/Poll.hpp"
 #include "../include/WebServ.hpp"
 
-void    Poll::run(WebServ& server) {
+void    Poll::run(WebServ<Poll>& server) {
     server.printServerStatus("poll");
 }
 

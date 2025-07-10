@@ -8,6 +8,7 @@
 
 #define MAXEVENTS 4096
 
+template <class Multiplexer>
 class WebServ;
 
 class Epoll : public Socket {
@@ -16,7 +17,7 @@ public:
     int acceptClient();
     void addServerToEpool();
     void addClientToEpool(int const &clientFd);
-    void run(WebServ& server);
+    void run(WebServ<Epoll>& server);
     HttpRequest receiveHttpRequest(int &clientFd);
     void sendHttpResponse(int &clientFd, HttpRequest &request);
     bool receivedCompleteRequest(std::string &rawData) const;

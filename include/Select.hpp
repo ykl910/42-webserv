@@ -4,11 +4,12 @@
 #include <sys/select.h>
 #include <vector>
 
+template <class Multiplexer>
 class WebServ;
 
 class Select : public Socket {
 public:
-    void run(WebServ& server);
+    void run(WebServ<Select>& server);
 
     Select();
     ~Select();

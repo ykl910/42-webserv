@@ -92,7 +92,7 @@ void Epoll::sendHttpResponse(int &clientFd, HttpRequest &request)
     }
 }
 
-void    Epoll::run(WebServ& server) {
+void    Epoll::run(WebServ<Epoll>& server) {
 
     server.printServerStatus("epoll");
 

@@ -1,14 +1,13 @@
 #include "../include/WebServ.hpp"
-#include "../include/HttpRequest.hpp"
-#include "../include/HttpResponse.hpp"
 
-bool WebServ::receivedCompleteRequest(std::string &rawData) const {
+template <class Multiplexer>
+bool WebServ<Multiplexer>::receivedCompleteRequest(std::string &rawData) const {
     //TODO : check if it's a non POST request, otherwise check the content-lenght
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
-
-HttpRequest WebServ::receiveHttpRequest(int &clientFd)
+template <class Multiplexer>
+HttpRequest WebServ<Multiplexer>::receiveHttpRequest(int &clientFd)
 {
     int bytesReceived = 0;
     char buffer[BUFFERSIZE];
@@ -26,7 +25,8 @@ HttpRequest WebServ::receiveHttpRequest(int &clientFd)
     return request;
 }
 
-void WebServ::sendHttpResponse(int &clientFd, HttpRequest &request)
+template <class Multiplexer>
+void WebServ<Multiplexer>::sendHttpResponse(int &clientFd, HttpRequest &request)
 {
     HttpResponse Response(request);
     size_t totalBytesSent = 0;
@@ -40,3 +40,25 @@ void WebServ::sendHttpResponse(int &clientFd, HttpRequest &request)
         totalBytesSent += bytesSent;
     }
 }
+
+template <class Multiplexer>
+void WebServ<Multiplexer>::printServerStatus(const char* multiplexer) const {
+    std::cout << BOLD WHITE << "Server status: "
+    << BOLD ITALIC GREEN << "running\n" << DEFAULT
+    << BOLD WHITE << "Port: "
+    << BOLD ITALIC BLUE  << "8080\n" << DEFAULT
+    << BOLD WHITE << "Multiplexer: "
+    << BOLD ITALIC BLUE  << multiplexer << DEFAULT
+    << std::endl;
+}
+
+template <class Multiplexer>
+WebServ<Multiplexer>::WebServ() {
+    this->runMultiplexer();
+}
+
+template <class Multiplexer>
+WebServ<Multiplexer>::WebServ(const char* configFile) {}
+
+template <class Multiplexer>
+WebServ<Multiplexer>::~WebServ() {}
