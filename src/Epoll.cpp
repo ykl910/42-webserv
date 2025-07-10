@@ -7,16 +7,18 @@ const int&    Epoll::getEpollFd(void) const {
 
 int Epoll::acceptClient() {
 
-    std::cout << "New connexion" << std::endl;
+    std::cout << "New pending connexion..." << std::endl;
 
-    struct sockaddr_storage clientAddr;
+    struct sockaddr clientAddr;
     socklen_t clientAddrSize;
 
     clientAddrSize = sizeof(clientAddr);
 
-    int clientFd = accept(this->getServerFd(), reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
+    int clientFd = accept(this->getServerFd(), &clientAddr, &clientAddrSize);
     if (clientFd == -1)
         this->printErrorAndThrow("accept");
+
+    std::cout << "Accepted from address: " << clientAddr.sa_data << std::endl;
 
     return clientFd;
 }
@@ -103,7 +105,7 @@ void    Epoll::run(WebServ& server) {
 
     while(true) {
 
-        int nbEvents = epoll_wait(this->_epollFd, eventsQueue.data(), eventsQueue.size(), -1);
+        int nbEvents = epoll_wait(this->_epollFd, eventsQueue.data(), eventsQueue.size(), 0);
         if(nbEvents == -1)
             this->printErrorAndThrow("epoll_wait");
         for(int i = 0; i < nbEvents; ++i){
