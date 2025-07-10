@@ -5,7 +5,7 @@ const int&    Epoll::getEpollFd(void) const {
     return this->_epollFd;
 }
 
-void Epoll::acceptClient() {
+int Epoll::acceptClient() {
 
     struct sockaddr_storage clientAddr;
     socklen_t clientAddrSize;
@@ -16,42 +16,58 @@ void Epoll::acceptClient() {
     if (clientFd == -1)
         this->printErrorAndThrow("accept");
 
-    struct epoll_event client_ev;
-    client_ev.events = EPOLLIN;
-    client_ev.data.fd = clientFd;
-
-    if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
-        this->printErrorAndThrow("epoll_ctl");
-
+    return clientFd;
 }
 
-
-void    Epoll::run(WebServ& server) {
-    server.printServerStatus("epoll");
-    std::vector<struct epoll_event> events(4096); //!This server is not for pussies
+void Epoll::createEpollInstance(){
 
     this->_epollFd = epoll_create1(0);
     if (this->_epollFd == -1)
         this->printErrorAndThrow("epoll_create1");
+}
 
-    // addServerToEpoll
+void Epoll::addServerToEpool(){
+
+    epoll_ev server_ev;
     server_ev.events = EPOLLIN;
     server_ev.data.fd = this->getServerFd();
 
     if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getServerFd(), &server_ev) == -1)
         this->printErrorAndThrow("epoll_ctl");
+}
+
+void Epoll::addClientToEpool(int const &clientFd){
+
+    epoll_ev client_ev;
+    client_ev.events = EPOLLIN;
+    client_ev.data.fd = clientFd;
+
+    if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
+        this->printErrorAndThrow("epoll_ctl");
+}
+
+void    Epoll::run(WebServ& server) {
+
+    server.printServerStatus("epoll");
+
+    this->createEpollInstance();
+    this->addServerToEpool();
+
+    vector eventsQueue(MAXEVENTS);
 
     while(true) {
 
-        int nbEvents = epoll_wait(this->_epollFd, events.data(), events.size(), -1);
+        int nbEvents = epoll_wait(this->_epollFd, eventsQueue.data(), eventsQueue.size(), -1);
         if(nbEvents == -1)
             this->printErrorAndThrow("epoll_wait");
         for(int i = 0; i < nbEvents; ++i){
 
-            int fd = events[i].data.fd;
+            int fd = eventsQueue[i].data.fd;
 
-            if(fd == this->getServerFd())
-                this->acceptClient();
+            if(fd == this->getServerFd()){
+                int clientFd = this->acceptClient();
+                this->addClientToEpool(clientFd);
+            }
            // else
                 //Do some shit
         }
