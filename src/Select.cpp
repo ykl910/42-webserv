@@ -7,8 +7,8 @@ void    Select::run(WebServ& server) {
     struct timeval tv;
     tv.tv_sec = 10;
     tv.tv_usec = 0;
-    int maxFd = server.getServerFd();
-    int serverFd = server.getServerFd();
+    int maxFd = this->getServerFd();
+    int serverFd = this->getServerFd();
 
     while (true) {
 

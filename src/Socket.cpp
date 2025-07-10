@@ -1,5 +1,9 @@
 #include "../include/Socket.hpp"
 
+int Socket::getServerFd() const {
+    return this->_serverFd;
+}
+
 Socket::Socket() {
     bzero(&this->_hints, sizeof(this->_hints));
     this->_hints.ai_family = AF_INET;
@@ -9,7 +13,7 @@ Socket::Socket() {
 
     int status;
     status = getaddrinfo(NULL, "8080", &this->_hints, &servInfosLst);
-    if(status != 0)
+    if (status != 0)
         this->printGaiErrorAndThrow("getaddrinfo", status);
 
     struct addrinfo *chosenAddr = servInfosLst;

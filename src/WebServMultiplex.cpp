@@ -14,7 +14,7 @@ void WebServ::acceptClient() {
 
     clientAddrSize = sizeof(clientAddr);
 
-    int clientFd = accept(this->_serverFd, reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
+    int clientFd = accept(this->_socket.getServerFd(), reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
     if (clientFd == -1)
         this->_error.printErrorAndThrow("accept");
 
