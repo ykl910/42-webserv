@@ -12,7 +12,6 @@
 #include "CGI.hpp"
 
 #define PORT 8080
-#define BUFFERSIZE 4096
 
 template <class Multiplexer>
 class WebServ : public Signal, public Multiplexer {
