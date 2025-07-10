@@ -17,5 +17,4 @@ private:
     int _serverFd;
 
     struct addrinfo _hints;
-    struct sockaddr_in _serverAddress;
 };
