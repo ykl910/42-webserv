@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Error.hpp"
+#include "AError.hpp"
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
 
-class Socket : public Error {
+class Socket : public AError {
 public:
     Socket();
     ~Socket();

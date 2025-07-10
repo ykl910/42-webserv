@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Error.hpp"
+#include "AError.hpp"
 #include <string>
 
 template <class Multiplexer>
 class WebServ;
 
-class Config : public Error {
+class Config : public AError {
 public:
 
     Config();
