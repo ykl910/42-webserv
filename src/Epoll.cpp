@@ -18,6 +18,10 @@ int Epoll::acceptClient() {
     if (clientFd == -1)
         this->printErrorAndThrow("accept");
 
+    int flags = fcntl(clientFd, F_GETFL, 0);
+    if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
+        this->printErrorAndThrow("fcntl");
+
     std::cout << "Accepted from address: " << clientAddr.sa_data << std::endl;
 
     return clientFd;
@@ -37,7 +41,7 @@ void Epoll::addServerToEpool(){
     std::cout << "Adding server to epoll instance" << std::endl;
 
     epoll_ev server_ev;
-    server_ev.events = EPOLLIN;
+    server_ev.events = EPOLLIN | EPOLLET;
     server_ev.data.fd = this->getServerFd();
 
     if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getServerFd(), &server_ev) == -1)
@@ -49,7 +53,7 @@ void Epoll::addClientToEpool(int const &clientFd){
     std::cout << "Adding client to epoll instance" << std::endl;
 
     epoll_ev client_ev;
-    client_ev.events = EPOLLIN;
+    client_ev.events = EPOLLIN | EPOLLET;
     client_ev.data.fd = clientFd;
 
     if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
@@ -61,22 +65,21 @@ bool Epoll::receivedCompleteRequest(std::string &rawData) const {
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
-HttpRequest Epoll::receiveHttpRequest(int &clientFd)
-{
-    int bytesReceived = 0;
+
+void Epoll::HttpRequestAndResponse(int &clientFd){
+
     char buffer[BUFFERSIZE];
-    std::string rawData;
 
-    while (!receivedCompleteRequest(rawData)){
-        bytesReceived = recv(clientFd, buffer, sizeof(buffer), 0);
-        if (bytesReceived == -1)
-            this->printErrorAndThrow("recv");
-        rawData.append(buffer, bytesReceived);
+    int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
+    if(bytes > 0)
+        this->_buffers[clientFd].append(buffer, bytes);
+
+    if(receivedCompleteRequest(this->_buffers[clientFd])){
+
+        HttpRequest request(_buffers[clientFd]);
+        this->sendHttpResponse(clientFd, request);
+        _buffers.erase(clientFd);
     }
-    close(clientFd);
-    HttpRequest request(rawData);
-
-    return request;
 }
 
 void Epoll::sendHttpResponse(int &clientFd, HttpRequest &request)
@@ -94,34 +97,54 @@ void Epoll::sendHttpResponse(int &clientFd, HttpRequest &request)
     }
 }
 
-void    Epoll::run(WebServ<Epoll>& server) {
+void Epoll::eventManager(epoll_ev &event){
+
+    if(event.events & EPOLLERR){
+
+        int err = 0;
+        socklen_t len = sizeof(err);
+
+        if(getsockopt(event.data.fd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
+            this->printError();
+
+        close(event.data.fd);
+    }
+    if(event.events & EPOLLHUP){
+
+        std::cout << "Connexion closed with a client" << std::endl;
+        close(event.data.fd);
+    }
+    if(!(event.events & EPOLLIN)){
+
+        std::cout << "Strange client behavoir..." << std::endl;
+    }
+    if((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
+
+        int clientFd = this->acceptClient();
+        this->addClientToEpool(clientFd);
+    }
+    else if(event.events & EPOLLIN){
+
+        this->HttpRequestAndResponse(event.data.fd);
+    }
+}
+
+void Epoll::run(WebServ& server) {
 
     server.printServerStatus("epoll");
 
     this->createEpollInstance();
     this->addServerToEpool();
 
-    vector eventsQueue(MAXEVENTS);
+    vector eventsQueue;
 
     while(true) {
 
-        int nbEvents = epoll_wait(this->_epollFd, eventsQueue.data(), eventsQueue.size(), 0);
+        int nbEvents = epoll_wait(this->_epollFd, eventsQueue.data(), MAXEVENTS, -1);
         if(nbEvents == -1)
             this->printErrorAndThrow("epoll_wait");
         for(int i = 0; i < nbEvents; ++i){
-
-            int fd = eventsQueue[i].data.fd;
-
-            if(fd == this->getServerFd()){
-
-                int clientFd = this->acceptClient();
-                this->addClientToEpool(clientFd);
-            }
-            else{
-
-                HttpRequest request = this->receiveHttpRequest(fd);
-                this->sendHttpResponse(fd, request);
-            }
+            this->eventManager(eventsQueue[i]);
         }
     }
     close(this->_epollFd);
