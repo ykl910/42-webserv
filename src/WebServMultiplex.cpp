@@ -7,25 +7,6 @@ bool WebServ::receivedCompleteRequest(std::string &rawData) const {
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
-void WebServ::acceptClient() {
-
-    struct sockaddr_storage clientAddr;
-    socklen_t clientAddrSize;
-
-    clientAddrSize = sizeof(clientAddr);
-
-    int clientFd = accept(this->_socket.getServerFd(), reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
-    if (clientFd == -1)
-        this->_error.printErrorAndThrow("accept");
-
-    struct epoll_event client_ev;
-    client_ev.events = EPOLLIN;
-    client_ev.data.fd = clientFd;
-
-    if (epoll_ctl(this->_epoll.getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
-        this->_error.printErrorAndThrow("epoll_ctl");
-
-}
 
 HttpRequest WebServ::receiveHttpRequest(int &clientFd)
 {

@@ -29,7 +29,6 @@ public:
     void runEpoll();
     void runSelect();
 
-    void acceptClient();
     HttpRequest receiveHttpRequest(int &clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
     void sendHttpResponse(int &clientFd, HttpRequest &request);
@@ -47,5 +46,4 @@ private:
     Select  _select;
     Signal  _signal;
     Config  _config;
-    Socket  _socket;
 };

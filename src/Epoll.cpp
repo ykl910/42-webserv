@@ -5,6 +5,27 @@ const int&    Epoll::getEpollFd(void) const {
     return this->_epollFd;
 }
 
+void Epoll::acceptClient() {
+
+    struct sockaddr_storage clientAddr;
+    socklen_t clientAddrSize;
+
+    clientAddrSize = sizeof(clientAddr);
+
+    int clientFd = accept(this->getServerFd(), reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
+    if (clientFd == -1)
+        this->printErrorAndThrow("accept");
+
+    struct epoll_event client_ev;
+    client_ev.events = EPOLLIN;
+    client_ev.data.fd = clientFd;
+
+    if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
+        this->printErrorAndThrow("epoll_ctl");
+
+}
+
+
 void    Epoll::run(WebServ& server) {
     server.printServerStatus("epoll");
     std::vector<struct epoll_event> events(4096); //!This server is not for pussies
@@ -30,7 +51,7 @@ void    Epoll::run(WebServ& server) {
             int fd = events[i].data.fd;
 
             if(fd == this->getServerFd())
-                server.acceptClient();
+                this->acceptClient();
            // else
                 //Do some shit
         }
