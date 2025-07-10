@@ -5,6 +5,8 @@
 
 class Socket : public Error {
 public:
+    int  getServerFd() const;
+
     Socket();
     ~Socket();
 

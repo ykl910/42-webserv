@@ -10,15 +10,6 @@ void WebServ::printServerStatus(const char* multiplexer) const {
     << std::endl;
 }
 
-int WebServ::getServerFd() const {
-    return this->_serverFd;
-}
-
-void    WebServ::parseConfigFile(const std::string& configFile) {
-    (void)configFile;
-    //TODO: Parse the conf_file and extract the port we will use (ex: 8080)
-}
-
 void    WebServ::runEpoll() {
     this->_epoll.run(*this);
 }
@@ -32,7 +23,7 @@ void    WebServ::runSelect() {
 }
 
 WebServ::WebServ(const char* configFile)
-    : _portServie("8080"), _config(configFile) {
+    : _config(configFile) {
 }
 
 WebServ::~WebServ() {

@@ -15,9 +15,9 @@ void    Epoll::run(WebServ& server) {
 
     // addServerToEpoll
     server_ev.events = EPOLLIN;
-    server_ev.data.fd = server.getServerFd();
+    server_ev.data.fd = this->getServerFd();
 
-    if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, server.getServerFd(), &server_ev) == -1)
+    if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getServerFd(), &server_ev) == -1)
         this->printErrorAndThrow("epoll_ctl");
 
     while(true) {
@@ -29,7 +29,7 @@ void    Epoll::run(WebServ& server) {
 
             int fd = events[i].data.fd;
 
-            if(fd == server.getServerFd())
+            if(fd == this->getServerFd())
                 server.acceptClient();
            // else
                 //Do some shit
@@ -47,7 +47,7 @@ Epoll::Epoll() {
 }
 
 Epoll::~Epoll() {
-    if (this->_epoll.getEpollFd())
-        close(this->_epoll.getEpollFd());
+    if (this->_epollFd)
+        close(this->_epollFd);
 
 }

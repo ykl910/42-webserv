@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Error.hpp"
+#include "Socket.hpp"
 #include <sys/poll.h>
 
 class WebServ;

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Error.hpp"
+#include "Socket.hpp"
 #include <sys/epoll.h>
 
 class WebServ;
 
-class Epoll : public Error {
+class Epoll : public Socket {
 public:
     void run(WebServ& server);
     const int& getEpollFd(void) const;

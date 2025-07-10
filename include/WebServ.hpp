@@ -34,19 +34,12 @@ public:
     bool receivedCompleteRequest(std::string &rawData) const;
     void sendHttpResponse(int &clientFd, HttpRequest &request);
 
-    int  getServerFd() const;
-    void parseConfigFile(const std::string& configFile);
     void printServerStatus(const char* multiplexer) const;
 
     WebServ(const char* configFile);
     ~WebServ();
 
 private:
-    // int _addrlen;
-    int _serverFd;
-
-    std::string _portServie;
-
     CGI     _cgi;
     Poll    _poll;
     Epoll   _epoll;

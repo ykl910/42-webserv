@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Error.hpp"
+#include "Socket.hpp"
 #include <sys/select.h>
 #include <vector>
 
 class WebServ;
 
-class Select : public Error {
+class Select : public Socket {
 public:
     void run(WebServ& server);
 
