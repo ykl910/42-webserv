@@ -7,6 +7,7 @@ class WebServ;
 
 class Epoll : public Socket {
 public:
+    void acceptClient();
     void run(WebServ& server);
     const int& getEpollFd(void) const;
 
