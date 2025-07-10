@@ -3,13 +3,19 @@
 #include "Error.hpp"
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 class Socket : public Error {
 public:
-    int  getServerFd() const;
-
     Socket();
     ~Socket();
+
+    int  getServerFd() const;
+    void createAndBind();
+    void setSocketOPt();
+    void setOnListening();
+
+    typedef struct addrinfo addrinfo;
 
 private:
     bool _isBound;
@@ -17,5 +23,5 @@ private:
 
     int _serverFd;
 
-    struct addrinfo _hints;
+    addrinfo _hints;
 };
