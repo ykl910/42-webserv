@@ -6,7 +6,7 @@
 template <class Multiplexer>
 class WebServ;
 
-class Poll : public Error {
+class Poll : public AError {
 public:
     void run(WebServ<Poll>& server);
 

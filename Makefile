@@ -10,10 +10,10 @@ FLAGS               = -g -Wall -Wextra -Werror -std=c++98
 ###########################          INCLUDE        ###########################
 
 INCLUDE_DIR         := include
-INCLUDE             := CGI.hpp \
+INCLUDE             := AError.hpp \
+					CGI.hpp \
                     Config.hpp \
                     Epoll.hpp \
-					Error.hpp \
                     HttpRequest.hpp \
                     HttpResponse.hpp \
                     Poll.hpp \
@@ -27,10 +27,10 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 ###########################          SOURCE         ###########################
 
 SRC_DIR             := src
-SRC                 := CGI.cpp \
+SRC                 := AError.cpp \
+					CGI.cpp \
                     Config.cpp \
                     Epoll.cpp \
-					Error.cpp \
                     HttpRequest.cpp \
                     HttpResponse.cpp \
                     main.cpp \

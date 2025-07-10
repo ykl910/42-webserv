@@ -8,12 +8,13 @@
 #include <netdb.h>
 #include <cerrno>
 
-class Error {
+class AError {
 public:
     void printError() const;
     void printErrorAndThrow(std::string const &context) const;
     void printGaiErrorAndThrow(std::string const &context, int &status) const;
 
 private:
-
+    // AError() {};
+    // ~AError() {};
 };
