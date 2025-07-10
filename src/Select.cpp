@@ -1,7 +1,7 @@
 #include "../include/Select.hpp"
 #include "../include/WebServ.hpp"
 
-void    Select::run(WebServ& server) {
+void    Select::run(WebServ<Select>& server) {
     server.printServerStatus("select");
     fd_set readFds;
     struct timeval tv;

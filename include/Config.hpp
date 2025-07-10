@@ -3,6 +3,7 @@
 #include "Error.hpp"
 #include <string>
 
+template <class Multiplexer>
 class WebServ;
 
 class Config : public Error {

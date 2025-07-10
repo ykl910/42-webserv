@@ -23,11 +23,12 @@
 #define PORT 8080
 #define BUFFERSIZE 4096
 
-class WebServ {
+template <class Multiplexer>
+class WebServ : public Multiplexer {
 public:
-    void runPoll();
-    void runEpoll();
-    void runSelect();
+    void    runMultiplexer(void) {
+        this->run(*this);
+    }
 
     HttpRequest receiveHttpRequest(int &clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
@@ -35,15 +36,9 @@ public:
 
     void printServerStatus(const char* multiplexer) const;
 
+    WebServ();
     WebServ(const char* configFile);
     ~WebServ();
-
-private:
-    CGI     _cgi;
-    Poll    _poll;
-    Epoll   _epoll;
-    Error   _error;
-    Select  _select;
-    Signal  _signal;
-    Config  _config;
 };
+
+#include "../src/WebServ.tpp"

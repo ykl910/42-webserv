@@ -37,9 +37,7 @@ SRC                 := CGI.cpp \
                     Poll.cpp \
                     Select.cpp \
                     Signal.cpp \
-					Socket.cpp \
-                    WebServ.cpp \
-                    WebServMultiplex.cpp
+					Socket.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
 ###########################       COMPILATION       ###########################
