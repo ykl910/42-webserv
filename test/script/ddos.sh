@@ -16,6 +16,8 @@ fi
 
 if curl $URL; then
     while true; do
-        curl $URL
+        if ! curl $URL; then
+            exit 0
+        fi
     done
 fi
