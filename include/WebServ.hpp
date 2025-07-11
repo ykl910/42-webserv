@@ -4,8 +4,6 @@
 #include "HttpRequest.hpp"
 #include "Signal.hpp"
 #include "Select.hpp"
-#include "Config.hpp"
-#include "Socket.hpp"
 #include "AError.hpp"
 #include "Epoll.hpp"
 #include "Poll.hpp"

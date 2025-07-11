@@ -11,7 +11,7 @@ FLAGS               = -g -Wall -Wextra -Werror -std=c++98
 
 INCLUDE_DIR         := include
 INCLUDE             := AError.hpp \
-					CGI.hpp \
+                    CGI.hpp \
                     Config.hpp \
                     Epoll.hpp \
                     HttpRequest.hpp \
@@ -19,7 +19,7 @@ INCLUDE             := AError.hpp \
                     Poll.hpp \
                     Select.hpp \
                     Signal.hpp \
-					Socket.hpp \
+                    Socket.hpp \
                     textFormatting.hpp \
                     WebServ.hpp
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
@@ -28,7 +28,7 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
 SRC_DIR             := src
 SRC                 := AError.cpp \
-					CGI.cpp \
+                    CGI.cpp \
                     Config.cpp \
                     Epoll.cpp \
                     HttpRequest.cpp \
@@ -37,7 +37,7 @@ SRC                 := AError.cpp \
                     Poll.cpp \
                     Select.cpp \
                     Signal.cpp \
-					Socket.cpp
+                    Socket.cpp
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
 ###########################       COMPILATION       ###########################
