@@ -21,8 +21,7 @@ public:
     int acceptClient();
     void addServerToEpool();
     void addClientToEpool(int const &clientFd);
-    //void run(WebServ& server);
-    void runEpoll();
+    void run(WebServ<Epoll>& server);
     void sendHttpResponse(int &clientFd, HttpRequest &request);
     bool receivedCompleteRequest(std::string &rawData) const;
     const int& getEpollFd(void) const;
