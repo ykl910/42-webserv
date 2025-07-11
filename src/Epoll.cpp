@@ -65,15 +65,17 @@ bool Epoll::receivedCompleteRequest(std::string &rawData) const {
     return rawData.find("\r\n\r\n") != std::string::npos;
 }
 
-
 void Epoll::HttpRequestAndResponse(int &clientFd){
 
     char buffer[BUFFERSIZE];
 
-    int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-    if(bytes > 0)
-        this->_buffers[clientFd].append(buffer, bytes);
+    while(true){
 
+        int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
+        if(bytes > 0)
+            this->_buffers[clientFd].append(buffer, bytes);
+
+    }
     if(receivedCompleteRequest(this->_buffers[clientFd])){
 
         HttpRequest request(_buffers[clientFd]);

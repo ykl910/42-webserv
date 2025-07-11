@@ -14,6 +14,6 @@ public:
     ~Poll();
 
 private:
-    struct pollfd _fd;
+    //struct pollfd _fd;
 
 };
