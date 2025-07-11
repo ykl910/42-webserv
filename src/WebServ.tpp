@@ -18,7 +18,7 @@ WebServ<Multiplexer>::WebServ() : _signalHandler(), _multiplexer() {
 
 template <class Multiplexer>
 WebServ<Multiplexer>::WebServ(const char* configPath)
-    : Config(configPath) {}
+    : Multiplexer(configPath) {}
 
 template <class Multiplexer>
 WebServ<Multiplexer>::~WebServ() {}
