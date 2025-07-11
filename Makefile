@@ -21,7 +21,10 @@ INCLUDE             := CGI.hpp \
                     Signal.hpp \
                     Socket.hpp \
                     textFormatting.hpp \
-                    WebServ.hpp
+                    WebServ.hpp \
+                    GET.hpp \
+                    POST.hpp \
+                    DELETE.hpp
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
 ###########################          SOURCE         ###########################
@@ -37,7 +40,10 @@ SRC                 := CGI.cpp \
                     Poll.cpp \
                     Select.cpp \
                     Signal.cpp \
-                    Socket.cpp
+                    Socket.cpp \
+                    GET.cpp \
+                    POST.cpp \
+                    DELETE.cpp 
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 
 ###########################       COMPILATION       ###########################

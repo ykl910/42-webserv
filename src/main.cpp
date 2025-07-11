@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
             if (argc == 3 && had_choosen_multiplexer(argv[2]))
                 run_specific_multiplexer(argv[2]);
             else
-                WebServ<Epoll> server;
+                WebServ<Select> server;
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             return EXIT_FAILURE;
