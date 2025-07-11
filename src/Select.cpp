@@ -11,7 +11,6 @@ void    Select::run(WebServ<Select>& server) {
     int serverFd = this->getServerFd();
 
     while (true) {
-
         //* FD_ZERO = empty readFds set
         //* FD_SET = add server socket to detect new connexions
         FD_ZERO(&readFds);
