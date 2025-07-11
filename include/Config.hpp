@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AError.hpp"
+#include "Error.hpp"
 #include <fstream>
 #include <string>
 #include <map>
@@ -18,6 +18,25 @@ public:
 
 private:
     std::string _configPath;
-    std::map<std::string, std::string>  _http;
-    std::map<std::string, std::string>  _config;
+    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _mainContext;
+    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _mainContext;
+    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _httpContext;
+    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _config;
 };
+
+/* NGINX context hierarchy
+main
+├── events
+├── http
+│   ├── server
+│   │   ├── location
+│   │   │   ├── if
+│   │   │   └── limit_except
+│   ├── upstream
+│   ├── map
+│   └── geo
+├── stream
+│   └── server
+└── mail
+    └── server
+*/
