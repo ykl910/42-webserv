@@ -12,13 +12,13 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer) const {
 }
 
 template <class Multiplexer>
-WebServ<Multiplexer>::WebServ() {
+WebServ<Multiplexer>::WebServ() : _signalHandler(), _multiplexer() {
     this->runMultiplexer();
 }
 
 template <class Multiplexer>
-WebServ<Multiplexer>::WebServ(const char* configFile) {
-(void)configFile;
+WebServ<Multiplexer>::WebServ(const char* configFile) : _signalHandler(), _multiplexer() {
+    (void)configFile;
 }
 
 template <class Multiplexer>

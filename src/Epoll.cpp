@@ -16,11 +16,11 @@ int Epoll::acceptClient() {
 
     int clientFd = accept(this->getServerFd(), &clientAddr, &clientAddrSize);
     if (clientFd == -1)
-        this->printErrorAndThrow("accept");
+        printErrorAndThrow("accept");
 
     int flags = fcntl(clientFd, F_GETFL, 0);
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
-        this->printErrorAndThrow("fcntl");
+        printErrorAndThrow("fcntl");
 
 //    std::cout << "Accepted from address: " << clientAddr.sa_data << std::endl;
 
@@ -33,7 +33,7 @@ void Epoll::createEpollInstance(){
 
     this->_epollFd = epoll_create1(0);
     if (this->_epollFd == -1)
-        this->printErrorAndThrow("epoll_create1");
+        printErrorAndThrow("epoll_create1");
 }
 
 void Epoll::addServerToEpool(){
@@ -45,7 +45,7 @@ void Epoll::addServerToEpool(){
     server_ev.data.fd = this->getServerFd();
 
     if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getServerFd(), &server_ev) == -1)
-        this->printErrorAndThrow("epoll_ctl");
+        printErrorAndThrow("epoll_ctl");
 }
 
 void Epoll::addClientToEpool(int const &clientFd){
@@ -57,7 +57,7 @@ void Epoll::addClientToEpool(int const &clientFd){
     client_ev.data.fd = clientFd;
 
     if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
-        this->printErrorAndThrow("epoll_ctl");
+        printErrorAndThrow("epoll_ctl");
 }
 
 bool Epoll::receivedCompleteRequest(std::string &rawData) const {
@@ -110,7 +110,7 @@ void Epoll::sendHttpResponse(int &clientFd, HttpRequest &request)
     while (totalBytesSent < responseLen){
         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
         if (bytesSent == -1)
-            this->printErrorAndThrow("send");
+            printErrorAndThrow("send");
         totalBytesSent += bytesSent;
     }
 }
@@ -123,7 +123,7 @@ void Epoll::eventManager(epoll_ev &event){
         socklen_t len = sizeof(err);
 
         if(getsockopt(event.data.fd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
-            this->printError();
+            printError();
         this->_buffers.erase(event.data.fd);
         close(event.data.fd);
     }
@@ -155,7 +155,7 @@ void Epoll::run(WebServ<Epoll>& server) {
 
         int nbEvents = epoll_wait(this->_epollFd, this->_eventsQueue.data(), MAXEVENTS, -1);
         if(nbEvents == -1)
-            this->printErrorAndThrow("epoll_wait");
+            printErrorAndThrow("epoll_wait");
         for(int i = 0; i < nbEvents; ++i){
             this->eventManager(this->_eventsQueue[i]);
         }

@@ -8,13 +8,6 @@
 #include <netdb.h>
 #include <cerrno>
 
-class AError {
-public:
-    void printError() const;
-    void printErrorAndThrow(std::string const &context) const;
-    void printGaiErrorAndThrow(std::string const &context, int &status) const;
-
-private:
-    // AError() {};
-    // ~AError() {};
-};
+void printError();
+void printErrorAndThrow(std::string const &context);
+void printGaiErrorAndThrow(std::string const &context, int &status);

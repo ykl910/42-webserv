@@ -32,7 +32,7 @@ void    Select::run(WebServ<Select>& server) {
         errno = 0;
         int activity = select(maxFd + 1, &readFds, NULL, NULL, &tv);
         if (activity < 0) {
-            this->printError();
+            printError();
             continue;
         }
 
@@ -41,7 +41,7 @@ void    Select::run(WebServ<Select>& server) {
             errno = 0;
             int newClient = accept(serverFd, NULL, NULL);
             if (newClient < 0) {
-                this->printError();
+                printError();
                 continue;
             } else {
                 this->_clientFds.push_back(newClient);

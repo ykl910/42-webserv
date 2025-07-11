@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Socket.hpp"
+#include "AError.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include <sys/epoll.h>

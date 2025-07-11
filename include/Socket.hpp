@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-class Socket : public AError {
+class Socket {
 public:
     Socket();
     ~Socket();
