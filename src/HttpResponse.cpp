@@ -1,22 +1,24 @@
 #include "../include/HttpResponse.hpp"
+#include "../include/GET.hpp"
+#include "../include/POST.hpp"
+#include "../include/DELETE.hpp"
 
 HttpResponse::HttpResponse(HttpRequest &request){
     (void)request;
 }
 
-HttpResponse::~HttpResponse(){}
-
-void HttpResponse::setCode(int code){
-    (void)code;
+void HttpResponse::setStatusLine(int code, std::string &reason){
+    std::ostringstream oss;
+    oss << code;
+    _statusLine = "HTTP/1.1 " + oss.str() + reason;
 }
 
 void HttpResponse::setHeaders(std::string &key, std::string &value){
-    (void)key;
-    (void)value;
+    _headers[key] = value;
 }
 
 void HttpResponse::setBody(std::string &body){
-    (void)body;
+    _body = body;
 }
 
 std::string HttpResponse::getResponse() const {
@@ -73,4 +75,18 @@ std::string HttpResponse::getResponse() const {
 }
 
 
-void HttpResponse::build(){}
+void HttpResponse::build(HttpRequest &request) {
+
+    if (request.getMethod() == "GET") {
+        GET get;
+        get.getHandler(request);
+    }
+    else if (request.getMethod() == "POST") {
+        POST post;
+        post.postHandler(request);
+    }
+    else if (request.getMethod() == "DELETE") {
+        DELETE del;
+        del.deleteHandler(request);
+    }
+}

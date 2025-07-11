@@ -14,6 +14,7 @@
 
 class HttpRequest {
 public:
+    HttpRequest() {};
     HttpRequest(const std::string &request);
     const std::string &getMethod() const;
     const std::string &getPath() const;
@@ -22,10 +23,10 @@ public:
     const std::string &getBody() const;
 
 private:
-    void    parse(const std::string &request);
-    std::string method;
-    std::string path;
-    std::string http_version;
-    std::map<std::string, std::string> headers;
-    std::string body;
+    void    _parse(const std::string &request);
+    std::string _method;
+    std::string _path;
+    std::string _http_version;
+    std::map<std::string, std::string> _headers;
+    std::string _body;
 };

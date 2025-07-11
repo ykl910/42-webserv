@@ -1,10 +1,10 @@
 #include "../include/HttpRequest.hpp"
 
 HttpRequest::HttpRequest(const std::string &request) {
-    parse(request);
+    _parse(request);
 }
 
-void    HttpRequest::parse(const std::string &request)
+void    HttpRequest::_parse(const std::string &request)
 {
     std::stringstream ss(request);
     std::string line;
@@ -12,7 +12,7 @@ void    HttpRequest::parse(const std::string &request)
 
     // parse request line
     std::stringstream requestLine(line);
-    requestLine >> method >> path >> http_version;
+    requestLine >> _method >> _path >> _http_version;
 
     // parse headers
     while (std::getline(ss, line) && line != "\r")
@@ -24,33 +24,33 @@ void    HttpRequest::parse(const std::string &request)
         {
             std::string key = line.substr(0, pos);
             std::string value = line.substr(pos + 2);
-            headers[key] = value;
+            _headers[key] = value;
         }
     }
 
     // parse body
     std::string bodyLine;
     while (std::getline(ss, bodyLine)) {
-        body += bodyLine + "\n";
+        _body += bodyLine + "\n";
     }
 }
 
 const std::string &HttpRequest::getMethod() const {
-    return method;
+    return _method;
 }
 
 const std::string &HttpRequest::getPath() const {
-    return path;
+    return _path;
 }
 
 const std::string &HttpRequest::getHttpVersion() const {
-    return http_version;
+    return _http_version;
 }
 
 const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
-    return headers;
+    return _headers;
 }
 
 const std::string &HttpRequest::getBody() const {
-    return body;
+    return _body;
 }

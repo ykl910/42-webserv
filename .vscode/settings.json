@@ -49,7 +49,9 @@
 		"typeinfo": "cpp",
 		"map": "cpp",
 		"sstream": "cpp",
-		"*.tpp": "cpp"
+		"*.tpp": "cpp",
+		"csignal": "cpp",
+		"fstream": "cpp"
 	},
     "editor.tabSize": 4,
     "editor.insertSpaces": true
