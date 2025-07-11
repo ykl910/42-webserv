@@ -17,7 +17,9 @@ WebServ<Multiplexer>::WebServ() {
 }
 
 template <class Multiplexer>
-WebServ<Multiplexer>::WebServ(const char* configFile) {}
+WebServ<Multiplexer>::WebServ(const char* configFile) {
+(void)configFile;
+}
 
 template <class Multiplexer>
 WebServ<Multiplexer>::~WebServ() {}
