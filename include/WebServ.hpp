@@ -19,11 +19,6 @@ public:
     void    runMultiplexer(void) {
         this->run(*this);
     }
-
-    HttpRequest receiveHttpRequest(int &clientFd);
-    bool receivedCompleteRequest(std::string &rawData) const;
-    void sendHttpResponse(int &clientFd, HttpRequest &request);
-
     void printServerStatus(const char* multiplexer) const;
 
     WebServ();
