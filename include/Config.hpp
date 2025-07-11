@@ -6,7 +6,7 @@
 template <class Multiplexer>
 class WebServ;
 
-class Config : public AError {
+class Config {
 public:
 
     Config();
