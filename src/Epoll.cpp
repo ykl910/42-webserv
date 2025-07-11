@@ -16,11 +16,11 @@ int Epoll::acceptClient() {
 
     int clientFd = accept(this->getServerFd(), &clientAddr, &clientAddrSize);
     if (clientFd == -1)
-        this->printErrorAndThrow("accept");
+        printErrorAndThrow("accept");
 
     int flags = fcntl(clientFd, F_GETFL, 0);
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
-        this->printErrorAndThrow("fcntl");
+        printErrorAndThrow("fcntl");
 
 //    std::cout << "Accepted from address: " << clientAddr.sa_data << std::endl;
 
@@ -33,7 +33,7 @@ void Epoll::createEpollInstance(){
 
     this->_epollFd = epoll_create1(0);
     if (this->_epollFd == -1)
-        this->printErrorAndThrow("epoll_create1");
+        printErrorAndThrow("epoll_create1");
 }
 
 void Epoll::addServerToEpool(){
@@ -45,7 +45,7 @@ void Epoll::addServerToEpool(){
     server_ev.data.fd = this->getServerFd();
 
     if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getServerFd(), &server_ev) == -1)
-        this->printErrorAndThrow("epoll_ctl");
+        printErrorAndThrow("epoll_ctl");
 }
 
 void Epoll::addClientToEpool(int const &clientFd){
@@ -53,16 +53,32 @@ void Epoll::addClientToEpool(int const &clientFd){
     std::cout << "Adding client to epoll instance" << std::endl;
 
     epoll_ev client_ev;
-    client_ev.events = EPOLLIN;
+    client_ev.events = EPOLLIN; //! Cannot use edge trigger mode... thanks 42 >:(
     client_ev.data.fd = clientFd;
 
     if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
-        this->printErrorAndThrow("epoll_ctl");
+        printErrorAndThrow("epoll_ctl");
 }
 
 bool Epoll::receivedCompleteRequest(std::string &rawData) const {
-    //TODO : check if it's a non POST request, otherwise check the content-lenght
-    return rawData.find("\r\n\r\n") != std::string::npos;
+
+    size_t headerEnd = rawData.find("\r\n\r\n");
+    if(headerEnd == std::string::npos)
+        return false;
+
+    size_t bodyStart = headerEnd + 4;
+
+    size_t contentLengthPos = rawData.find("Content-Length: ");
+    if(contentLengthPos == std::string::npos)
+        return true;
+
+    size_t valueStart = contentLengthPos + strlen("Content-Length: ");
+    size_t valueEnd = rawData.find("\r\n", valueStart);
+    std::string valueStr = rawData.substr(valueStart, valueEnd - valueStart);
+    int contentLength = std::atoi(valueStr.c_str());
+
+    size_t bodyLengh = rawData.size() - bodyStart;
+    return (bodyLengh >= static_cast<size_t>(contentLength));
 }
 
 void Epoll::HttpRequestAndResponse(int &clientFd){
@@ -73,8 +89,11 @@ void Epoll::HttpRequestAndResponse(int &clientFd){
     if(bytes > 0)
         this->_buffers[clientFd].append(buffer, bytes);
 
+    std::cout << "received:\n" << this->_buffers[clientFd];
+
     if(receivedCompleteRequest(this->_buffers[clientFd])){
 
+        std::cout << "complete request received !" << std::endl;
         HttpRequest request(_buffers[clientFd]);
         this->sendHttpResponse(clientFd, request);
         _buffers.erase(clientFd);
@@ -91,7 +110,7 @@ void Epoll::sendHttpResponse(int &clientFd, HttpRequest &request)
     while (totalBytesSent < responseLen){
         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
         if (bytesSent == -1)
-            this->printErrorAndThrow("send");
+            printErrorAndThrow("send");
         totalBytesSent += bytesSent;
     }
 }
@@ -104,13 +123,14 @@ void Epoll::eventManager(epoll_ev &event){
         socklen_t len = sizeof(err);
 
         if(getsockopt(event.data.fd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
-            this->printError();
-
+            printError();
+        this->_buffers.erase(event.data.fd);
         close(event.data.fd);
     }
     if(event.events & EPOLLHUP){
 
         std::cout << "Connexion closed with a client" << std::endl;
+        this->_buffers.erase(event.data.fd);
         close(event.data.fd);
     }
     if((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
@@ -131,26 +151,27 @@ void Epoll::run(WebServ<Epoll>& server) {
     this->createEpollInstance();
     this->addServerToEpool();
 
-    vector eventsQueue(MAXEVENTS);
-
     while(true) {
 
-        int nbEvents = epoll_wait(this->_epollFd, eventsQueue.data(), MAXEVENTS, -1);
+        int nbEvents = epoll_wait(this->_epollFd, this->_eventsQueue.data(), MAXEVENTS, -1);
         if(nbEvents == -1)
-            this->printErrorAndThrow("epoll_wait");
+            printErrorAndThrow("epoll_wait");
         for(int i = 0; i < nbEvents; ++i){
-            this->eventManager(eventsQueue[i]);
+            this->eventManager(this->_eventsQueue[i]);
         }
     }
     close(this->_epollFd);
+    for(mapIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
+        close(it->first);
 }
 
-Epoll::Epoll() {
+Epoll::Epoll() : _eventsQueue(MAXEVENTS){
 
 }
 
 Epoll::~Epoll() {
     if (this->_epollFd)
         close(this->_epollFd);
-
+    for(mapIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
+        close(it->first);
 }

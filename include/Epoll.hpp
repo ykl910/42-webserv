@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Socket.hpp"
+#include "AError.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include <sys/epoll.h>
@@ -17,6 +18,7 @@ class Epoll : public Socket {
 public:
     typedef struct epoll_event epoll_ev;
     typedef std::vector<epoll_ev> vector;
+    typedef std::map<int, std::string>::iterator mapIt;
     void createEpollInstance();
     int acceptClient();
     void addServerToEpool();
@@ -33,5 +35,5 @@ public:
 private:
     int _epollFd;
     std::map<int, std::string> _buffers;
-
+    vector _eventsQueue;
 };

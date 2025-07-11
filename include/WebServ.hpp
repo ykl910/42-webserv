@@ -12,16 +12,18 @@
 #define PORT 8080
 
 template <class Multiplexer>
-class WebServ : public Signal, public Multiplexer {
+class WebServ {
+private:
+    Signal _signalHandler;
+    Multiplexer _multiplexer;
+    
 public:
-    void    runMultiplexer(void) {
-        this->run(*this);
-    }
-    void printServerStatus(const char* multiplexer) const;
-
     WebServ();
     WebServ(const char* configFile);
     ~WebServ();
+    void printServerStatus(const char* multiplexer) const;
+    void runMultiplexer() {
+        _multiplexer.run(*this);
+    }
 };
-
 #include "../src/WebServ.tpp"

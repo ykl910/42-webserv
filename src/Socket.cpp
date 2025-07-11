@@ -8,17 +8,17 @@ void Socket::setSocketOPt(){
 
     int opt = 1;
     if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-        this->printErrorAndThrow("setsockopt");
+        printErrorAndThrow("setsockopt");
 
     int flags = fcntl(this->_serverFd, F_GETFL, 0);
     if(flags == -1)
-        this->printErrorAndThrow("fcntl()");
+        printErrorAndThrow("fcntl()");
 
     flags |= O_NONBLOCK;
 
     int s = fcntl(this->_serverFd, F_SETFL, flags);
     if(s == -1)
-        this->printErrorAndThrow("fcntl()");
+        printErrorAndThrow("fcntl()");
 }
 
 void Socket::createAndBind(){
@@ -32,7 +32,7 @@ void Socket::createAndBind(){
     int status;
     status = getaddrinfo(NULL, "8080", &this->_hints, &servInfosLst);
     if (status != 0)
-        this->printGaiErrorAndThrow("getaddrinfo", status);
+        printGaiErrorAndThrow("getaddrinfo", status);
 
     addrinfo *chosenAddr = servInfosLst;
 
@@ -40,19 +40,19 @@ void Socket::createAndBind(){
     {
         this->_serverFd = socket(chosenAddr->ai_family, chosenAddr->ai_socktype, chosenAddr->ai_protocol);
         if(this->_serverFd == -1){
-            this->printError();
+            printError();
             chosenAddr = chosenAddr->ai_next;
             continue;
         }
         break;
     }
     if (!chosenAddr)
-        this->printErrorAndThrow("socket");
+        printErrorAndThrow("socket");
 
     this->setSocketOPt();
 
     if (bind(this->_serverFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
-        this->printErrorAndThrow("bind");
+        printErrorAndThrow("bind");
     this->_isBound = true;
 
     freeaddrinfo(servInfosLst);
@@ -61,7 +61,7 @@ void Socket::createAndBind(){
 void Socket::setOnListening(){
 
     if (listen(this->_serverFd, SOMAXCONN) == -1)
-        this->printErrorAndThrow("listen");
+        printErrorAndThrow("listen");
     this->_isListening = true;
 
 }
