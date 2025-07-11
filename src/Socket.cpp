@@ -4,6 +4,23 @@ int Socket::getServerFd() const {
     return this->_serverFd;
 }
 
+void Socket::setSocketOPt(){
+
+    int opt = 1;
+    if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+        this->printErrorAndThrow("setsockopt");
+
+    int flags = fcntl(this->_serverFd, F_GETFL, 0);
+    if(flags == -1)
+        this->printErrorAndThrow("fcntl()");
+
+    flags |= O_NONBLOCK;
+
+    int s = fcntl(this->_serverFd, F_SETFL, flags);
+    if(s == -1)
+        this->printErrorAndThrow("fcntl()");
+}
+
 void Socket::createAndBind(){
 
     bzero(&this->_hints, sizeof(this->_hints));
@@ -32,28 +49,13 @@ void Socket::createAndBind(){
     if (!chosenAddr)
         this->printErrorAndThrow("socket");
 
+    this->setSocketOPt();
+
     if (bind(this->_serverFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
         this->printErrorAndThrow("bind");
     this->_isBound = true;
 
     freeaddrinfo(servInfosLst);
-}
-
-void Socket::setSocketOPt(){
-
-    int opt = 1;
-    if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-        this->printErrorAndThrow("setsockopt");
-
-    int flags = fcntl(this->_serverFd, F_GETFL, 0);
-    if(flags == -1)
-        this->printErrorAndThrow("fcntl()");
-
-    flags |= O_NONBLOCK;
-
-    int s = fcntl(this->_serverFd, F_SETFL, flags);
-    if(s == -1)
-        this->printErrorAndThrow("fcntl()");
 }
 
 void Socket::setOnListening(){
@@ -67,7 +69,6 @@ void Socket::setOnListening(){
 Socket::Socket() {
 
     this->createAndBind();
-    this->setSocketOPt();
     this->setOnListening();
 }
 

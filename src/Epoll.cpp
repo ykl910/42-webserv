@@ -22,7 +22,7 @@ int Epoll::acceptClient() {
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
         this->printErrorAndThrow("fcntl");
 
-    std::cout << "Accepted from address: " << clientAddr.sa_data << std::endl;
+//    std::cout << "Accepted from address: " << clientAddr.sa_data << std::endl;
 
     return clientFd;
 }
@@ -41,7 +41,7 @@ void Epoll::addServerToEpool(){
     std::cout << "Adding server to epoll instance" << std::endl;
 
     epoll_ev server_ev;
-    server_ev.events = EPOLLIN | EPOLLET;
+    server_ev.events = EPOLLIN;
     server_ev.data.fd = this->getServerFd();
 
     if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getServerFd(), &server_ev) == -1)
@@ -53,7 +53,7 @@ void Epoll::addClientToEpool(int const &clientFd){
     std::cout << "Adding client to epoll instance" << std::endl;
 
     epoll_ev client_ev;
-    client_ev.events = EPOLLIN | EPOLLET;
+    client_ev.events = EPOLLIN;
     client_ev.data.fd = clientFd;
 
     if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
@@ -69,13 +69,10 @@ void Epoll::HttpRequestAndResponse(int &clientFd){
 
     char buffer[BUFFERSIZE];
 
-    while(true){
+    int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
+    if(bytes > 0)
+        this->_buffers[clientFd].append(buffer, bytes);
 
-        int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-        if(bytes > 0)
-            this->_buffers[clientFd].append(buffer, bytes);
-
-    }
     if(receivedCompleteRequest(this->_buffers[clientFd])){
 
         HttpRequest request(_buffers[clientFd]);
@@ -116,10 +113,6 @@ void Epoll::eventManager(epoll_ev &event){
         std::cout << "Connexion closed with a client" << std::endl;
         close(event.data.fd);
     }
-    if(!(event.events & EPOLLIN)){
-
-        std::cout << "Strange client behavoir..." << std::endl;
-    }
     if((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
 
         int clientFd = this->acceptClient();
@@ -138,7 +131,7 @@ void Epoll::run(WebServ<Epoll>& server) {
     this->createEpollInstance();
     this->addServerToEpool();
 
-    vector eventsQueue;
+    vector eventsQueue(MAXEVENTS);
 
     while(true) {
 
