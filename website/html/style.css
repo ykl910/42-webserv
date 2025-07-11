@@ -1,119 +1,94 @@
-/*header style*/
-header {
-   text-align: center; 
-   padding: 20px;
-   color: #ecf0f1;
-}
+/* Police terminal */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
 body {
-  background-color: #2c3e50;
-  margin: 0;
-  color: #ecf0f1;
-  font-family: ubuntu;
+    background-color: #000000;
+    color: #33ff33;
+    font-family: 'Share Tech Mono', monospace;
+    text-shadow: 0 0 5px #33ff33;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    line-height: 1.6;
 }
 
-/*navigation menu style*/
-nav a {
-  display: inline-block;
-  padding: 10px 20px;
-  margin: 0 10px;
-  background-color: #ecf0f1;
-  color: #2c3e50;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+/* Titres */
+h1, h2 {
+    border-bottom: 1px solid #33ff33;
+    padding-bottom: 0.5rem;
+    margin-top: 2rem;
+    text-align: center;
 }
 
-nav a:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+/* Curseur clignotant type terminal */
+.cursor {
+    display: inline-block;
+    width: 10px;
+    background-color: #33ff33;
+    margin-left: 5px;
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+    50% { opacity: 0; }
 }
 
-nav a:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+/* Liens */
+a {
+    color: #00ff99;
+    text-decoration: none;
+}
+a:hover {
+    color: #33ff33;
+    text-decoration: underline;
 }
 
-.gif img {
-  width: 500px;
-  height: auto;
-  border-radius: 8px;
+/* Images */
+img {
+    max-width: 100%;
+    margin: 1rem 0;
+    border: 2px solid #33ff33;
+    box-shadow: 0 0 20px #00ff00;
+    position: relative;  /* force un contexte de position */
+    z-index: 1;
 }
 
-footer {
-   text-align: center; 
-   padding: 20px;
-   color: #ecf0f1;
+/* Listes */
+ul {
+    padding-left: 1.5rem;
+}
+li {
+    margin-bottom: 0.5rem;
+    list-style-type: "→ ";
 }
 
-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+/* Scrollbar personnalisée (si navigateur compatible) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #000;
+}
+::-webkit-scrollbar-thumb {
+    background: #33ff33;
+    box-shadow: 0 0 5px #00ff00;
 }
 
-/* File upload styling */
-.upload {
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 20px;
-  background-color: #34495e;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  text-align: center;
+/* Animation de fond type scan vertical */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0%,
+        #33ff3355 10%,
+        transparent 20%
+    );
+    animation: scan 10s linear infinite;
+    z-index: 0;
+    pointer-events: none;
 }
-
-.file-upload {
-  position: relative;
-  margin: 20px 0;
-  text-align: center;
-}
-
-.file-input {
-  opacity: 0;
-  width: 0.1px;
-  height: 0.1px;
-  position: absolute;
-}
-
-.file-label {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.file-label:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-}
-
-#file-chosen {
-  margin-left: 10px;
-  font-style: italic;
-  color: #bdc3c7;
-}
-
-.upload-btn {
-  padding: 10px 25px;
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-  margin-top: 15px;
-}
-
-.upload-btn:hover {
-  background-color: #27ae60;
-  transform: translateY(-2px);
+@keyframes scan {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100vh; }
 }
