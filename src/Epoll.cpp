@@ -129,13 +129,9 @@ void Epoll::eventManager(epoll_ev &event){
     }
 }
 
-//void Epol::run(WebServ& server){
-//
-//    server.printServerStatus("epoll");
-//}
+void Epoll::run(WebServ<Epoll>& server) {
 
-void Epoll::runEpoll() {
-
+    server.printServerStatus("epoll");
 
     this->createEpollInstance();
     this->addServerToEpool();
