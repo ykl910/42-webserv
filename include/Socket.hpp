@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Config.hpp"
-#include "AError.hpp"
+#include "Error.hpp"
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>

@@ -4,7 +4,7 @@
 #include "HttpRequest.hpp"
 #include "Signal.hpp"
 #include "Select.hpp"
-#include "AError.hpp"
+#include "Error.hpp"
 #include "Epoll.hpp"
 #include "Poll.hpp"
 #include "CGI.hpp"
@@ -16,7 +16,7 @@ class WebServ {
 private:
     Signal _signalHandler;
     Multiplexer _multiplexer;
-    
+
 public:
     WebServ();
     WebServ(const char* configFile);

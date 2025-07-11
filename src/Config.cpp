@@ -1,7 +1,27 @@
 #include "../include/Config.hpp"
 #include "../include/WebServ.hpp"
 
-// parseConfigFile(this->_configFile);
+/*
+Context:
+    - TOP LEVEL: main, events, http, stream, mail
+    - HTTP: server, upstream, map, geo, types, limite_req_zone, limit_conn_zone,
+log_format, include, charset_map, server_names_hash_bucket_size
+    - SERVER: location, if, limit_except, include
+    - LOCATION: if, limit_except, include
+    - STREAM: server, upstream
+    - MAIL:
+
+Directives:
+    -
+*/
+
+// void    getDirective(const std::string& line) {
+
+// }
+
+// void    getContext(const std::string& context) {
+
+// }
 
 void    Config::parseConfigFile(void) {
     std::ifstream file(this->_configPath.c_str());
@@ -10,18 +30,17 @@ void    Config::parseConfigFile(void) {
         throw std::runtime_error("Error: can't open config file");
     std::string line;
     while (std::getline(file, line)) {
+        // getContext(line);
         std::cout << line << std::endl;
     }
 }
 
 Config::Config() : _configPath("config/webserv.conf") {
-    // Parse config file with default path
     this->parseConfigFile();
 }
 
 Config::Config(const std::string& configPath) : _configPath(configPath) {
     this->parseConfigFile();
-    // Parse config file
 }
 
 Config::~Config() {
