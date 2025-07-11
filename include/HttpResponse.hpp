@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HttpRequest.hpp"
 #include <netinet/in.h>
 #include <unistd.h>
 #include <cstdio>
@@ -11,8 +12,6 @@
 #include <sstream>
 #include <vector>
 #include <map>
-
-#include "../include/HttpRequest.hpp"
 
 class HttpResponse {
 public:
