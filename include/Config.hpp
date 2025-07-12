@@ -18,10 +18,13 @@ public:
 
 private:
     std::string _configPath;
-    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _mainContext;
-    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _mainContext;
-    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _httpContext;
-    // std::map<std::string, std::map<std::string, std::map<std::string, std::string>  _config;
+
+    typedef std::map<std::string,
+            std::map<std::string,
+            std::vector<std::string>>> context;
+    context _mainContext;
+    context _httpContext;
+    context _serverContext;
 };
 
 /* NGINX context hierarchy
