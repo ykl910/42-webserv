@@ -1,23 +1,21 @@
 #include "../include/HttpResponse.hpp"
-#include "../include/GET.hpp"
-#include "../include/POST.hpp"
-#include "../include/DELETE.hpp"
+#include "../include/ResponseHandler.hpp"
 
 HttpResponse::HttpResponse(HttpRequest &request){
     (void)request;
 }
 
-void HttpResponse::setStatusLine(int code, std::string &reason){
+void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason){
     std::ostringstream oss;
     oss << code;
-    _statusLine = "HTTP/1.1 " + oss.str() + reason;
+    _statusLine = version + oss.str() + reason;
 }
 
-void HttpResponse::setHeaders(std::string &key, std::string &value){
+void HttpResponse::setHeaders(const std::string &key, const std::string &value){
     _headers[key] = value;
 }
 
-void HttpResponse::setBody(std::string &body){
+void HttpResponse::setBody(const std::string &body){
     _body = body;
 }
 
@@ -78,15 +76,12 @@ std::string HttpResponse::getResponse() const {
 void HttpResponse::build(HttpRequest &request) {
 
     if (request.getMethod() == "GET") {
-        GET get;
-        get.getHandler(request);
+        handleGet(request, *this);
     }
     else if (request.getMethod() == "POST") {
-        POST post;
-        post.postHandler(request);
+        handlePost(request, *this);
     }
     else if (request.getMethod() == "DELETE") {
-        DELETE del;
-        del.deleteHandler(request);
+        handleDelete(request, *this);
     }
 }

@@ -1,7 +1,6 @@
 #include "../include/WebServ.hpp"
 
 void printError() {
-
     std::cerr << BOLD RED << "Error: " << DEFAULT;
     std::cerr << strerror(errno) << std::endl;
 }
