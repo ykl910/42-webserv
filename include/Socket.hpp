@@ -10,7 +10,6 @@ class Socket : public Config {
 public:
     Socket();
     ~Socket();
-
     int  getServerFd() const;
     void createAndBind();
     void setSocketOPt();
@@ -21,8 +20,6 @@ public:
 private:
     bool _isBound;
     bool _isListening;
-
     int _serverFd;
-
     addrinfo _hints;
 };

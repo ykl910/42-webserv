@@ -18,9 +18,9 @@ public:
     HttpResponse(HttpRequest &request);
     HttpResponse() {};
     ~HttpResponse() {};
-    void setStatusLine(int code, std::string &reason);
-    void setHeaders(std::string &key, std::string &value);
-    void setBody(std::string &body);
+    void setStatusLine(const std::string version, int code, const std::string &reason);
+    void setHeaders(const std::string &key, const std::string &value);
+    void setBody(const std::string &body);
     std::string getResponse() const;
     void    build(HttpRequest &request);
 
