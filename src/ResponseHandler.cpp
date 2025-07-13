@@ -35,12 +35,6 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
     }
 }
 
-
-void buildGetResponse(HttpRequest& request, HttpResponse& response)
-{
-    
-}
-
 void handlePost(HttpRequest& request, HttpResponse& response) {
     (void)request;
     (void)response;

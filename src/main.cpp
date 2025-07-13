@@ -34,38 +34,41 @@ void    run_specific_multiplexer(const std::string& multiplexer) {
         WebServ<Epoll>  server;
 }
 
-// int main(int argc, char **argv) {
-//     if (got_config_file(argc, argv[1])) {
-//         try {
-//             if (argc == 3 && had_choosen_multiplexer(argv[2]))
-//                 run_specific_multiplexer(argv[2]);
-//             else
-//                 WebServ<Select> server;
-//         } catch (std::exception& e) {
-//             std::cerr << e.what() << std::endl;
-//             return EXIT_FAILURE;
-//         }
-//         return EXIT_SUCCESS;
-//     }
-//     return EXIT_FAILURE;
-// }
-
-//test request parsing
-int main() {
-    std::string raw_request =
-        "GET /index.html HTTP/1.1\r\n"
-        "Host: localhost:8080\r\n"
-        "User-Agent: curl/7.64.1\r\n"
-        "Accept: */*\r\n"
-        "\r\n";
-
-    HttpRequest request(raw_request);
-    std::cout << "Method: " << request.getMethod() << std::endl;
-    std::cout << "Path: " << request.getPath() << std::endl;
-    std::cout << "Version: " << request.getHttpVersion() << std::endl;
-    std::map<std::string, std::string> m = request.getHeaders();
-    for (std::map<std::string, std::string>::iterator it = m.begin();
-        it != m.end(); ++it) {
-        std::cout << it->first << "-> " << it->second << std::endl;
+int main(int argc, char **argv) {
+    if (got_config_file(argc, argv[1])) {
+        try {
+            if (argc == 3 && had_choosen_multiplexer(argv[2]))
+                run_specific_multiplexer(argv[2]);
+            else
+                WebServ<Select> server;
+        } catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
+            return EXIT_FAILURE;
+        }
+        return EXIT_SUCCESS;
     }
+    return EXIT_FAILURE;
 }
+
+//test response parsing
+// int main() {
+//     std::string raw_request =
+//         "GET /index.html HTTP/1.1\r\n"
+//         "Host: localhost:8080\r\n"
+//         "User-Agent: curl/7.64.1\r\n"
+//         "Accept: */*\r\n"
+//         "\r\n";
+
+//     HttpRequest request(raw_request);
+//     // std::cout << "Method: " << request.getMethod() << std::endl;
+//     // std::cout << "Path: " << request.getPath() << std::endl;
+//     // std::cout << "Version: " << request.getHttpVersion() << std::endl;
+//     // std::map<std::string, std::string> m = request.getHeaders();
+//     // for (std::map<std::string, std::string>::iterator it = m.begin();
+//     //     it != m.end(); ++it) {
+//     //     std::cout << it->first << "-> " << it->second << std::endl;
+//     // }
+//     HttpResponse response(request);
+//     response.build(request);
+//     std::cout << response.getResponse();
+// }

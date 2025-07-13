@@ -65,7 +65,10 @@ void    Select::run(WebServ<Select>& server) {
                 std::string request(buf, bytes);
                 HttpRequest httpReq(request);
                 std::cout << "Received request:\n" << request << std::endl;
-                std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
+                HttpResponse httpRes(httpReq);
+                httpRes.build(httpReq);
+                std::string response = httpRes.getResponse();
+                //std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
                 send(*it, response.c_str(), response.size(), 0);
                 close(*it);
                 it = this->_clientFds.erase(it);
