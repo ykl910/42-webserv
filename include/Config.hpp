@@ -3,6 +3,7 @@
 #include "Error.hpp"
 #include <fstream>
 #include <string>
+#include <vector>
 #include <map>
 
 template <class Multiplexer>
@@ -21,7 +22,7 @@ private:
 
     typedef std::map<std::string,
             std::map<std::string,
-            std::vector<std::string>>> context;
+            std::vector<std::string> > > context;
     context _mainContext;
     context _httpContext;
     context _serverContext;

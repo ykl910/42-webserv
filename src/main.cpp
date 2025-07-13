@@ -20,21 +20,17 @@ bool    got_config_file(const int argc, const char* argv) {
     return false;
 }
 
-bool    had_choosen_multiplexer(const char* input) {
-    std::string multiplexer(input);
-
-    return !multiplexer.empty() && (multiplexer == "select"
-        || multiplexer == "poll" || multiplexer == "epoll");
+bool    had_choosen_multiplexer(const std::string& input) {
+    return !input.empty() && (input == "select"
+        || input == "poll" || input == "epoll");
 }
 
 void    run_specific_multiplexer(const std::string& multiplexer) {
-    std::string string_multiplexer(multiplexer);
-
-    if (string_multiplexer == "select")
+    if (multiplexer == "select")
         WebServ<Select> server;
-    else if (string_multiplexer == "poll")
+    else if (multiplexer == "poll")
         WebServ<Poll>   server;
-    else if (string_multiplexer == "epoll")
+    else if (multiplexer == "epoll")
         WebServ<Epoll>  server;
 }
 
