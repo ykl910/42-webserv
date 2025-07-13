@@ -28,7 +28,7 @@ public:
     bool receivedCompleteRequest(std::string &rawData) const;
     const int& getEpollFd(void) const;
     void eventManager(epoll_ev &event);
-    void HttpRequestAndResponse(int &clientfd);
+    void HttpRequestAndResponse(int clientfd);
     Epoll();
     ~Epoll();
 

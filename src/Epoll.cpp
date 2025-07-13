@@ -81,7 +81,7 @@ bool Epoll::receivedCompleteRequest(std::string &rawData) const {
     return (bodyLengh >= static_cast<size_t>(contentLength));
 }
 
-void Epoll::HttpRequestAndResponse(int &clientFd){
+void Epoll::HttpRequestAndResponse(int clientFd){
 
     char buffer[BUFFERSIZE];
 
