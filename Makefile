@@ -22,7 +22,9 @@ INCLUDE             := CGI.hpp \
                     Socket.hpp \
                     textFormatting.hpp \
                     WebServ.hpp \
-                    ResponseHandler.hpp
+                    GET.hpp \
+                    POST.hpp \
+                    DELETE.hpp
 
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
@@ -40,7 +42,9 @@ SRC                 := CGI.cpp \
                     Select.cpp \
                     Signal.cpp \
                     Socket.cpp \
-                    ResponseHandler.cpp
+                    GET.cpp \
+                    POST.cpp \
+                    DELETE.cpp
 
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 

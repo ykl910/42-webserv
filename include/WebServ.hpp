@@ -2,6 +2,7 @@
 
 #include "textFormatting.hpp"
 #include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 #include "Signal.hpp"
 #include "Select.hpp"
 #include "Error.hpp"
