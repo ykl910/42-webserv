@@ -14,8 +14,6 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <map>
 
-std::string itos(int value);
-void handleGet(HttpRequest& request, HttpResponse& response);
 void handlePost(HttpRequest& request, HttpResponse& response);
-void handleDelete(HttpRequest& request, HttpResponse& response);

@@ -68,6 +68,8 @@ void    Select::run(WebServ<Select>& server) {
                 HttpResponse httpRes(httpReq);
                 httpRes.build(httpReq);
                 std::string response = httpRes.getResponse();
+                //std::cout << "Sending response:\n" << response << std::endl;
+                //std::cout << response << std::endl;
                 //std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
                 send(*it, response.c_str(), response.size(), 0);
                 close(*it);
