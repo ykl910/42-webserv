@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>À propos – post42_</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const text = "root@post42_";
+    const typedText = document.querySelector(".typed-text");
+    let i = 0;
+
+    function typeChar() {
+        if (i < text.length) {
+            typedText.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeChar, 100); // vitesse (ms)
+        }
+    }
+
+    typedText.textContent = "";
+    typeChar();
+});
+</script>
+
+<body>
+    <!-- Barre de navigation (identique à la page principale) -->
+    <nav class="navbar">
+        <div class="left-side">
+            <img src="../images/post42logo.png" alt="logo" class="logo" />
+            <a href="about.html">about us</a>
+            <a href="index.html">latest posts</a>
+        </div>
+        <div class="site-name">post42_</div>
+        <div class="right-side">
+            <button class="upload">upload</button>
+        </div>
+    </nav>
+
+    <main>
+        <img src="../images/hackers.png" alt="Préambule">
+        <p>
+            Ce site n’a pas été créé pour divertir.
+            Il est né d’un constat brutal : la vérité est piratée. Ce que vous voyez, lisez, consommez — tout est filtré, calibré, aseptisé. Pendant que l’opinion est modelée, pendant que les algorithmes vous endorment, nous avons ouvert une brèche.
+
+            post42_ est un acte de sabotage. Un refus de coopérer.
+
+            Nous avons bâti cet imageboard comme une plateforme libre, anonyme et résiliente, où les voix dissidentes ne sont pas effacées, mais amplifiées. Ici, l’ironie côtoie le doute, les memes croisent les documents classifiés, et l’invraisemblable devient question légitime.
+
+            Vous êtes libres de croire ou non.
+            Mais une chose est certaine : le système ne vous dira jamais ce qu’on publie ici.
+        </p>
+        <p class="signature">
+        <span class="typed-text">root@post42_</span><span class="cursor">_</span>
+        </p>
+
+    </main>
+</body>
+</html>
