@@ -21,9 +21,7 @@ void Socket::setSocketOPt(){
         printErrorAndThrow("fcntl()");
 }
 
-void Socket::createAndBind(){
-
-    bzero(&this->_hints, sizeof(this->_hints));
+void Socket::createAndBind() {
     this->_hints.ai_family = AF_INET;
     this->_hints.ai_socktype = SOCK_STREAM;
     this->_hints.ai_flags = AI_PASSIVE;
@@ -53,21 +51,16 @@ void Socket::createAndBind(){
 
     if (bind(this->_serverFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
         printErrorAndThrow("bind");
-    this->_isBound = true;
 
     freeaddrinfo(servInfosLst);
 }
 
 void Socket::setOnListening(){
-
     if (listen(this->_serverFd, SOMAXCONN) == -1)
         printErrorAndThrow("listen");
-    this->_isListening = true;
-
 }
 
 Socket::Socket() {
-
     this->createAndBind();
     this->setOnListening();
 }

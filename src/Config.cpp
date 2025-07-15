@@ -15,13 +15,13 @@ Directives:
     -
 */
 
-// void    getDirective(const std::string& line) {
+void    Config::getNextDirective(const std::string& line) {
+    (void)line;
+}
 
-// }
-
-// void    getContext(const std::string& context) {
-
-// }
+void    Config::getNextContext(const std::string& context) {
+    (void)context;
+}
 
 void    Config::parseConfigFile(void) {
     std::ifstream file(this->_configPath.c_str());
@@ -30,7 +30,7 @@ void    Config::parseConfigFile(void) {
         throw std::runtime_error("Error: can't open config file");
     std::string line;
     while (std::getline(file, line)) {
-        // getContext(line);
+        getNextContext(line);
         std::cout << line << std::endl;
     }
 }
@@ -43,6 +43,4 @@ Config::Config(const std::string& configPath) : _configPath(configPath) {
     this->parseConfigFile();
 }
 
-Config::~Config() {
-
-}
+Config::~Config() {}

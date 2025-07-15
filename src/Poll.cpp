@@ -1,5 +1,6 @@
 #include "../include/Poll.hpp"
 #include "../include/WebServ.hpp"
+
 // int ppoll(struct pollfd *fds, nfds_t nfds,
 //      const struct timespec *tmo_p, const sigset_t *sigmask);
 // struct pollfd {
@@ -8,11 +9,45 @@
 //        short revents;    /* returned events */
 // };
 
+void    Poll::initPoll(void) {
+    struct pollfd serverPoll;
+
+    serverPoll.fd = this->getServerFd();
+    this->_pollFd.push_back(serverPoll);
+}
+
 void    Poll::run(WebServ<Poll>& server) {
     server.printServerStatus("poll");
 
-    // struct timeval tv;
-    // ppoll(this->_fds, 10, )
+    this->initPoll();
+    while (true) {
+        int activity = poll(&this->_pollFd[0], this->_pollFd.size(), 5000); // 5 ms timeout
+        if (activity < 0) {
+            printError(); //
+            continue;
+        } else if (activity == 0) {
+            printError(); // timeout
+        }
+
+        for (pollIterator it = this->_pollFd.begin();
+                          it != this->_pollFd.end(); it++) {
+            if (it->fd)  {
+                switch (it->events) {
+                    case POLLIN:
+                    break;
+
+                    case POLLPRI:
+                    break;
+
+                    case POLLOUT:
+                    break;
+
+                    case POLLRDHUP:
+                    break;
+                }
+            }
+        }
+    }
 }
 
 Poll::Poll() {
@@ -20,5 +55,7 @@ Poll::Poll() {
 }
 
 Poll::~Poll() {
-
+    for (pollIterator it = this->_pollFd.begin();
+                      it != this->_pollFd.end(); it++) {
+    }
 }

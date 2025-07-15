@@ -34,7 +34,7 @@ void Epoll::createEpollInstance(){
         printErrorAndThrow("epoll_create1");
 }
 
-void Epoll::addServerToEpool(){
+void Epoll::addServerToEpoll(){
 
     std::cout << "Adding server to epoll instance" << std::endl;
 
@@ -46,7 +46,7 @@ void Epoll::addServerToEpool(){
         printErrorAndThrow("epoll_ctl");
 }
 
-void Epoll::addClientToEpool(int const &clientFd){
+void Epoll::addClientToEpoll(int const &clientFd){
 
     std::cout << "Adding client to epoll instance" << std::endl;
 
@@ -61,13 +61,13 @@ void Epoll::addClientToEpool(int const &clientFd){
 bool Epoll::receivedCompleteRequest(std::string &rawData) const {
 
     size_t headerEnd = rawData.find("\r\n\r\n");
-    if(headerEnd == std::string::npos)
+    if (headerEnd == std::string::npos)
         return false;
 
     size_t bodyStart = headerEnd + 4;
 
     size_t contentLengthPos = rawData.find("Content-Length: ");
-    if(contentLengthPos == std::string::npos)
+    if (contentLengthPos == std::string::npos)
         return true;
 
     size_t valueStart = contentLengthPos + strlen("Content-Length: ");
@@ -84,12 +84,12 @@ void Epoll::getRequest(int clientFd){
     char buffer[BUFFERSIZE];
 
     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-    if(bytes > 0)
+    if (bytes > 0)
         this->_buffers[clientFd].append(buffer, bytes);
 
     std::cout << "received:\n" << this->_buffers[clientFd];
 
-    if(receivedCompleteRequest(this->_buffers[clientFd])){
+    if (receivedCompleteRequest(this->_buffers[clientFd])){
 
         std::cout << "complete request received !" << std::endl;
         HttpRequest request(_buffers[clientFd]);
@@ -116,33 +116,33 @@ void Epoll::sendResponse(int &clientFd, HttpRequest &request)
 
 void Epoll::eventManager(epoll_ev &event){
 
-    if(event.events & EPOLLERR){
+    if (event.events & EPOLLERR){
 
         int err = 0;
         socklen_t len = sizeof(err);
 
-        if(getsockopt(event.data.fd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
+        if (getsockopt(event.data.fd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
             printError();
         this->_buffers.erase(event.data.fd);
         epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
     }
-    else if(event.events & EPOLLHUP){
+    else if (event.events & EPOLLHUP){
 
         std::cout << "Connexion closed with a client" << std::endl;
         this->_buffers.erase(event.data.fd);
         epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
     }
-    else if((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
+    else if ((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
 
         int clientFd = this->acceptClient();
-        this->addClientToEpool(clientFd);
+        this->addClientToEpoll(clientFd);
     }
-    else if(event.events & EPOLLIN){
+    else if (event.events & EPOLLIN){
 
         this->getRequest(event.data.fd);
-        if(this->_gotFullRequest[event.data.fd])
+        if (this->_gotFullRequest[event.data.fd])
             this->sendResponse(event.data.fd, this->_requests[event.data.fd]);
     }
 }
@@ -152,14 +152,14 @@ void Epoll::run(WebServ<Epoll>& server) {
     server.printServerStatus("epoll");
 
     this->createEpollInstance();
-    this->addServerToEpool();
+    this->addServerToEpoll();
 
-    while(true) {
+    while (true) {
 
         int nbEvents = epoll_wait(this->_epollFd, this->_eventsQueue.data(), MAXEVENTS, -1);
-        if(nbEvents == -1)
+        if (nbEvents == -1)
             printErrorAndThrow("epoll_wait");
-        for(int i = 0; i < nbEvents; ++i)
+        for (int i = 0; i < nbEvents; ++i)
             this->eventManager(this->_eventsQueue[i]);
     }
 }
@@ -171,6 +171,6 @@ Epoll::Epoll() : _eventsQueue(MAXEVENTS){
 Epoll::~Epoll() {
     if (this->_epollFd)
         close(this->_epollFd);
-    for(buffersIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
-        close(it->first);
+    // for (buffersIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
+    //     close(it->first);
 }
