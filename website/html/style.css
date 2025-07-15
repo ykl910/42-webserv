@@ -12,6 +12,100 @@ body {
     line-height: 1.6;
 }
 
+/* BARRE DE NAVIGATION FIXE */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-bottom: 1px solid #33ff33;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    z-index: 1000;
+    box-shadow: 0 0 10px #33ff33;
+    overflow: hidden; /* nécessaire pour limiter le flou */
+}
+
+/* EFFET DE FLU SUR CE QUI EST DERRIÈRE LA NAVBAR */
+.navbar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(6px); /* flou visible sur ce qui passe en dessous */
+    -webkit-backdrop-filter: blur(6px); /* compatibilité Safari */
+    z-index: -1; /* pour que le flou soit derrière le contenu de la nav */
+}
+
+/* CÔTÉ GAUCHE : logo + lien */
+.left-side {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    height: 45px;
+    width: auto;
+    filter: drop-shadow(0 0 2px #33ff33);
+}
+
+/* Lien about us */
+.left-side a {
+    color: #33ff33;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    text-decoration: none;
+    text-shadow: 0 0 5px #33ff33;
+}
+
+.left-side a:hover {
+    color: #00ff99;
+    text-decoration: underline;
+}
+
+/* CENTRE : nom du site */
+.site-name {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #33ff33;
+    font-size: 1.6rem;
+    font-weight: bold;
+    font-family: 'Share Tech Mono', monospace;
+    text-shadow: 0 0 5px #33ff33;
+    letter-spacing: 2px;
+    pointer-events: none; /* pour ne pas gêner les clics autour */
+}
+
+/* CÔTÉ DROIT : bouton upload */
+.right-side .upload {
+    background-color: transparent;
+    border: 2px solid #33ff33;
+    color: #33ff33;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    text-shadow: 0 0 5px #33ff33;
+    transition: background-color 0.3s, color 0.3s;
+    backdrop-filter: blur(4px);
+}
+
+.right-side .upload:hover {
+    background-color: #33ff33;
+    color: #000;
+    text-shadow: none;
+}
+
+/* DÉCALER LE CONTENU SOUS LA NAV */
+main {
+    padding-top: 80px;
+}
+
+
 /* Titres */
 h1, h2 {
     border-bottom: 1px solid #33ff33;
@@ -48,7 +142,7 @@ img {
     margin: 1rem 0;
     border: 2px solid #33ff33;
     box-shadow: 0 0 20px #00ff00;
-    position: relative;  /* force un contexte de position */
+    position: relative;
     z-index: 1;
 }
 
@@ -61,7 +155,7 @@ li {
     list-style-type: "→ ";
 }
 
-/* Scrollbar personnalisée (si navigateur compatible) */
+/* Scrollbar personnalisée */
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -91,4 +185,26 @@ body::before {
 @keyframes scan {
     0% { background-position: 0 0; }
     100% { background-position: 0 100vh; }
+}
+
+/* Signature type terminal */
+.signature {
+    margin-top: 2rem;
+    font-family: 'Share Tech Mono', monospace;
+    color: #33ff33;
+    font-size: 1.1rem;
+    white-space: nowrap;
+}
+
+/* Curseur clignotant */
+.cursor {
+    display: inline-block;
+    width: 10px;
+    background-color: #33ff33;
+    margin-left: 5px;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
 }

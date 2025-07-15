@@ -7,12 +7,12 @@
       </head>
 
    <body>
-      <header>   
+      <header>
       <h1>Let's Upload !</h1>
       </header>
       <main>
             <div class=gif>
-               <img src="../assets/upload.gif" alt="Animated GIF" width="300">
+               <img src="../asset/upload.gif" alt="Animated GIF" width="300">
             </div>
             <div class="upload">
                <h3>Upload a File</h3>
@@ -32,7 +32,7 @@
       <script>
          const fileInput = document.getElementById('uploadFile');
          const fileChosen = document.getElementById('file-chosen');
-         
+
          fileInput.addEventListener('change', function() {
             if(this.files && this.files.length > 0) {
             fileChosen.textContent = this.files[0].name;
