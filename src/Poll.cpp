@@ -20,6 +20,7 @@ void    Poll::run(WebServ<Poll>& server) {
     server.printServerStatus("poll");
 
     this->initPoll();
+    int bytes;
     while (true) {
         int activity = poll(&this->_pollFd[0], this->_pollFd.size(), 5000); // 5 ms timeout
         if (activity < 0) {
@@ -28,12 +29,13 @@ void    Poll::run(WebServ<Poll>& server) {
         } else if (activity == 0) {
             printError(); // timeout
         }
-
         for (pollIterator it = this->_pollFd.begin();
                           it != this->_pollFd.end(); it++) {
+
             if (it->fd)  {
                 switch (it->events) {
-                    case POLLIN:
+                    case POLLIN: // There is data to read
+                    bytes = recv(it->fd, this->buffer, sizeof(this->buffer), 0);
                     break;
 
                     case POLLPRI:
@@ -44,6 +46,30 @@ void    Poll::run(WebServ<Poll>& server) {
 
                     case POLLRDHUP:
                     break;
+
+                    case POLLERR:
+                    break;
+
+                    case POLLHUP:
+                    break;
+
+                    case POLLNVAL:
+                    break;
+
+                    case POLLRDNORM:
+                    break;
+
+                    case POLLRDBAND:
+                    break;
+
+                    case POLLWRNORM:
+                    break;
+
+                    case POLLWRBAND:
+                    break;
+                }
+                switch (it->revents) {
+
                 }
             }
         }

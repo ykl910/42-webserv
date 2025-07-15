@@ -24,8 +24,9 @@ public:
     void run(WebServ<Epoll>& server);
     void enableWriteEvent(int clientFd);
     void disableWriteEvent(int clientFd);
-    bool receivedCompleteRequest(std::string &rawData) const;
-    const int& getEpollFd(void) const;
+    void createEpollInstance();
+    void addServerToEpoll();
+    int acceptClient();
     void eventManager(epoll_ev &event);
     void getRequest(int clientfd);
     void sendResponse(int &clientFd, HttpRequest &request);
@@ -33,7 +34,6 @@ public:
     const int& getEpollFd(void) const;
     void addClientToEpoll(int const &clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
-    void eventManager(epoll_ev &event);
 
     Epoll();
     ~Epoll();

@@ -10,6 +10,9 @@ class WebServ;
 class Select : public Socket {
 public:
     void initSelect(void);
+    void checkReadFds(void);
+    void checkWriteFds(void);
+    void checkExceptFds(void);
     void run(WebServ<Select>& server);
 
     int acceptClient(void);
@@ -21,4 +24,6 @@ private:
     typedef std::vector<int>::iterator selectIterator;
     std::vector<int> _selectFd;
     fd_set _readFds;
+    fd_set _writeFds;
+    fd_set _exceptFds;
 };
