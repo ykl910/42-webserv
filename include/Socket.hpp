@@ -8,16 +8,15 @@
 
 class Socket : public Config {
 public:
-    int  getServerFd() const;
+    int  getSocketFd() const;
     void createAndBind();
-    void setSocketOPt();
+    void setSocketOpt();
     void setOnListening();
 
-    typedef struct addrinfo addrinfo;
     Socket();
     ~Socket();
 
 private:
-    int _serverFd;
+    int _socketFd;
     addrinfo _hints;
 };
