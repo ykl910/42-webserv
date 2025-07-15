@@ -1,64 +1,74 @@
 #include "../include/Select.hpp"
 #include "../include/WebServ.hpp"
 
+int Select::acceptClient(void) {
+    return 0;
+}
+
+void    Select::initSelect(void) {
+
+}
+
 void    Select::run(WebServ<Select>& server) {
     server.printServerStatus("select");
-    fd_set readFds;
+
     struct timeval tv;
     tv.tv_sec = 10;
     tv.tv_usec = 0;
     int maxFd = this->getServerFd();
     int serverFd = this->getServerFd();
+    int activity = 0;
 
     while (true) {
+
         //* FD_ZERO = empty readFds set
         //* FD_SET = add server socket to detect new connexions
-        FD_ZERO(&readFds);
-        FD_SET(serverFd, &readFds);
+        FD_ZERO(&_readFds);
+        FD_SET(serverFd, &_readFds);
 
-        //* Add everyt client sockets to readFds and add maxFd if necessary
-        for (fdsIterator it = this->_clientFds.begin();
-            it != this->_clientFds.end(); ++it) {
-            FD_SET(*it, &readFds);
+        //* Add every client sockets to readFds and add maxFd if necessary
+        for (selectIterator it = this->_selectFd.begin();
+                            it != this->_selectFd.end(); ++it) {
+            FD_SET(*it, &_readFds);
             if (*it > maxFd)
                 maxFd = *it;
         }
 
-        tv.tv_sec = 10;
-        tv.tv_usec = 0;
-
         //* wait for event in a socket
         errno = 0;
-        int activity = select(maxFd + 1, &readFds, NULL, NULL, &tv);
+        activity = select(maxFd + 1, &_readFds, NULL, NULL, &tv);
         if (activity < 0) {
-            printError();
+            printError(); // select error
             continue;
+        } else if (activity == 0) {
+            printError(); // timeout
         }
 
         //* new connexion -> accept connexion and add client to the list
-        if (FD_ISSET(serverFd, &readFds)) {
+        if (FD_ISSET(serverFd, &_readFds)) {
             errno = 0;
             int newClient = accept(serverFd, NULL, NULL);
             if (newClient < 0) {
                 printError();
                 continue;
             } else {
-                this->_clientFds.push_back(newClient);
+                this->_selectFd.push_back(newClient);
                 std::cout << "New client connected: FD " << newClient << std::endl;
             }
         }
 
         //* loop on every actives clients and seek for data to read
-        for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end();) {
+        for (selectIterator it = this->_selectFd.begin();
+                            it != this->_selectFd.end();) {
             char buf[4096];
             int bytes = 0;
 
-            if (FD_ISSET(*it, &readFds)) {
+            if (FD_ISSET(*it, &_readFds)) {
                 bytes = recv(*it, buf, sizeof(buf), 0);
                 if (bytes <= 0) {
                     close(*it);
                     std::cout << "Client disconnected: FD " << *it << std::endl;
-                    it = this->_clientFds.erase(it);
+                    it = this->_selectFd.erase(it);
                     continue;
                 }
 
@@ -68,12 +78,9 @@ void    Select::run(WebServ<Select>& server) {
                 HttpResponse httpRes(httpReq);
                 httpRes.build(httpReq);
                 std::string response = httpRes.getResponse();
-                //std::cout << "Sending response:\n" << response << std::endl;
-                //std::cout << response << std::endl;
-                //std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
                 send(*it, response.c_str(), response.size(), 0);
                 close(*it);
-                it = this->_clientFds.erase(it);
+                it = this->_selectFd.erase(it);
             }
             else
                 ++it;
@@ -81,12 +88,10 @@ void    Select::run(WebServ<Select>& server) {
     }
 }
 
-Select::Select() {
-
-}
+Select::Select() {}
 
 Select::~Select() {
-    for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end(); ++it)
+    for (selectIterator it = this->_selectFd.begin();
+         it != this->_selectFd.end(); ++it)
         close(*it);
-
 }

@@ -9,13 +9,16 @@ class WebServ;
 
 class Select : public Socket {
 public:
+    void initSelect(void);
     void run(WebServ<Select>& server);
+
+    int acceptClient(void);
 
     Select();
     ~Select();
 
 private:
-    typedef std::vector<int>::iterator fdsIterator;
-    std::vector<int> _clientFds;
-
+    typedef std::vector<int>::iterator selectIterator;
+    std::vector<int> _selectFd;
+    fd_set _readFds;
 };

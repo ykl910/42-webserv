@@ -9,8 +9,12 @@
 template <class Multiplexer>
 class WebServ;
 
+enum e_context {MAIN_CONTEXT, HTTP_CONTEXT, SERVER_CONTEXT};
+
 class Config {
 public:
+    void getNextContext(const std::string& context);
+    void getNextDirective(const std::string& line);
     void parseConfigFile(void);
 
     Config();
@@ -26,6 +30,7 @@ private:
     context _mainContext;
     context _httpContext;
     context _serverContext;
+    std::vector<int> _port;
 };
 
 /* NGINX context hierarchy

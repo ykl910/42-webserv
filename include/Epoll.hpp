@@ -20,16 +20,21 @@ public:
     typedef std::vector<epoll_ev> vector;
     typedef std::map<int, std::string>::iterator buffersIt;
     typedef std::map<int, HttpRequest>::iterator requestsIt;
-    void createEpollInstance();
-    int acceptClient();
-    void addServerToEpool();
-    void addClientToEpool(int const &clientFd);
+
     void run(WebServ<Epoll>& server);
-    bool receivedCompleteRequest(std::string &rawData) const;
-    const int& getEpollFd(void) const;
-    void eventManager(epoll_ev &event);
+
+    int acceptClient();
+    void addServerToEpoll();
+    void createEpollInstance();
+
     void getRequest(int clientfd);
     void sendResponse(int &clientFd, HttpRequest &request);
+
+    const int& getEpollFd(void) const;
+    void addClientToEpoll(int const &clientFd);
+    bool receivedCompleteRequest(std::string &rawData) const;
+    void eventManager(epoll_ev &event);
+
     Epoll();
     ~Epoll();
 
