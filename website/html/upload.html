@@ -1,52 +1,71 @@
 <!DOCTYPE html>
-<html>
-   <head>
-      <link rel="stylesheet" href="style.css">
-      <link rel="icon" href="../assets/webserve.png" type="image/png">
-      <title>Upload</title>
-   </head>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="style.css">
+   <link rel="icon" href="../assets/webserve.png" type="image/png">
+   <title>Upload</title>
+</head>
 
-   <body>
-         <!-- BARRE DE NAVIGATION -->
-      <nav class="navbar">
-         <div class="left-side">
-               <img src="../images/post42logo.png" alt="logo" class="logo" />
-               <a href="about.html">about us</a>
-               <a href="index.html">latest posts</a>
-         </div>
-         <div class="site-name">post42_</div>
-         <div class="right-side">
-            <a href="upload.html" class="upload">upload</a>
-         </div>
-      </nav>
-      <main>
-            <h1>Upload</h1>
-            <div class=gif>
-               <img src="../assets/upload.gif" alt="Animated GIF">
-            </div>
-            <div class="upload">
-               <h3>Upload a File</h3>
-               <form action="/upload" method="POST" enctype="multipart/form-data">
-                  <div class="file-upload">
-                        <input type="file" name="uploadFile" id="uploadFile" class="file-input">
-                        <label for="uploadFile" class="file-label">Choose a file</label>
-                        <span id="file-chosen">No file chosen</span>
-                  </div>
-                  <button type="submit" class="upload-btn">Upload File</button>
-               </form>
-            </div>
-      </main>
-      <script>
-         const fileInput = document.getElementById('uploadFile');
-         const fileChosen = document.getElementById('file-chosen');
+<body>
+   <!-- BARRE DE NAVIGATION -->
+   <nav class="navbar">
+      <div class="left-side">
+         <img src="../images/post42logo.png" alt="logo" class="logo" />
+         <a href="about.html">about us</a>
+         <a href="index.html">latest posts</a>
+      </div>
+      <div class="site-name">post42_</div>
+      <div class="right-side">
+         <a href="upload.html" class="upload">upload</a>
+      </div>
+   </nav>
 
-         fileInput.addEventListener('change', function() {
-            if(this.files && this.files.length > 0) {
+   <main>
+      <h1>New post</h1>
+
+      <div class="gif">
+         <img src="../assets/upload.gif" alt="Animated GIF">
+      </div>
+
+      <div class="upload">
+         <h3>Write your post</h3>
+         <form action="/upload" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+               <label for="title">Title:</label>
+               <input type="text" id="title" name="title" placeholder="Enter a title" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+               <label for="body">Body:</label>
+               <textarea id="body" name="body" rows="5" placeholder="Write your content here..." required></textarea>
+            </div>
+
+            <div class="form-group file-upload">
+               <label for="uploadFile" class="file-label">Choose an image</label>
+               <input type="file" name="uploadFile" id="uploadFile" class="file-input" required>
+               <span id="file-chosen">No file chosen</span>
+            </div>
+
+            <div class="form-group">
+               <button type="submit" class="upload-btn">Upload your post</button>
+            </div>
+         </form>
+      </div>
+   </main>
+
+   <script>
+      const fileInput = document.getElementById('uploadFile');
+      const fileChosen = document.getElementById('file-chosen');
+
+      fileInput.addEventListener('change', function () {
+         if (this.files && this.files.length > 0) {
             fileChosen.textContent = this.files[0].name;
-            } else {
+         } else {
             fileChosen.textContent = 'No file chosen';
-            }
-         });
-      </script>
-    </body>
+         }
+      });
+   </script>
+</body>
 </html>
