@@ -12,7 +12,7 @@
 void    Poll::initPoll(void) {
     struct pollfd serverPoll;
 
-    serverPoll.fd = this->getServerFd();
+    serverPoll.fd = this->getSocketFd();
     this->_pollFd.push_back(serverPoll);
 }
 
@@ -31,48 +31,78 @@ void    Poll::run(WebServ<Poll>& server) {
         }
         for (pollIterator it = this->_pollFd.begin();
                           it != this->_pollFd.end(); it++) {
+            if (it->events & POLLIN || it->events & POLLRDNORM) // Equivalent to POLLIN
+            /*
+                There is data to read.
+            */
+                bytes = recv(it->fd, this->buffer, sizeof(this->buffer), 0);
 
-            if (it->fd)  {
-                switch (it->events) {
-                    case POLLIN: // There is data to read
-                    bytes = recv(it->fd, this->buffer, sizeof(this->buffer), 0);
-                    break;
+            else if (it->events & POLLPRI)
+            /*
+              There is some exceptional condition on the file descriptor.  Possibilities  in‐
+              clude:
 
-                    case POLLPRI:
-                    break;
+              •  There is out-of-band data on a TCP socket (see tcp(7)).
 
-                    case POLLOUT:
-                    break;
+              •  A  pseudoterminal master in packet mode has seen a state change on the slave
+                 (see ioctl_tty(2)).
 
-                    case POLLRDHUP:
-                    break;
+              •  A cgroup.events file has been modified (see cgroups(7)).
+            */
+                return;
 
-                    case POLLERR:
-                    break;
+            else if (it->events & POLLOUT || it->events & POLLWRNORM) // Equivalent to POLLOUT
+            /*
+              Writing is now possible, though a write larger than the available  space  in  a
+              socket or pipe will still block (unless O_NONBLOCK is set).
+            */
+                return;
 
-                    case POLLHUP:
-                    break;
+            else if (it->events & POLLRDHUP)
+            /*
+              (since Linux 2.6.17) Stream  socket peer closed connection, or shut down writing half of connection.
+              The _GNU_SOURCE feature test macro must be defined (before including any header
+              files) in order to obtain this definition.
+            */
+                return;
 
-                    case POLLNVAL:
-                    break;
+            else if (it->events & POLLERR)
+            /*
+              Error condition (only returned in revents; ignored in  events). This  bit  is
+              also  set  for  a file descriptor referring to the write end of a pipe when the
+              read end has been closed.
+            */
+                return;
 
-                    case POLLRDNORM:
-                    break;
+            else if (it->events & POLLHUP)
+            /*
+              Hang up (only returned in revents; ignored in events).  Note that when  reading
+              from  a  channel such as a pipe or a stream socket, this event merely indicates
+              that the peer closed its end of the channel.  Subsequent reads from the channel
+              will return 0 (end of file) only after all outstanding data in the channel  has
+              been consumed.
+            */
+                return;
 
-                    case POLLRDBAND:
-                    break;
+            else if (it->events & POLLNVAL)
+            /*
+              Invalid request: fd not open (only returned in revents; ignored in events)
+            */
+                return;
 
-                    case POLLWRNORM:
-                    break;
+            else if (it->events & POLLRDBAND)
+            /*
+              Priority band data can be read (generally unused on Linux)
+            */
+                return;
 
-                    case POLLWRBAND:
-                    break;
-                }
-                switch (it->revents) {
-
-                }
-            }
+            else if (it->events & POLLWRBAND)
+            /*
+              Priority data may be written
+            */
+                return;
         }
+        (void)bytes;
     }
 }
 

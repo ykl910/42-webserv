@@ -22,8 +22,17 @@ public:
 
 private:
     typedef std::vector<int>::iterator selectIterator;
-    std::vector<int> _selectFd;
-    fd_set _readFds;
-    fd_set _writeFds;
-    fd_set _exceptFds;
+
+    char                _buffer[4096];
+    fd_set              _readFds;
+    fd_set              _writeFds;
+    fd_set              _exceptFds;
+    std::vector<int>    _selectFd;
 };
+
+/*
+  fd_set
+       A structure type that can represent a set of file descriptors.   According  to  POSIX,
+       the  maximum  number  of  file  descriptors in an fd_set structure is the value of the
+       macro FD_SETSIZE.
+*/

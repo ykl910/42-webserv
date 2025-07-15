@@ -29,7 +29,7 @@ public:
     int acceptClient();
     void eventManager(epoll_ev &event);
     void getRequest(int clientfd);
-    void sendResponse(int &clientFd, HttpRequest &request);
+    void sendResponse(int clientFd, HttpRequest request);
 
     const int& getEpollFd(void) const;
     void addClientToEpoll(int const &clientFd);

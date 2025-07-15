@@ -32,7 +32,7 @@ int Epoll::acceptClient() {
 
     clientAddrSize = sizeof(clientAddr);
 
-    int clientFd = accept(this->getServerFd(), &clientAddr, &clientAddrSize);
+    int clientFd = accept(this->getSocketFd(), &clientAddr, &clientAddrSize);
     if (clientFd == -1)
         printErrorAndThrow("accept");
 
@@ -58,9 +58,9 @@ void Epoll::addServerToEpoll() {
 
     epoll_ev server_ev;
     server_ev.events = EPOLLIN;
-    server_ev.data.fd = this->getServerFd();
+    server_ev.data.fd = this->getSocketFd();
 
-    if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getServerFd(), &server_ev) == -1)
+    if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, this->getSocketFd(), &server_ev) == -1)
         printErrorAndThrow("epoll_ctl");
 }
 
@@ -116,7 +116,7 @@ void Epoll::getRequest(int clientFd) {
     }
 }
 
-void Epoll::sendResponse(int &clientFd, HttpRequest &request) {
+void Epoll::sendResponse(int clientFd, HttpRequest request) {
     HttpResponse Response(request);
     size_t totalBytesSent = 0;
     std::string response = Response.getResponse();
@@ -151,7 +151,7 @@ void Epoll::eventManager(epoll_ev &event) {
         epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
     }
-    else if ((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
+    else if ((event.events & EPOLLIN) && event.data.fd == this->getSocketFd()){
 
         int clientFd = this->acceptClient();
         this->addClientToEpoll(clientFd);

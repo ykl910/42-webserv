@@ -31,7 +31,7 @@ void    Config::parseConfigFile(void) {
     std::string line;
     while (std::getline(file, line)) {
         getNextContext(line);
-        std::cout << line << std::endl;
+        // std::cout << line << std::endl;
     }
 }
 
