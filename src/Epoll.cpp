@@ -105,14 +105,12 @@ void Epoll::getRequest(int clientFd){
     if(bytes > 0)
         this->_buffers[clientFd].append(buffer, bytes);
 
-    std::cout << YELLOW << this->_buffers[clientFd] << DEFAULT << std::endl;
     if (receivedCompleteRequest(this->_buffers[clientFd])) {
 
         std::cout << BOLD ITALIC GREEN << "\nreceived:\n" << DEFAULT;
         std::cout << MAGENTA << this->_buffers[clientFd] << DEFAULT << std::endl;
         HttpRequest request(_buffers[clientFd]);
         this->_requests[clientFd] = request;
-        this->_gotFullRequest[clientFd] = true;
         this->enableWriteEvent(clientFd);
         _buffers.erase(clientFd);
     }
@@ -162,10 +160,7 @@ void Epoll::eventManager(epoll_ev &event){
     else if(event.events & EPOLLIN)
         this->getRequest(event.data.fd);
     else if(event.events & EPOLLOUT)
-    {
-        if(this->_gotFullRequest[event.data.fd])
-            this->sendResponse(event.data.fd, this->_requests[event.data.fd]);
-    }
+        this->sendResponse(event.data.fd, this->_requests[event.data.fd]);
 }
 
 void Epoll::run(WebServ<Epoll>& server) {
