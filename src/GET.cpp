@@ -64,46 +64,46 @@ bool handlePng(HttpRequest& request, HttpResponse& response, std::string path) {
 
 // bool handlePng(HttpRequest& request, HttpResponse& response, std::string path) {
 //     std::string fullPath = "./website" + path;
-    
+
 //     // Try C-style file handling instead of ifstream
 //     FILE* file = fopen(fullPath.c_str(), "rb");
 //     if (!file) {
 //         response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
 //         return false;
 //     }
-    
+
 //     // Get file size
 //     fseek(file, 0, SEEK_END);
 //     unsigned long fileSize = ftell(file);
 //     fseek(file, 0, SEEK_SET);
-    
+
 //     // Read file in chunks to handle large files better
 //     std::vector<char> buffer;
 //     buffer.reserve(fileSize);
-    
+
 //     char chunk[8192];
 //     size_t bytesRead;
 //     while ((bytesRead = fread(chunk, 1, sizeof(chunk), file)) > 0) {
 //         buffer.insert(buffer.end(), chunk, chunk + bytesRead);
 //     }
 //     fclose(file);
-    
+
 //     if (buffer.size() != fileSize) {
 //         response.setStatusLine(request.getHttpVersion(), 500, "Internal Server Error");
 //         return false;
 //     }
-    
+
 //     response.setStatusLine(request.getHttpVersion(), 200, "OK");
 //     response.setHeaders("Content-Type", "image/png");
 //     response.setHeaders("Content-Length", itos(fileSize));
-    
+
 //     // Additional headers for large files
 //     response.setHeaders("Accept-Ranges", "bytes");
 //     response.setHeaders("Cache-Control", "public, max-age=3600");
-    
+
 //     std::string binaryString(&buffer[0], buffer.size());
 //     response.setBody(binaryString);
-    
+
 //     return true;
 // }
 
@@ -126,4 +126,5 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
     } else if (extension == "png") {
         success = handlePng(request, response, path);
     }
+    (void)success;
 }
