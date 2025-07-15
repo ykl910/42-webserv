@@ -75,6 +75,7 @@ void    Select::run(WebServ<Select>& server) {
                 std::string request(buf, bytes);
                 HttpRequest httpReq(request);
                 std::cout << "Received request:\n" << request << std::endl;
+                std::cout << "Path:\n" << httpReq.getPath() << std::endl;
                 HttpResponse httpRes(httpReq);
                 httpRes.build(httpReq);
                 std::string response = httpRes.getResponse();

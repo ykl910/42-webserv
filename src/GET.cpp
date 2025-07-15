@@ -6,20 +6,29 @@ std::string itos(int value) {
     return oss.str();
 }
 
+bool handleHtmlError(HttpRequest& request, HttpResponse& response, std::stringstream *buffer) {
+    std::string fullPath = "./website/html/404.html";
+    std::ifstream file(fullPath.c_str());
+    *buffer << file.rdbuf();
+    std::string body = buffer->str();
+    response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
+    response.setHeaders("Content-Type", "text/html");
+    response.setHeaders("Content-Length", itos(body.length()));
+    response.setBody(body);
+    return true;
+}
+
 bool handleHtml(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer) {
     std::string fullPath = "./website/html" + path;
     std::ifstream file(fullPath.c_str());
     if (!file.is_open())
-    {
-        response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
         return false;
-    }
     *buffer << file.rdbuf();
     std::string body = buffer->str();
     response.setStatusLine(request.getHttpVersion(), 200, "OK");
     response.setHeaders("Content-Type", "text/html");
     response.setHeaders("Content-Length", itos(body.length()));
-    response.setBody(buffer->str());
+    response.setBody(body);
     return true;
 }
 
@@ -28,23 +37,24 @@ bool handleCss(HttpRequest& request, HttpResponse& response, std::string path, s
     std::ifstream file(fullPath.c_str());
     if (!file.is_open())
     {
-        response.setStatusLine(request.getHttpVersion(), 404, "Not found");
-        return false;
+        handleCss(request, response, "/style.css", buffer);
+        return true;
     }
     *buffer << file.rdbuf();
     std::string body = buffer->str();
     response.setStatusLine(request.getHttpVersion(), 200, "OK");
     response.setHeaders("Content-Type", "text/css");
     response.setHeaders("Content-Length", itos(body.length()));
-    response.setBody(buffer->str());
+    response.setBody(body);
     return true;
 }
 
-bool handlePng(HttpRequest& request, HttpResponse& response, std::string path) {
+bool handleImg(HttpRequest& request, HttpResponse& response, std::string path, std::string extension) {
     std::string fullPath = "./website" + path;
     std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::binary);
     if (!file.is_open()) {
         response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
+        std::cerr << "Image not found for path: " << fullPath << std::endl;
         return false;
     }
     std::vector<char> data;
@@ -56,56 +66,16 @@ bool handlePng(HttpRequest& request, HttpResponse& response, std::string path) {
         data.insert(data.end(), temp, temp + file.gcount());
     }
     response.setStatusLine(request.getHttpVersion(), 200, "OK");
-    response.setHeaders("Content-Type", "image/png");
+    if (extension == "png")
+        response.setHeaders("Content-Type", "image/png");
+    else if (extension == "gif")
+        response.setHeaders("Content-Type", "image/gif");
+    else if (extension == "webp")
+        response.setHeaders("Content-Type", "image/webp");
     response.setHeaders("Content-Length", itos(data.size()));
     response.setBody(std::string(&data[0], data.size()));
     return true;
 }
-
-// bool handlePng(HttpRequest& request, HttpResponse& response, std::string path) {
-//     std::string fullPath = "./website" + path;
-
-//     // Try C-style file handling instead of ifstream
-//     FILE* file = fopen(fullPath.c_str(), "rb");
-//     if (!file) {
-//         response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
-//         return false;
-//     }
-
-//     // Get file size
-//     fseek(file, 0, SEEK_END);
-//     unsigned long fileSize = ftell(file);
-//     fseek(file, 0, SEEK_SET);
-
-//     // Read file in chunks to handle large files better
-//     std::vector<char> buffer;
-//     buffer.reserve(fileSize);
-
-//     char chunk[8192];
-//     size_t bytesRead;
-//     while ((bytesRead = fread(chunk, 1, sizeof(chunk), file)) > 0) {
-//         buffer.insert(buffer.end(), chunk, chunk + bytesRead);
-//     }
-//     fclose(file);
-
-//     if (buffer.size() != fileSize) {
-//         response.setStatusLine(request.getHttpVersion(), 500, "Internal Server Error");
-//         return false;
-//     }
-
-//     response.setStatusLine(request.getHttpVersion(), 200, "OK");
-//     response.setHeaders("Content-Type", "image/png");
-//     response.setHeaders("Content-Length", itos(fileSize));
-
-//     // Additional headers for large files
-//     response.setHeaders("Accept-Ranges", "bytes");
-//     response.setHeaders("Cache-Control", "public, max-age=3600");
-
-//     std::string binaryString(&buffer[0], buffer.size());
-//     response.setBody(binaryString);
-
-//     return true;
-// }
 
 void handleGet(HttpRequest& request, HttpResponse& response) {
     std::string root = "./website";
@@ -119,12 +89,14 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
     }
     bool success = false;
     std::stringstream buffer;
-    if (extension == "html" || extension == "htm") {
+    if (extension == "html" || extension == "htm" || extension == "") {
         success = handleHtml(request, response, path, &buffer);
+        if (!success)
+            handleHtmlError(request, response, &buffer);
     } else if (extension == "css") {
         success = handleCss(request, response, path, &buffer);
-    } else if (extension == "png") {
-        success = handlePng(request, response, path);
-    }
-    (void)success;
+    } else if (extension == "png" || extension == "gif" || extension == "webp") {
+        success = handleImg(request, response, path, extension);
+    } else 
+        handleHtmlError(request, response, &buffer);
 }

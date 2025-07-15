@@ -22,11 +22,11 @@ public:
     typedef std::map<int, HttpRequest>::iterator requestsIt;
 
     void run(WebServ<Epoll>& server);
-
-    int acceptClient();
-    void addServerToEpoll();
-    void createEpollInstance();
-
+    void enableWriteEvent(int clientFd);
+    void disableWriteEvent(int clientFd);
+    bool receivedCompleteRequest(std::string &rawData) const;
+    const int& getEpollFd(void) const;
+    void eventManager(epoll_ev &event);
     void getRequest(int clientfd);
     void sendResponse(int &clientFd, HttpRequest &request);
 
@@ -42,6 +42,5 @@ private:
     int _epollFd;
     std::map<int, std::string> _buffers;
     std::map<int, HttpRequest> _requests;
-    std::map<int, bool> _gotFullRequest;
     vector _eventsQueue;
 };
