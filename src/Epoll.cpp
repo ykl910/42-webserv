@@ -22,8 +22,6 @@ int Epoll::acceptClient() {
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
         printErrorAndThrow("fcntl");
 
-//    std::cout << "Accepted from address: " << clientAddr.sa_data << std::endl;
-
     return clientFd;
 }
 
@@ -53,7 +51,7 @@ void Epoll::addClientToEpool(int const &clientFd){
     std::cout << "Adding client to epoll instance" << std::endl;
 
     epoll_ev client_ev;
-    client_ev.events = EPOLLIN; //! Cannot use edge trigger mode... thanks 42 >:(
+    client_ev.events = EPOLLIN;
     client_ev.data.fd = clientFd;
 
     if (epoll_ctl(this->getEpollFd(), EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
@@ -81,7 +79,7 @@ bool Epoll::receivedCompleteRequest(std::string &rawData) const {
     return (bodyLengh >= static_cast<size_t>(contentLength));
 }
 
-void Epoll::HttpRequestAndResponse(int clientFd){
+void Epoll::getRequest(int clientFd){
 
     char buffer[BUFFERSIZE];
 
@@ -95,12 +93,13 @@ void Epoll::HttpRequestAndResponse(int clientFd){
 
         std::cout << "complete request received !" << std::endl;
         HttpRequest request(_buffers[clientFd]);
-        this->sendHttpResponse(clientFd, request);
+        this->_requests[clientFd] = request;
+        this->_gotFullRequest[clientFd] = true;
         _buffers.erase(clientFd);
     }
 }
 
-void Epoll::sendHttpResponse(int &clientFd, HttpRequest &request)
+void Epoll::sendResponse(int &clientFd, HttpRequest &request)
 {
     HttpResponse Response(request);
     size_t totalBytesSent = 0;
@@ -125,22 +124,26 @@ void Epoll::eventManager(epoll_ev &event){
         if(getsockopt(event.data.fd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
             printError();
         this->_buffers.erase(event.data.fd);
+        epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
     }
-    if(event.events & EPOLLHUP){
+    else if(event.events & EPOLLHUP){
 
         std::cout << "Connexion closed with a client" << std::endl;
         this->_buffers.erase(event.data.fd);
+        epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
     }
-    if((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
+    else if((event.events & EPOLLIN) && event.data.fd == this->getServerFd()){
 
         int clientFd = this->acceptClient();
         this->addClientToEpool(clientFd);
     }
     else if(event.events & EPOLLIN){
 
-        this->HttpRequestAndResponse(event.data.fd);
+        this->getRequest(event.data.fd);
+        if(this->_gotFullRequest[event.data.fd])
+            this->sendResponse(event.data.fd, this->_requests[event.data.fd]);
     }
 }
 
@@ -156,13 +159,9 @@ void Epoll::run(WebServ<Epoll>& server) {
         int nbEvents = epoll_wait(this->_epollFd, this->_eventsQueue.data(), MAXEVENTS, -1);
         if(nbEvents == -1)
             printErrorAndThrow("epoll_wait");
-        for(int i = 0; i < nbEvents; ++i){
+        for(int i = 0; i < nbEvents; ++i)
             this->eventManager(this->_eventsQueue[i]);
-        }
     }
-    close(this->_epollFd);
-    for(mapIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
-        close(it->first);
 }
 
 Epoll::Epoll() : _eventsQueue(MAXEVENTS){
@@ -172,6 +171,6 @@ Epoll::Epoll() : _eventsQueue(MAXEVENTS){
 Epoll::~Epoll() {
     if (this->_epollFd)
         close(this->_epollFd);
-    for(mapIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
+    for(buffersIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
         close(it->first);
 }
