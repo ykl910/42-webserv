@@ -303,3 +303,46 @@ body::before {
   text-shadow: none;
   box-shadow: 0 0 15px #33ff33;
 }
+
+/* Formulaire : champs texte (title + body) */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #33ff33;
+  text-shadow: 0 0 3px #33ff33;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  background-color: #000000;
+  border: 2px solid #33ff33;
+  color: #33ff33;
+  font-family: 'Share Tech Mono', monospace;
+  padding: 0.6rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  text-shadow: 0 0 3px #33ff33;
+  box-shadow: 0 0 8px #00ff00;
+  outline: none;
+}
+
+.form-group input[type="text"]::placeholder,
+.form-group textarea::placeholder {
+  color: #00ff99;
+  opacity: 0.6;
+  text-shadow: none;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
