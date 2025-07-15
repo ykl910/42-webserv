@@ -2,6 +2,8 @@
 
 #include "Socket.hpp"
 #include <sys/poll.h>
+#include <sys/time.h>
+#include <vector>
 
 template <class Multiplexer>
 class WebServ;
@@ -14,6 +16,6 @@ public:
     ~Poll();
 
 private:
-    //struct pollfd _fd;
+    struct pollfd *_fds;
 
 };
