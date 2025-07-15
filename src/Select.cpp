@@ -6,7 +6,19 @@ int Select::acceptClient(void) {
 }
 
 void    Select::initSelect(void) {
+    return;
+}
 
+void    Select::checkReadFds() {
+    return;
+}
+
+void    Select::checkWriteFds() {
+    return;
+}
+
+void    Select::checkExceptFds() {
+    return;
 }
 
 void    Select::run(WebServ<Select>& server) {
@@ -36,7 +48,7 @@ void    Select::run(WebServ<Select>& server) {
 
         //* wait for event in a socket
         errno = 0;
-        activity = select(maxFd + 1, &_readFds, NULL, NULL, &tv);
+        activity = select(maxFd + 1, &_readFds, &_writeFds, &_exceptFds, &tv);
         if (activity < 0) {
             printError(); // select error
             continue;
@@ -59,12 +71,12 @@ void    Select::run(WebServ<Select>& server) {
 
         //* loop on every actives clients and seek for data to read
         for (selectIterator it = this->_selectFd.begin();
-                            it != this->_selectFd.end();) {
-            char buf[4096];
+                            it != this->_selectFd.end(); it++) {
+            char buffer[4096];
             int bytes = 0;
 
             if (FD_ISSET(*it, &_readFds)) {
-                bytes = recv(*it, buf, sizeof(buf), 0);
+                bytes = recv(*it, buffer, sizeof(buffer), 0);
                 if (bytes <= 0) {
                     close(*it);
                     std::cout << "Client disconnected: FD " << *it << std::endl;
@@ -72,7 +84,7 @@ void    Select::run(WebServ<Select>& server) {
                     continue;
                 }
 
-                std::string request(buf, bytes);
+                std::string request(buffer, bytes);
                 HttpRequest httpReq(request);
                 std::cout << "Received request:\n" << request << std::endl;
                 std::cout << "Path:\n" << httpReq.getPath() << std::endl;

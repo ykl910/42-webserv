@@ -43,7 +43,7 @@ int Epoll::acceptClient() {
     return clientFd;
 }
 
-void Epoll::createEpollInstance(){
+void Epoll::createEpollInstance() {
 
     std::cout << "Creating new epool instance" << std::endl;
 
@@ -52,7 +52,7 @@ void Epoll::createEpollInstance(){
         printErrorAndThrow("epoll_create1");
 }
 
-void Epoll::addServerToEpoll(){
+void Epoll::addServerToEpoll() {
 
     std::cout << "Adding server to epoll instance" << std::endl;
 
@@ -64,7 +64,7 @@ void Epoll::addServerToEpoll(){
         printErrorAndThrow("epoll_ctl");
 }
 
-void Epoll::addClientToEpoll(int const &clientFd){
+void Epoll::addClientToEpoll(int const &clientFd) {
 
     std::cout << "Adding client to epoll instance" << std::endl;
 
@@ -97,7 +97,7 @@ bool Epoll::receivedCompleteRequest(std::string &rawData) const {
     return (bodyLengh >= static_cast<size_t>(contentLength));
 }
 
-void Epoll::getRequest(int clientFd){
+void Epoll::getRequest(int clientFd) {
 
     char buffer[BUFFERSIZE];
 
@@ -116,8 +116,7 @@ void Epoll::getRequest(int clientFd){
     }
 }
 
-void Epoll::sendResponse(int &clientFd, HttpRequest &request)
-{
+void Epoll::sendResponse(int &clientFd, HttpRequest &request) {
     HttpResponse Response(request);
     size_t totalBytesSent = 0;
     std::string response = Response.getResponse();
@@ -132,7 +131,7 @@ void Epoll::sendResponse(int &clientFd, HttpRequest &request)
     this->disableWriteEvent(clientFd);
 }
 
-void Epoll::eventManager(epoll_ev &event){
+void Epoll::eventManager(epoll_ev &event) {
 
     if (event.events & EPOLLERR){
 
@@ -179,7 +178,7 @@ void Epoll::run(WebServ<Epoll>& server) {
     }
 }
 
-Epoll::Epoll() : _eventsQueue(MAXEVENTS){
+Epoll::Epoll() : _eventsQueue(MAXEVENTS) {
 
 }
 
