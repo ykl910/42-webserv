@@ -25,6 +25,8 @@ public:
     void addServerToEpool();
     void addClientToEpool(int const &clientFd);
     void run(WebServ<Epoll>& server);
+    void enableWriteEvent(int clientFd);
+    void disableWriteEvent(int clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
     const int& getEpollFd(void) const;
     void eventManager(epoll_ev &event);
