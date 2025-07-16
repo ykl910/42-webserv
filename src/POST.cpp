@@ -33,10 +33,6 @@ std::string getContentType(std::string &line) {
     return NULL;
 }
 
-int getContentLength(std::string &line) {
-
-    return std::atoi(line.c_str());
-}
 
 void storeTitle(std::string body) {
 
@@ -60,13 +56,13 @@ void handlePost(HttpRequest& request, HttpResponse& response) {
     std::map<std::string, std::string> headers = request.getHeaders();
     std::string contentType = getContentType(headers["Content-Type"]);
     std::string boundary = getBoundary(headers["Content-Type"]);
-    int contentLength = getContentLength(headers["Content-Length"]);
 
-    if(contentType.empty() || contentLength == 0 || boundary.empty())
+    if(contentType.empty() || boundary.empty())
     {
         //TODO: BAD REQUEST
         std::cout << "ouinoin" << std::endl;
     }
+
     std::vector<std::string> tokens = split(request.getBody(), boundary);
     std::vector<std::string>::iterator tokenIt;
 
