@@ -15,6 +15,14 @@ Directives:
     -
 */
 
+bool    isDirective(const std::string& line) {
+    return line == "listen";
+}
+
+bool    isContext(const std::string& line) {
+    return line == "http" || line == "server";
+}
+
 void    Config::getNextDirective(const std::string& line) {
     (void)line;
 }
@@ -23,15 +31,33 @@ void    Config::getNextContext(const std::string& context) {
     (void)context;
 }
 
+void    Config::getMainContext(const std::string& context) {
+    for (size_t i = 0; context[i]; i++)
+        (void)context;
+}
+
+void    Config::getServerContext(const std::string& context) {
+    for (size_t i = 0; context[i]; i++)
+        (void)context;
+}
+
+void    Config::getHttpContext(const std::string& context) {
+    for (size_t i = 0; context[i]; i++)
+        (void)context;
+}
+
 void    Config::parseConfigFile(void) {
     std::ifstream file(this->_configPath.c_str());
 
     if (!file)
         throw std::runtime_error("Error: can't open config file");
     std::string line;
+    int i = 0;
     while (std::getline(file, line)) {
-        getNextContext(line);
-        // std::cout << line << std::endl;
+        while (std::isspace(line[i]))
+            i++;
+        // if (isContext(line.substr(i, line.size())))
+        //     getNextContext(line);
     }
 }
 
