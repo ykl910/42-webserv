@@ -20,7 +20,7 @@ public:
 private:
     typedef std::vector<struct pollfd>::iterator pollIterator;
 
-    nfds_t nfds;
+    //nfds_t nfds;
     char buffer[4092];
     std::vector<struct pollfd> _pollFd;
 };

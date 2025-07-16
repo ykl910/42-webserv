@@ -42,5 +42,6 @@ private:
     int _epollFd;
     std::map<int, std::string> _buffers;
     std::map<int, HttpRequest> _requests;
+    std::map<int, bool> _pendingResponse;
     vector _eventsQueue;
 };
