@@ -111,29 +111,52 @@ void Epoll::getRequest(int clientFd) {
         std::cout << MAGENTA << this->_buffers[clientFd] << DEFAULT << std::endl;
         HttpRequest request(_buffers[clientFd]);
         this->_requests[clientFd] = request;
-        this->_pendingResponse[clientFd] = true;
+        this->_gotFullRequest[clientFd] = true;
         this->enableWriteEvent(clientFd);
         _buffers.erase(clientFd);
+        this->_pendingResponse[clientFd] = 0;
     }
     else
-        this->_pendingResponse[clientFd] = false;
+        this->_gotFullRequest[clientFd] = false;
 }
 
 void Epoll::sendResponse(int clientFd, HttpRequest request) {
 
-    HttpResponse Response(request);
-    size_t totalBytesSent = 0;
-    std::string response = Response.getResponse();
+    std::string response;
+
+    if(!this->_gotResponse[clientFd])
+    {
+        HttpResponse Response(request);
+        response = Response.getResponse();
+        this->_responses[clientFd] = Response;
+        this->_gotResponse[clientFd] = true;
+    }
+    else
+    {
+        response = this->_responses[clientFd].getResponse();
+    }
+
+    size_t totalBytesSent = this->_pendingResponse[clientFd];
     size_t responseLen = response.length();
 
     while (totalBytesSent < responseLen) {
         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
-        if (bytesSent == -1)
-            printErrorAndThrow("send");
+        if (bytesSent <= 0)
+            break ;
         totalBytesSent += bytesSent;
     }
-    this->disableWriteEvent(clientFd);
-    this->_pendingResponse.erase(clientFd);
+    if(totalBytesSent != responseLen)
+    {
+        this->_pendingResponse[clientFd] = totalBytesSent;
+    }
+    else
+    {
+        this->_pendingResponse.erase(clientFd);
+        this->disableWriteEvent(clientFd);
+        this->_gotFullRequest.erase(clientFd);
+        this->_gotResponse.erase(clientFd);
+        this->_responses.erase(clientFd);
+    }
 }
 
 void Epoll::eventManager(epoll_ev &event) {
@@ -163,7 +186,7 @@ void Epoll::eventManager(epoll_ev &event) {
     }
     else if(event.events & EPOLLIN)
         this->getRequest(event.data.fd);
-    else if((event.events & EPOLLOUT) && this->_pendingResponse[event.data.fd])
+    else if((event.events & EPOLLOUT) && this->_gotFullRequest[event.data.fd])
         this->sendResponse(event.data.fd, this->_requests[event.data.fd]);
 }
 
