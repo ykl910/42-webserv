@@ -1,93 +1,124 @@
 #include "../include/Select.hpp"
 #include "../include/WebServ.hpp"
 
+bool Select::acceptClient(int serverFd) {
+    if (FD_ISSET(serverFd, &_readFds)) {
+    /*
+        select() modifies the contents of the sets according to the rules
+        described below. After  calling  select(),  the FD_ISSET() macro
+        can be used to test if a file descriptor is still present in a set.
+        FD_ISSET() returns nonzero  if  the file descriptor fd is present
+        in set, and zero if it is not.
+    */
+        errno = 0;
+        int newClient = accept(serverFd, NULL, NULL);
+        if (newClient < 0) {
+            printError();
+            return true;
+        } else {
+            int flags = fcntl(newClient, F_GETFL, 0);
+            if (flags == -1 || fcntl(newClient, F_SETFL, flags | O_NONBLOCK) == -1) {
+                printError();
+                close(newClient);
+            } else {
+                _selectFd.push_back(newClient);
+                std::cout << "New client connected: FD " << newClient << std::endl;
+            }
+        }
+    }
+    return false;
+}
+
+void    Select::readAndWrite(void) {
+    for (selectIterator it = this->_selectFd.begin();
+                        it != this->_selectFd.end();) {
+        char buf[4096];
+        ssize_t bytes = 0;
+        if (FD_ISSET(*it, &_readFds)) {
+            bytes = recv(*it, buf, sizeof(buf), 0);
+            if (bytes <= 0) {
+                close(*it);
+                std::cout << "Client disconnected: FD " << *it << std::endl;
+                it = this->_selectFd.erase(it);
+                continue;
+            }
+            std::string request(buf, bytes);
+            HttpRequest httpReq(request);
+            std::cout << "Received request:\n" << request << std::endl;
+            HttpResponse httpRes(httpReq);
+            httpRes.build(httpReq);
+            std::string response = httpRes.getResponse();
+            ssize_t totalSent = 0;
+            const char* data = response.c_str();
+            ssize_t totalSize = response.size();
+            while (totalSent < totalSize) {
+                ssize_t sent = send(*it, data + totalSent, totalSize - totalSent, 0);
+                if (sent < 0) {
+                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                        continue;
+                    } else {
+                        printError();
+                        break;
+                    }
+                }
+                totalSent += sent;
+            }
+            close(*it);
+            it = this->_selectFd.erase(it);
+        }
+        else
+            ++it;
+    }
+}
+
 void    Select::run(WebServ<Select>& server) {
     server.printServerStatus("select");
-    fd_set readFds;
     struct timeval tv;
     tv.tv_sec = 10;
     tv.tv_usec = 0;
     int maxFd = this->getSocketFd();
     int serverFd = this->getSocketFd();
+    int activity = 0;
 
     while (true) {
-        //* FD_ZERO = empty readFds set
-        //* FD_SET = add server socket to detect new connexions
-        FD_ZERO(&readFds);
-        FD_SET(serverFd, &readFds);
-
-        //* Add everyt client sockets to readFds and add maxFd if necessary
-        for (fdsIterator it = this->_clientFds.begin();
-            it != this->_clientFds.end(); ++it) {
-            FD_SET(*it, &readFds);
+        FD_ZERO(&_readFds);
+        /*
+            This  macro  clears  (removes all file descriptors from) set.
+            It should be employed as the first step in initializing a file
+            descriptor set.
+        */
+        FD_SET(serverFd, &_readFds);
+        /*
+            This macro adds the file descriptor fd to set. Adding a file
+            descriptor that is already present in the set is a no-op, and does
+            not produce an error.
+        */
+        for (selectIterator it = this->_selectFd.begin();
+                            it != this->_selectFd.end(); ++it) {
+            FD_SET(*it, &_readFds);
             if (*it > maxFd)
                 maxFd = *it;
         }
-
-        tv.tv_sec = 10;
-        tv.tv_usec = 0;
-
         //* wait for event in a socket
         errno = 0;
-        int activity = select(maxFd + 1, &readFds, NULL, NULL, &tv);
+        activity = select(maxFd + 1, &_readFds, NULL, NULL, &tv);
         if (activity < 0) {
             printError();
             continue;
+        } else if (activity == 0) {
+            continue;
         }
-
         //* new connexion -> accept connexion and add client to the list
-        if (FD_ISSET(serverFd, &readFds)) {
-            errno = 0;
-            int newClient = accept(serverFd, NULL, NULL);
-            if (newClient < 0) {
-                printError();
-                continue;
-            } else {
-                this->_clientFds.push_back(newClient);
-                std::cout << "New client connected: FD " << newClient << std::endl;
-            }
-        }
-
-        //* loop on every actives clients and seek for data to read
-        for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end();) {
-            char buf[4096];
-            int bytes = 0;
-
-            if (FD_ISSET(*it, &readFds)) {
-                bytes = recv(*it, buf, sizeof(buf), 0);
-                if (bytes <= 0) {
-                    close(*it);
-                    std::cout << "Client disconnected: FD " << *it << std::endl;
-                    it = this->_clientFds.erase(it);
-                    continue;
-                }
-
-                std::string request(buf, bytes);
-                HttpRequest httpReq(request);
-                std::cout << "Received request:\n" << request << std::endl;
-                std::cout << "Path:\n" << httpReq.getPath() << std::endl;
-                HttpResponse httpRes(httpReq);
-                httpRes.build(httpReq);
-                std::string response = httpRes.getResponse();
-                //std::cout << "Sending response:\n" << response << std::endl;
-                //std::cout << response << std::endl;
-                //std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello from webserv!</h1></body></html>";
-                send(*it, response.c_str(), response.size(), 0);
-                close(*it);
-                it = this->_clientFds.erase(it);
-            }
-            else
-                ++it;
-        }
+        acceptClient(serverFd);
+        //* read request and send response
+        readAndWrite();
     }
 }
 
-Select::Select() {
-
-}
+Select::Select() {}
 
 Select::~Select() {
-    for (fdsIterator it = this->_clientFds.begin(); it != this->_clientFds.end(); ++it)
+    for (selectIterator it = this->_selectFd.begin();
+         it != this->_selectFd.end(); ++it)
         close(*it);
-
 }
