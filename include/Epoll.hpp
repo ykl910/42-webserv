@@ -6,7 +6,6 @@
 #include "HttpResponse.hpp"
 #include <sys/epoll.h>
 #include <vector>
-#include <map>
 
 #define MAXEVENTS 4096
 #define BUFFERSIZE 512
@@ -40,8 +39,11 @@ public:
 
 private:
     int _epollFd;
+    vector _eventsQueue;
     std::map<int, std::string> _buffers;
     std::map<int, HttpRequest> _requests;
-    std::map<int, bool> _pendingResponse;
-    vector _eventsQueue;
+    std::map<int, bool> _gotFullRequest;
+    std::map<int, bool> _gotResponse;
+    std::map<int, HttpResponse> _responses;
+    std::map<int, int> _pendingResponse;
 };
