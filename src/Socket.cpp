@@ -22,6 +22,7 @@ void Socket::setSocketOpt() {
 }
 
 void Socket::createAndBind() {
+    bzero(&this->_hints, sizeof(this->_hints));
     this->_hints.ai_family = AF_INET;
     this->_hints.ai_socktype = SOCK_STREAM;
     this->_hints.ai_flags = AI_PASSIVE;

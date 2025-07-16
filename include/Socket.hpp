@@ -18,5 +18,5 @@ public:
 
 private:
     int _socketFd;
-    addrinfo _hints;
+    struct addrinfo _hints;
 };
