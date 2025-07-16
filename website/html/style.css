@@ -30,7 +30,7 @@ body {
     overflow: hidden; /* nécessaire pour limiter le flou */
 }
 
-/* EFFET DE FLU SUR CE QUI EST DERRIÈRE LA NAVBAR */
+/* EFFET DE FLOU SUR CE QUI EST DERRIÈRE LA NAVBAR */
 .navbar::after {
     content: "";
     position: absolute;
