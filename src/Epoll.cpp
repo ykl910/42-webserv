@@ -198,7 +198,7 @@ void Epoll::run(WebServ<Epoll>& server) {
     this->addServerToEpoll();
 
     while(true) {
-        int nbEvents = epoll_wait(this->_epollFd, this->_eventsQueue.data(), MAXEVENTS, -1);
+        int nbEvents = epoll_wait(this->_epollFd, this->_eventsQueue.data(), MAXEVENTS, 0);
         if (nbEvents == -1)
             printErrorAndThrow("epoll_wait");
         for (int i = 0; i < nbEvents; ++i)
