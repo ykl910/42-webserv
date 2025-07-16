@@ -111,12 +111,16 @@ void Epoll::getRequest(int clientFd) {
         std::cout << MAGENTA << this->_buffers[clientFd] << DEFAULT << std::endl;
         HttpRequest request(_buffers[clientFd]);
         this->_requests[clientFd] = request;
+        this->_pendingResponse[clientFd] = true;
         this->enableWriteEvent(clientFd);
         _buffers.erase(clientFd);
     }
+    else
+        this->_pendingResponse[clientFd] = false;
 }
 
 void Epoll::sendResponse(int clientFd, HttpRequest request) {
+
     HttpResponse Response(request);
     size_t totalBytesSent = 0;
     std::string response = Response.getResponse();
@@ -129,6 +133,7 @@ void Epoll::sendResponse(int clientFd, HttpRequest request) {
         totalBytesSent += bytesSent;
     }
     this->disableWriteEvent(clientFd);
+    this->_pendingResponse.erase(clientFd);
 }
 
 void Epoll::eventManager(epoll_ev &event) {
@@ -158,7 +163,7 @@ void Epoll::eventManager(epoll_ev &event) {
     }
     else if(event.events & EPOLLIN)
         this->getRequest(event.data.fd);
-    else if(event.events & EPOLLOUT)
+    else if((event.events & EPOLLOUT) && this->_pendingResponse[event.data.fd])
         this->sendResponse(event.data.fd, this->_requests[event.data.fd]);
 }
 
@@ -185,6 +190,6 @@ Epoll::Epoll() : _eventsQueue(MAXEVENTS) {
 Epoll::~Epoll() {
     if (this->_epollFd)
         close(this->_epollFd);
-    // for (buffersIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
-    //     close(it->first);
+    for (buffersIt it = this->_buffers.begin(); it != this->_buffers.end(); ++it)
+        close(it->first);
 }
