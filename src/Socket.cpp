@@ -1,43 +1,43 @@
 #include "../include/Socket.hpp"
 
 int Socket::getSocketFd() const {
-    return this->_socketFd;
+    return _socketFd;
 }
 
 void Socket::setSocketOpt() {
 
     int opt = 1;
-    if (setsockopt(this->_socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+    if (setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
         printErrorAndThrow("setsockopt");
 
-    int flags = fcntl(this->_socketFd, F_GETFL, 0);
+    int flags = fcntl(_socketFd, F_GETFL, 0);
     if (flags == -1)
         printErrorAndThrow("fcntl()");
 
     flags |= O_NONBLOCK;
 
-    int s = fcntl(this->_socketFd, F_SETFL, flags);
+    int s = fcntl(_socketFd, F_SETFL, flags);
     if (s == -1)
         printErrorAndThrow("fcntl()");
 }
 
 void Socket::createAndBind() {
-    bzero(&this->_hints, sizeof(this->_hints));
-    this->_hints.ai_family = AF_INET;
-    this->_hints.ai_socktype = SOCK_STREAM;
-    this->_hints.ai_flags = AI_PASSIVE;
+    bzero(&_hints, sizeof(_hints));
+    _hints.ai_family = AF_INET;
+    _hints.ai_socktype = SOCK_STREAM;
+    _hints.ai_flags = AI_PASSIVE;
     struct addrinfo *servInfosLst = NULL;
 
     int status;
-    status = getaddrinfo(NULL, "8080", &this->_hints, &servInfosLst);
+    status = getaddrinfo(NULL, "8080", &_hints, &servInfosLst);
     if (status != 0)
         printGaiErrorAndThrow("getaddrinfo", status);
 
     struct addrinfo *chosenAddr = servInfosLst;
 
     while (chosenAddr != NULL) {
-        this->_socketFd = socket(chosenAddr->ai_family, chosenAddr->ai_socktype, chosenAddr->ai_protocol);
-        if(this->_socketFd == -1) {
+        _socketFd = socket(chosenAddr->ai_family, chosenAddr->ai_socktype, chosenAddr->ai_protocol);
+        if(_socketFd == -1) {
             printError();
             chosenAddr = chosenAddr->ai_next;
             continue;
@@ -47,25 +47,25 @@ void Socket::createAndBind() {
     if (!chosenAddr)
         printErrorAndThrow("socket");
 
-    this->setSocketOpt();
+    setSocketOpt();
 
-    if (bind(this->_socketFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
+    if (bind(_socketFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
         printErrorAndThrow("bind");
 
     freeaddrinfo(servInfosLst);
 }
 
 void Socket::setOnListening(){
-    if (listen(this->_socketFd, SOMAXCONN) == -1)
+    if (listen(_socketFd, SOMAXCONN) == -1)
         printErrorAndThrow("listen");
 }
 
 Socket::Socket() {
-    this->createAndBind();
-    this->setOnListening();
+    createAndBind();
+    setOnListening();
 }
 
 Socket::~Socket() {
-    if (this->_socketFd)
-        close(this->_socketFd);
+    if (_socketFd)
+        close(_socketFd);
 }

@@ -11,6 +11,10 @@ class WebServ;
 
 class Poll : public Socket {
 public:
+    typedef std::vector<struct pollfd>::iterator pollIterator;
+
+    void acceptClient(int socketFd);
+    void manageRequest(pollIterator& it, ssize_t bytes);
     void initPoll(void);
     void run(WebServ<Poll>& server);
 
@@ -18,9 +22,7 @@ public:
     ~Poll();
 
 private:
-    typedef std::vector<struct pollfd>::iterator pollIterator;
-
     //nfds_t nfds;
-    char buffer[4092];
+    char _buffer[4092];
     std::vector<struct pollfd> _pollFd;
 };
