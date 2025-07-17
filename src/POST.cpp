@@ -110,11 +110,12 @@ int storeThread(HttpRequest &request, std::string boundary) {
 
     static int threadNb = 0;
 
-    if(!directoryExist())
-    {
-        if(createDirectory() == -1)
-            return -1;
-    }
+   if(!directoryExist())
+   {
+       if(createDirectory() == -1)
+           return -1;
+   }
+
 
     std::vector<std::string> tokens = split(request.getBody(), boundary);
     std::vector<std::string>::iterator tokenIt;
@@ -145,6 +146,16 @@ int storeThread(HttpRequest &request, std::string boundary) {
     return 0;
 }
 
+void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::string msg) {
+
+
+    response.setStatusLine(request.getHttpVersion(), code, msg);
+    response.setHeaders("Content-Type", "multipart/form-data");
+    std::string body = request.getBody();
+    response.setHeaders("Content-Length", itos(body.size()));
+    response.setBody(body);
+}
+
 void handlePost(HttpRequest& request, HttpResponse& response) {
 
     (void)response;
@@ -155,13 +166,10 @@ void handlePost(HttpRequest& request, HttpResponse& response) {
     if((!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
     {
         if(storeThread(request, boundary) == -1)
-            std::cerr << "error store thread" << std::endl; //TODO: send appropriate response error (code 500)
+            buildResponse(request, response, 500, "Internal error");
         else
-            std::cerr << "ok store thread" << std::endl; //TODO: send appropriate response ok (code 201)
+            buildResponse(request, response, 201, "Created");
     }
     else
-    {
-        //TODO: BAD REQUEST and send appropriate response (code 400)
-        std::cerr << "not a multipart/form-data" << std::endl;
-    }
+        buildResponse(request, response, 400, "Bad Request");
 }
