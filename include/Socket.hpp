@@ -19,4 +19,5 @@ public:
 private:
     int _socketFd;
     struct addrinfo _hints;
+    // std::vector<struct addrinfo> _hints;
 };
