@@ -1,20 +1,8 @@
 #include "../include/POST.hpp"
 #include "../include/textFormatting.hpp"
+#include "../include/WebServ.hpp"
 
-std::vector<std::string>split(std::string string, std::string &boundary) {
-
-    std::vector<std::string> tokens;
-    std::string::size_type start = 0;
-    std::string::size_type end;
-
-    while((end = string.find(boundary, start)) != std::string::npos)
-    {
-        tokens.push_back(string.substr(start, end - start));
-        start = end + boundary.length();
-    }
-    tokens.push_back(string.substr(start));
-    return tokens;
-}
+# define DIRPATH "website/threads/"
 
 std::string getBoundary(std::string &line) {
 
@@ -33,34 +21,51 @@ std::string getContentType(std::string &line) {
     return NULL;
 }
 
+void storeTitle(std::string title, int threadNb) {
 
-void storeTitle(std::string body) {
-
-    std::cout << GREEN <<"Title:" << body << DEFAULT <<std::endl;
+    std::cout << GREEN <<"Title:" << title << DEFAULT <<std::endl;
+    std::string filename = "title" + itos(threadNb);
 }
 
-void storeText(std::string body) {
-
+void storeText(std::string body, int threadNb) {
+    (void)threadNb;
     std::cout << RED << "Texte: " << body << DEFAULT << std::endl;
 }
 
-void storeImg(std::string body) {
-
-    std::cout << YELLOW << "Img:" << body << DEFAULT << std::endl;
+void storeImg(std::string img, int threadNb) {
+    (void)threadNb;
+    std::cout << YELLOW << "Img:" << img << DEFAULT << std::endl;
 }
 
-void handlePost(HttpRequest& request, HttpResponse& response) {
+bool directoryExist() {
 
-
-    (void)response;
-    std::map<std::string, std::string> headers = request.getHeaders();
-    std::string contentType = getContentType(headers["Content-Type"]);
-    std::string boundary = getBoundary(headers["Content-Type"]);
-
-    if(contentType.empty() || boundary.empty())
+    DIR *directory = opendir(DIRPATH);
+    if(directory)
     {
-        //TODO: BAD REQUEST
-        std::cout << "ouinoin" << std::endl;
+        closedir(directory);
+        return true;
+    }
+    return false;
+}
+
+int createDirectory() {
+
+    if(mkdir(DIRPATH, 0755) == -1)
+    {
+        printError();
+        return -1;
+    }
+    return 0;
+}
+
+int storeThread(HttpRequest &request, std::string boundary) {
+
+    static int threadNb = 0;
+
+    if(!directoryExist())
+    {
+        if(createDirectory() == -1)
+            return -1;
     }
 
     std::vector<std::string> tokens = split(request.getBody(), boundary);
@@ -70,10 +75,37 @@ void handlePost(HttpRequest& request, HttpResponse& response) {
     {
        std::string line = *tokenIt;
        if(line.find("Content-Disposition: form-data; name=\"title\"") != std::string::npos)
-           storeTitle(line);
+           storeTitle(line, threadNb);
        if(line.find("Content-Disposition: form-data; name=\"body\"")!= std::string::npos)
-           storeText(line);
+           storeText(line, threadNb);
        if(line.find("Content-Disposition: form-data; name=\"uploadFile\"")!= std::string::npos)
-           storeImg(line);
+           storeImg(line, threadNb);
+    }
+    threadNb++;
+    return 0;
+}
+
+void handlePost(HttpRequest& request, HttpResponse& response) {
+
+    (void)response;
+    std::map<std::string, std::string> headers = request.getHeaders();
+    std::string contentType = getContentType(headers["Content-Type"]);
+    std::string boundary = getBoundary(headers["Content-Type"]);
+
+    if(contentType.empty() || boundary.empty())
+    {
+        //TODO: BAD REQUEST and send appropriate response
+        std::cout << "contentType.empty() || boundary.empty()" << std::endl;
+    }
+    else if(contentType == "multipart/form-data" && !boundary.empty())
+    {
+        if(storeThread(request, boundary) == -1)
+            std::cout << "error store thread" << std::endl; //TODO: send appropriate response error
+        std::cout << "ok store thread" << std::endl; //TODO: send appropriate response ok
+    }
+    else
+    {
+        //TODO: BAD REQUEST and send appropriate response
+        std::cout << "not a multipart/form-data" << std::endl;
     }
 }

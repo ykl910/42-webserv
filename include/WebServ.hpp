@@ -9,6 +9,7 @@
 #include "Epoll.hpp"
 #include "Poll.hpp"
 #include "CGI.hpp"
+#include "utils.hpp"
 
 #define PORT 8080
 

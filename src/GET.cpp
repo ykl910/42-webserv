@@ -1,11 +1,5 @@
 #include "../include/GET.hpp"
 
-std::string itos(int value) {
-    std::ostringstream oss;
-    oss << value;
-    return oss.str();
-}
-
 bool handleHtmlError(HttpRequest& request, HttpResponse& response, std::stringstream *buffer) {
     std::string fullPath = "./website/html/404.html";
     std::ifstream file(fullPath.c_str());
@@ -97,6 +91,6 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
         success = handleCss(request, response, path, &buffer);
     } else if (extension == "png" || extension == "gif" || extension == "webp") {
         success = handleImg(request, response, path, extension);
-    } else 
+    } else
         handleHtmlError(request, response, &buffer);
 }
