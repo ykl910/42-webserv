@@ -65,12 +65,7 @@ int storeText(std::string body, int threadNb) {
 int storeImg(std::string img, int threadNb) {
 
     std::string filename;
-    if(img.find(".jpeg") || img.find(".jpg"))
-        filename = itos(threadNb) + "_img.jpg";
-    else if(img.find(".png"))
-        filename = itos(threadNb) + "_img.png";
-    else
-        return -1;
+    filename = itos(threadNb) + "_img.jpg";
 
     int fd = createFile(filename);
     if(fd == -1)
