@@ -46,19 +46,26 @@ void    Config::getHttpContext(const std::string& context) {
         (void)context;
 }
 
+bool    isHttpContext(const std::string& line) {
+    (void)line;
+    return true;
+}
+
 void    Config::parseConfigFile(void) {
     std::ifstream file(_configPath.c_str());
 
     if (!file)
         throw std::runtime_error("Error: can't open config file");
-    // std::string line;
+
+    std::string line;
     // int i = 0;
-    // while (std::getline(file, line)) {
-    //     while (std::isspace(line[i]))
-    //         i++;
-        // if (isContext(line.substr(i, line.size())))
-        //     getNextContext(line);
-    // }
+    while (std::getline(file, line)) {
+
+        // if (isHttpContext(line) && _directive.mainMask & )
+        // while (std::isspace(line[i++]))
+        // if ()
+        // getMainContext();
+    }
 }
 
 Config::Config() : _configPath("config/webserv.conf") {

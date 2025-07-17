@@ -12,7 +12,7 @@ public:
     bool acceptClient(int serverFd);
     void readAndWrite(void);
     void run(WebServ<Select>& server);
-    
+
     Select();
     ~Select();
 
@@ -24,7 +24,7 @@ private:
 
 /*
   fd_set
-       A structure type that can represent a set of file descriptors.   According  to  POSIX,
-       the  maximum  number  of  file  descriptors in an fd_set structure is the value of the
-       macro FD_SETSIZE.
+       A structure type that can represent a set of file descriptors.
+       According  to  POSIX, the  maximum  number  of  file  descriptors in an
+       fd_set structure is the value of the macro FD_SETSIZE.
 */

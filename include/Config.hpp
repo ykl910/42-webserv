@@ -33,7 +33,7 @@ typedef struct s_directive {
 
 class Config {
 public:
-    void getMainContext(const std::string& context);
+    void getMainContext(const std::string& line);
     void getHttpContext(const std::string& context);
     void getServerContext(const std::string& context);
     void getNextContext(const std::string& context);
