@@ -32,7 +32,6 @@ int createFile(std::string filename) {
 
 int storeTitle(std::string title, int threadNb) {
 
-    //std::cout << GREEN <<"Title:" << title << DEFAULT <<std::endl;
     std::string filename = itos(threadNb) + "_title.txt";
     int fd = createFile(filename);
     if(fd == -1)
@@ -49,7 +48,6 @@ int storeTitle(std::string title, int threadNb) {
 
 int storeText(std::string body, int threadNb) {
 
-   //std::cout << RED << "Texte: " << body << DEFAULT << std::endl;
     std::string filename = itos(threadNb) + "_body.txt";
     int fd = createFile(filename);
     if(fd == -1)
@@ -66,7 +64,6 @@ int storeText(std::string body, int threadNb) {
 
 int storeImg(std::string img, int threadNb) {
 
-    //std::cout << YELLOW << "Img:" << img << DEFAULT << std::endl;
     std::string filename;
     if(img.find(".jpeg") || img.find(".jpg"))
         filename = itos(threadNb) + "_img.jpg";

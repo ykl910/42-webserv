@@ -45,7 +45,7 @@
 
             <div class="form-group file-upload">
                <label for="uploadFile" class="file-label">Choose an image</label>
-               <input type="file" name="uploadFile" id="uploadFile" class="file-input" required>
+               <input type="file" name="uploadFile" id="uploadFile" class="file-input" required accept=".jpeg,.jpg,.png,image/jpeg,image/png">
                <span id="file-chosen">No file chosen</span>
             </div>
 
@@ -61,8 +61,15 @@
       const fileChosen = document.getElementById('file-chosen');
 
       fileInput.addEventListener('change', function () {
-         if (this.files && this.files.length > 0) {
-            fileChosen.textContent = this.files[0].name;
+         const file = this.files[0];
+         if (file) {
+            fileChosen.textContent = file.name;
+            const maxSize = 2 * 1024 * 1024;
+            if (file.size > maxSize) {
+               alert("File is too large. Maximum size allowed is 2MB.");
+               this.value = ""; // Réinitialise le champ
+               fileChosen.textContent = "No file chosen";
+            }
          } else {
             fileChosen.textContent = 'No file chosen';
          }
