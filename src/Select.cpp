@@ -30,8 +30,8 @@ bool Select::acceptClient(int serverFd) {
 }
 
 void    Select::readAndWrite(void) {
-    for (selectIterator it = this->_selectFd.begin();
-                        it != this->_selectFd.end();) {
+    for (selectIterator it = _selectFd.begin();
+                        it != _selectFd.end();) {
         char buf[4096];
         ssize_t bytes = 0;
         if (FD_ISSET(*it, &_readFds)) {
@@ -39,7 +39,7 @@ void    Select::readAndWrite(void) {
             if (bytes <= 0) {
                 close(*it);
                 std::cout << "Client disconnected: FD " << *it << std::endl;
-                it = this->_selectFd.erase(it);
+                it = _selectFd.erase(it);
                 continue;
             }
             std::string request(buf, bytes);
@@ -64,7 +64,7 @@ void    Select::readAndWrite(void) {
                 totalSent += sent;
             }
             close(*it);
-            it = this->_selectFd.erase(it);
+            it = _selectFd.erase(it);
         }
         else
             ++it;
@@ -76,8 +76,8 @@ void    Select::run(WebServ<Select>& server) {
     struct timeval tv;
     tv.tv_sec = 10;
     tv.tv_usec = 0;
-    int maxFd = this->getSocketFd();
-    int serverFd = this->getSocketFd();
+    int maxFd = getSocketFd();
+    int serverFd = getSocketFd();
     int activity = 0;
 
     while (true) {
@@ -93,8 +93,8 @@ void    Select::run(WebServ<Select>& server) {
             descriptor that is already present in the set is a no-op, and does
             not produce an error.
         */
-        for (selectIterator it = this->_selectFd.begin();
-                            it != this->_selectFd.end(); ++it) {
+        for (selectIterator it = _selectFd.begin();
+                            it != _selectFd.end(); ++it) {
             FD_SET(*it, &_readFds);
             if (*it > maxFd)
                 maxFd = *it;
@@ -118,7 +118,7 @@ void    Select::run(WebServ<Select>& server) {
 Select::Select() {}
 
 Select::~Select() {
-    for (selectIterator it = this->_selectFd.begin();
-         it != this->_selectFd.end(); ++it)
+    for (selectIterator it = _selectFd.begin();
+         it != _selectFd.end(); ++it)
         close(*it);
 }

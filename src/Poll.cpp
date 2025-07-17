@@ -12,97 +12,84 @@
 void    Poll::initPoll(void) {
     struct pollfd serverPoll;
 
-    serverPoll.fd = this->getSocketFd();
-    this->_pollFd.push_back(serverPoll);
+    serverPoll.fd = getSocketFd();
+    serverPoll.events = POLLIN;
+    serverPoll.revents = 0;
+    _pollFd.push_back(serverPoll);
+}
+
+void    Poll::acceptClient(int socketFd) {
+    int clientFd = accept(socketFd, NULL, NULL);
+    if (clientFd == -1)
+        printErrorAndThrow("accept");
+
+    int flags = fcntl(clientFd, F_GETFL, 0);
+    if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
+        printErrorAndThrow("fcntl");
+
+    struct pollfd newClientPoll;
+
+    newClientPoll.fd = clientFd;
+    newClientPoll.events = POLLIN;
+    newClientPoll.revents = 0;
+    _pollFd.push_back(newClientPoll);
+}
+
+void    Poll::manageRequest(pollIterator& it, ssize_t bytes) {
+    std::string request(_buffer, bytes);
+
+    HttpRequest httpReq(request);
+    std::cout << "Received request:\n" << request << std::endl;
+
+    HttpResponse httpRes(httpReq);
+    httpRes.build(httpReq);
+    std::string response = httpRes.getResponse();
+    ssize_t totalSent = 0;
+
+    const char* data = response.c_str();
+    ssize_t totalSize = response.size();
+    while (totalSent < totalSize) {
+        ssize_t sent = send(it->fd, data + totalSent, totalSize - totalSent, 0);
+        if (sent < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                continue;
+            } else {
+                printError();
+                break;
+            }
+        }
+        totalSent += sent;
+    }
+    close(it->fd);
+    it = _pollFd.erase(it);
 }
 
 void    Poll::run(WebServ<Poll>& server) {
     server.printServerStatus("poll");
 
-    this->initPoll();
-    int bytes;
+    int socketFd = getSocketFd();
+    initPoll();
+    ssize_t bytes;
     while (true) {
-        int activity = poll(&this->_pollFd[0], this->_pollFd.size(), 5000); // 5 ms timeout
-        if (activity < 0) {
-            printError(); //
-            continue;
-        } else if (activity == 0) {
-            printError(); // timeout
+        int activity = poll(&_pollFd[0], _pollFd.size(), -1); // -1 wait indefinitely
+        if (activity == -1)
+            printError();
+
+        for (pollIterator it = _pollFd.begin();
+                          it != _pollFd.end();) {
+            if (it->fd & POLLIN) {
+                if (it->fd == socketFd) {
+                    acceptClient(socketFd);
+                }
+            } else {
+               bytes = recv(it->fd, _buffer, sizeof(_buffer), 0);
+               if (bytes <= 0) {
+                    close(it->fd);
+                    it = _pollFd.erase(it);
+               } else
+                    manageRequest(it, bytes);
+            }
         }
-        for (pollIterator it = this->_pollFd.begin();
-                          it != this->_pollFd.end(); it++) {
-            if (it->events & POLLIN || it->events & POLLRDNORM) // Equivalent to POLLIN
-            /*
-                There is data to read.
-            */
-                bytes = recv(it->fd, this->buffer, sizeof(this->buffer), 0);
-
-            else if (it->events & POLLPRI)
-            /*
-              There is some exceptional condition on the file descriptor.  Possibilities  in‐
-              clude:
-
-              •  There is out-of-band data on a TCP socket (see tcp(7)).
-
-              •  A  pseudoterminal master in packet mode has seen a state change on the slave
-                 (see ioctl_tty(2)).
-
-              •  A cgroup.events file has been modified (see cgroups(7)).
-            */
-                return;
-
-            else if (it->events & POLLOUT || it->events & POLLWRNORM) // Equivalent to POLLOUT
-            /*
-              Writing is now possible, though a write larger than the available  space  in  a
-              socket or pipe will still block (unless O_NONBLOCK is set).
-            */
-                return;
-
-            else if (it->events & POLLRDHUP)
-            /*
-              (since Linux 2.6.17) Stream  socket peer closed connection, or shut down writing half of connection.
-              The _GNU_SOURCE feature test macro must be defined (before including any header
-              files) in order to obtain this definition.
-            */
-                return;
-
-            else if (it->events & POLLERR)
-            /*
-              Error condition (only returned in revents; ignored in  events). This  bit  is
-              also  set  for  a file descriptor referring to the write end of a pipe when the
-              read end has been closed.
-            */
-                return;
-
-            else if (it->events & POLLHUP)
-            /*
-              Hang up (only returned in revents; ignored in events).  Note that when  reading
-              from  a  channel such as a pipe or a stream socket, this event merely indicates
-              that the peer closed its end of the channel.  Subsequent reads from the channel
-              will return 0 (end of file) only after all outstanding data in the channel  has
-              been consumed.
-            */
-                return;
-
-            else if (it->events & POLLNVAL)
-            /*
-              Invalid request: fd not open (only returned in revents; ignored in events)
-            */
-                return;
-
-            else if (it->events & POLLRDBAND)
-            /*
-              Priority band data can be read (generally unused on Linux)
-            */
-                return;
-
-            else if (it->events & POLLWRBAND)
-            /*
-              Priority data may be written
-            */
-                return;
-        }
-        (void)bytes;
     }
 }
 
@@ -111,7 +98,7 @@ Poll::Poll() {
 }
 
 Poll::~Poll() {
-    for (pollIterator it = this->_pollFd.begin();
-                      it != this->_pollFd.end(); it++) {
+    for (pollIterator it = _pollFd.begin();
+                      it != _pollFd.end(); it++) {
     }
 }
