@@ -24,40 +24,27 @@
    </nav>
 
    <main>
-      <h1>New post</h1>
-
+      <h1>Remove post</h1>
       <div class="gif">
-         <img src="../assets/upload.gif" alt="Animated GIF">
+         <img src="../assets/remove.webp" alt="Animated GIF">
       </div>
-
       <div class="upload">
          <h3>Write your post</h3>
-         <form action="/upload" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-               <label for="title">Title:</label>
-               <input type="text" id="title" name="title" placeholder="Enter a title" required autocomplete="off">
-            </div>
+         <form action="/delete" method="POST" enctype="multipart/form-data">
+            <!-- Hidden input to specify this is a delete request -->
+            <input type="hidden" name="_method" value="DELETE">
 
-            <div class="form-group">
-               <label for="body">Body:</label>
-               <textarea id="body" name="body" rows="5" placeholder="Write your content here..." required></textarea>
-            </div>
+            <!-- Optional input to specify type: file or dir -->
+            <label for="path">Path to delete (file or directory):</label>
+            <input type="text" name="path" id="path" required>
 
-            <div class="form-group file-upload">
-               <label for="uploadFile" class="file-label">Choose an image</label>
-               <input type="file" name="uploadFile" id="uploadFile" class="file-input" required>
-               <span id="file-chosen">No file chosen</span>
-            </div>
-
-            <div class="form-group">
-               <button type="submit" class="upload-btn">Upload your post</button>
-            </div>
+            <button type="submit">Delete</button>
          </form>
       </div>
    </main>
 
    <script>
-      const fileInput = document.getElementById('uploadFile');
+      const fileInput = document.getElementById('fileToDelete');
       const fileChosen = document.getElementById('file-chosen');
 
       fileInput.addEventListener('change', function () {
