@@ -32,7 +32,7 @@ int createFile(std::string filename) {
 
 int storeTitle(std::string title, int threadNb) {
 
-    std::cout << GREEN <<"Title:" << title << DEFAULT <<std::endl;
+    //std::cout << GREEN <<"Title:" << title << DEFAULT <<std::endl;
     std::string filename = itos(threadNb) + "_title.txt";
     int fd = createFile(filename);
     if(fd == -1)
@@ -49,7 +49,7 @@ int storeTitle(std::string title, int threadNb) {
 
 int storeText(std::string body, int threadNb) {
 
-    std::cout << RED << "Texte: " << body << DEFAULT << std::endl;
+   //std::cout << RED << "Texte: " << body << DEFAULT << std::endl;
     std::string filename = itos(threadNb) + "_body.txt";
     int fd = createFile(filename);
     if(fd == -1)
@@ -65,9 +65,16 @@ int storeText(std::string body, int threadNb) {
 }
 
 int storeImg(std::string img, int threadNb) {
-    (void)threadNb;
-    std::cout << YELLOW << "Img:" << img << DEFAULT << std::endl;
-    std::string filename = itos(threadNb) + "_img.jpg";
+
+    //std::cout << YELLOW << "Img:" << img << DEFAULT << std::endl;
+    std::string filename;
+    if(img.find(".jpeg") || img.find(".jpg"))
+        filename = itos(threadNb) + "_img.jpg";
+    else if(img.find(".png"))
+        filename = itos(threadNb) + "_img.png";
+    else
+        return -1;
+
     int fd = createFile(filename);
     if(fd == -1)
         return -1;
@@ -148,21 +155,16 @@ void handlePost(HttpRequest& request, HttpResponse& response) {
     std::string contentType = getContentType(headers["Content-Type"]);
     std::string boundary = getBoundary(headers["Content-Type"]);
 
-    if(contentType.empty() || boundary.empty())
-    {
-        //TODO: BAD REQUEST and send appropriate response
-        std::cout << "contentType.empty() || boundary.empty()" << std::endl;
-    }
-    else if(contentType == "multipart/form-data" && !boundary.empty())
+    if((!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
     {
         if(storeThread(request, boundary) == -1)
-            std::cout << "error store thread" << std::endl; //TODO: send appropriate response error
+            std::cerr << "error store thread" << std::endl; //TODO: send appropriate response error (code 500)
         else
-            std::cout << "ok store thread" << std::endl; //TODO: send appropriate response ok
+            std::cerr << "ok store thread" << std::endl; //TODO: send appropriate response ok (code 201)
     }
     else
     {
-        //TODO: BAD REQUEST and send appropriate response
-        std::cout << "not a multipart/form-data" << std::endl;
+        //TODO: BAD REQUEST and send appropriate response (code 400)
+        std::cerr << "not a multipart/form-data" << std::endl;
     }
 }
