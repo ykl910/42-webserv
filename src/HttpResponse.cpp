@@ -14,6 +14,10 @@ void HttpResponse::build(HttpRequest &request){
     else if (request.getMethod() == "DELETE") {
         handleDelete(request, *this);
     }
+    else {
+
+        //TODO : response with code 501
+    }
 }
 
 void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason){
