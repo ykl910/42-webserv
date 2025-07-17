@@ -44,7 +44,8 @@ SRC                 := CGI.cpp \
                     Socket.cpp \
                     GET.cpp \
                     POST.cpp \
-                    DELETE.cpp
+                    DELETE.cpp \
+                    utils.cpp
 
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 

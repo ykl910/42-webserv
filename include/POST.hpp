@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
 #include <fstream>
 #include <cstdio>
 #include <cstdlib>
