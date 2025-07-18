@@ -151,6 +151,8 @@ void Epoll::sendResponse(int clientFd, HttpRequest request) {
     }
     else
     {
+        std::cout << BOLD ITALIC GREEN << "\nresponse:\n" << DEFAULT;
+        std::cout << YELLOW << response.c_str() << std::endl;
         this->_pendingResponse.erase(clientFd);
         this->disableWriteEvent(clientFd);
         this->_gotFullRequest.erase(clientFd);
