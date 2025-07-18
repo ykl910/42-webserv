@@ -31,6 +31,7 @@
       <select id="fileSelect">
          <option>Loading files...</option>
       </select>
+
       <button onclick="deleteSelected()">Delete</button>
 
       <script>
@@ -57,29 +58,17 @@
          function deleteSelected() {
             const file = document.getElementById('fileSelect').value;
             if (!file) return alert('No file selected.');
-
-            if (confirm(`Delete "${file}"?`)) {
-            fetch(`/delete/${file}`, { method: 'DELETE' })
-               .then(res => {
-                  if (res.ok) alert(`${file} deleted.`);
-                  else alert(`Failed to delete: ${res.status}`);
-               });
-            }
+               fetch(`/threads/${file}`, { method: 'DELETE' })
+                  .then(res => {
+                     if (res.status >= 200 && res.status < 300) {
+                        alert(`${file} deleted.`);
+                        location.href = '/remove.html';
+                     }
+                     else alert(`Failed to delete: ${res.status}`);
+                  });
          }
       </script>
       </div>
    </main>
-   <script>
-      const fileInput = document.getElementById('fileToDelete');
-      const fileChosen = document.getElementById('file-chosen');
-
-      fileInput.addEventListener('change', function () {
-         if (this.files && this.files.length > 0) {
-            fileChosen.textContent = this.files[0].name;
-         } else {
-            fileChosen.textContent = 'No file chosen';
-         }
-      });
-   </script>
 </body>
 </html>

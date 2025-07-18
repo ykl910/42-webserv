@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <fstream>
 #include <cstdio>
@@ -16,5 +17,4 @@
 #include <vector>
 #include <map>
 
-std::string itos(int value);
 void handleGet(HttpRequest& request, HttpResponse& response);
