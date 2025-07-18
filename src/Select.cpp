@@ -45,10 +45,12 @@ void    Select::manageRequest(void) {
             }
             std::string request(buf, bytes);
             HttpRequest httpReq(request);
-            std::cout << "Received request:\n" << request << std::endl;
+            std::cout << BOLD ITALIC GREEN <<  "Received request:\n" << DEFAULT;
+            std::cout << MAGENTA << request << DEFAULT << std::endl;
             HttpResponse httpRes(httpReq);
-            httpRes.build(httpReq);
             std::string response = httpRes.getResponse();
+            // std::cout << BOLD ITALIC GREEN <<  "Response sent:\n" << DEFAULT;
+            // std::cout << YELLOW << response << DEFAULT << std::endl;
             ssize_t totalSent = 0;
             const char* data = response.c_str();
             ssize_t totalSize = response.size();

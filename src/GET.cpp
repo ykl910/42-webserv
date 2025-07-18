@@ -1,4 +1,6 @@
 #include "../include/GET.hpp"
+#include "../include/textFormatting.hpp"
+#include "../include/WebServ.hpp"
 
 bool handleHtmlError(HttpRequest& request, HttpResponse& response, std::stringstream *buffer) {
     std::string fullPath = "./website/html/404.html";
@@ -71,6 +73,40 @@ bool handleImg(HttpRequest& request, HttpResponse& response, std::string path, s
     return true;
 }
 
+void handleThread(HttpRequest& request, HttpResponse& response) {
+    std::string targetDir = "./website/threads";
+    DIR* dir = opendir(targetDir.c_str());
+    if (!dir) {
+        response.setStatusLine(request.getHttpVersion(), 200, "OK");
+        std::string emptyArray = "[]";
+        response.setHeaders("Content-Type", "application/json");
+        response.setHeaders("Content-Length", itos(emptyArray.length()));
+        response.setBody(emptyArray);
+        return;
+    }
+    std::string jsonResponse = "[";
+    struct dirent* entry;
+    bool firstEntry = true;
+    while ((entry = readdir(dir)) != NULL) {
+        std::string filename = entry->d_name;
+        if (filename[0] == '.')
+            continue;
+        else {
+            if (!firstEntry)
+                jsonResponse += ",";
+            else
+                firstEntry = false;
+            jsonResponse += "\"" + filename + "\"";
+        }
+    }
+    jsonResponse += "]";
+    closedir(dir);
+    response.setStatusLine(request.getHttpVersion(), 200, "OK");
+    response.setHeaders("Content-Type", "application/json");
+    response.setHeaders("Content-Length", itos(jsonResponse.length()));
+    response.setBody(jsonResponse);
+}
+
 void handleGet(HttpRequest& request, HttpResponse& response) {
     std::string root = "./website";
     std::string path = request.getPath();
@@ -83,7 +119,9 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
     }
     bool success = false;
     std::stringstream buffer;
-    if (extension == "html" || extension == "htm" || extension == "") {
+    if (request.getPath() == "/list-files") {
+        handleThread(request, response);        
+    } else if (extension == "html" || extension == "htm" || extension == "") {
         success = handleHtml(request, response, path, &buffer);
         if (!success)
             handleHtmlError(request, response, &buffer);
@@ -91,6 +129,7 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
         success = handleCss(request, response, path, &buffer);
     } else if (extension == "png" || extension == "gif" || extension == "webp") {
         success = handleImg(request, response, path, extension);
-    } else
+    } else {
         handleHtmlError(request, response, &buffer);
+    }
 }
