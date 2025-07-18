@@ -153,7 +153,6 @@ void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::
 
 void handlePost(HttpRequest& request, HttpResponse& response) {
 
-    (void)response;
     std::map<std::string, std::string> headers = request.getHeaders();
     std::string contentType = getContentType(headers["Content-Type"]);
     std::string boundary = getBoundary(headers["Content-Type"]);
