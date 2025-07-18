@@ -27,7 +27,7 @@ bool handleHtml(HttpRequest& request, HttpResponse& response, std::string path, 
 }
 
 bool handleCss(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer) {
-    std::string fullPath = "./website/html" + path;
+    std::string fullPath = "./website/css" + path;
     std::ifstream file(fullPath.c_str());
     if (!file.is_open())
     {
