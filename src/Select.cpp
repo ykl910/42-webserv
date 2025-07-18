@@ -29,11 +29,12 @@ bool Select::acceptClient(int serverFd) {
     return false;
 }
 
-void    Select::readAndWrite(void) {
+void    Select::manageRequest(void) {
+    char buf[4096];
+    ssize_t bytes = 0;
+
     for (selectIterator it = _selectFd.begin();
                         it != _selectFd.end();) {
-        char buf[4096];
-        ssize_t bytes = 0;
         if (FD_ISSET(*it, &_readFds)) {
             bytes = recv(*it, buf, sizeof(buf), 0);
             if (bytes <= 0) {
@@ -73,9 +74,9 @@ void    Select::readAndWrite(void) {
 
 void    Select::run(WebServ<Select>& server) {
     server.printServerStatus("select");
-    struct timeval tv;
-    tv.tv_sec = 10;
-    tv.tv_usec = 0;
+
+    _tv.tv_sec = 10;
+    _tv.tv_usec = 0;
     int maxFd = getSocketFd();
     int serverFd = getSocketFd();
     int activity = 0;
@@ -101,7 +102,7 @@ void    Select::run(WebServ<Select>& server) {
         }
         //* wait for event in a socket
         errno = 0;
-        activity = select(maxFd + 1, &_readFds, NULL, NULL, &tv);
+        activity = select(maxFd + 1, &_readFds, NULL, NULL, &_tv);
         if (activity < 0) {
             printError();
             continue;
@@ -111,7 +112,7 @@ void    Select::run(WebServ<Select>& server) {
         //* new connexion -> accept connexion and add client to the list
         acceptClient(serverFd);
         //* read request and send response
-        readAndWrite();
+        manageRequest();
     }
 }
 

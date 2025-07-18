@@ -13,6 +13,7 @@ void    Poll::initPoll(void) {
     struct pollfd serverPoll;
 
     serverPoll.fd = getSocketFd();
+    std::cout << serverPoll.fd << std::endl;
     serverPoll.events = POLLIN;
     serverPoll.revents = 0;
     _pollFd.push_back(serverPoll);
@@ -33,6 +34,7 @@ void    Poll::acceptClient(int socketFd) {
     newClientPoll.events = POLLIN;
     newClientPoll.revents = 0;
     _pollFd.push_back(newClientPoll);
+    std::cout << "Here\n";
 }
 
 void    Poll::manageRequest(pollIterator& it, ssize_t bytes) {
@@ -67,20 +69,21 @@ void    Poll::manageRequest(pollIterator& it, ssize_t bytes) {
 void    Poll::run(WebServ<Poll>& server) {
     server.printServerStatus("poll");
 
-    int socketFd = getSocketFd();
+    // int socketFd = getSocketFd();
     initPoll();
     ssize_t bytes;
     while (true) {
-        int activity = poll(&_pollFd[0], _pollFd.size(), -1); // -1 wait indefinitely
+        std::cout << "size: " << _pollFd.size() << std::endl;
+        int activity = poll(&_pollFd[0], _pollFd.size(), 10); // -1 wait indefinitely
         if (activity == -1)
             printError();
 
+        size_t i = 0;
+        // std::cout << "Here\n";
         for (pollIterator it = _pollFd.begin();
                           it != _pollFd.end();) {
-            if (it->fd & POLLIN) {
-                if (it->fd == socketFd) {
-                    acceptClient(socketFd);
-                }
+            if (it->revents & POLLIN) {
+                std::cout << i << std::endl;
             } else {
                bytes = recv(it->fd, _buffer, sizeof(_buffer), 0);
                if (bytes <= 0) {
@@ -89,7 +92,11 @@ void    Poll::run(WebServ<Poll>& server) {
                } else
                     manageRequest(it, bytes);
             }
+            i++;
         }
+        // acceptClient(socketFd);
+        std::cout << _pollFd[0].fd << std::endl;
+        acceptClient(_pollFd[0].fd);
     }
 }
 

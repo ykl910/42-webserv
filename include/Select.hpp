@@ -10,7 +10,7 @@ class WebServ;
 class Select : public Socket {
 public:
     bool acceptClient(int serverFd);
-    void readAndWrite(void);
+    void manageRequest(void);
     void run(WebServ<Select>& server);
 
     Select();
@@ -20,6 +20,7 @@ private:
     typedef std::vector<int>::iterator selectIterator;
     fd_set              _readFds;
     std::vector<int>    _selectFd;
+    struct timeval      _tv;
 };
 
 /*
