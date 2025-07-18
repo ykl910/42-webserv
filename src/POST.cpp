@@ -143,10 +143,21 @@ int storeThread(HttpRequest &request, std::string boundary) {
 
 void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::string msg) {
 
-
     response.setStatusLine(request.getHttpVersion(), code, msg);
-    response.setHeaders("Content-Type", "multipart/form-data");
-    std::string body = request.getBody();
+    response.setHeaders("Content-Type", "text/html");
+    std::string path;
+    if(code == 201)
+        path = "./website/html/uploadSucces.html";
+    else if(code == 400)
+        path = "./website/html/400.html";
+    else if(code == 500)
+        path = "./website/html/500.html";
+    else
+        path = "./website/html/404.html";
+    std::ifstream file(path.c_str());
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string body = buffer.str();
     response.setHeaders("Content-Length", itos(body.size()));
     response.setBody(body);
 }
