@@ -101,26 +101,10 @@ bool    isHttpContext(std::ifstream& file, std::string& line) {
 }
 
 void    Config::printConfig(void) {
+    
+    // std::cout << BOLD WHITE ITALIC << "MAIN CONTEXT\n" << DEFAULT;
     return;
-    // for (mainContextIt it = _mainContext.begin(); it != _mainContext.end(); ++it) {
-    //     if (isDirective(it->second)) {
-    //         for (directiveIt it = it->second.begin(); it != it->second.end(); ++it) {
-
-    //         }
-    //     } else {
-    //         for (httpContext it = _httpContext.begin(); it != _httpContext.end(); ++it) {
-
-    //         }
-    //     }
-
-    //     }
 }
-
-// void    Config::getNextDirective(std::ifstream& file, Context& context, std::string& line) {
-//     (void)line;
-//     (void)file;
-//     (void)context;
-// }
 
 void    Config::getMainContext(std::ifstream& file, std::string& line) {
     (void)file;
@@ -156,7 +140,6 @@ void    Config::parseConfigFile(void) {
         throw std::runtime_error("Error: can't open config file");
 
     std::string line;
-    // std::cout << BOLD WHITE ITALIC << "MAIN CONTEXT\n" << DEFAULT;
     while (std::getline(file, line)) {
         if (isHttpContext(file, line)) {
             if (!(_configMask.mainContext & HTTP_CONTEXT)) {
