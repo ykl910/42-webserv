@@ -3,6 +3,7 @@
 #include "Socket.hpp"
 #include <sys/select.h>
 #include <vector>
+#include "HttpRequest.hpp"
 
 template <class Multiplexer>
 class WebServ;
@@ -10,7 +11,8 @@ class WebServ;
 class Select : public Socket {
 public:
     bool acceptClient(int serverFd);
-    void manageRequest(void);
+    HttpRequest readCompleteRequest(std::string *requestData, int fd, bool &success);
+    void readAndWrite(void);
     void run(WebServ<Select>& server);
 
     Select();

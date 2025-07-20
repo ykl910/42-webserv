@@ -29,24 +29,70 @@ bool Select::acceptClient(int serverFd) {
     return false;
 }
 
-void    Select::manageRequest(void) {
+HttpRequest    Select::readCompleteRequest(std::string *requestData, int fd, bool &success)
+{
     char buf[4096];
-    ssize_t bytes = 0;
+    size_t totalBytes = 0;
+    size_t contentLength = 0;
+    bool headersComplete = false;
+    size_t headerEnd = 0;
+    while (!headersComplete)
+    {
+        size_t bytes = recv(fd, buf, sizeof(buf), 0);
+        if (bytes < 0) {
+            continue;
+        }
+        else if (bytes == 0) {
+            success = false;
+            return HttpRequest();
+        }
+        requestData->append(buf, bytes);
+        totalBytes += bytes;
+        headerEnd = requestData->find("\r\n\r\n");
+        if (headerEnd != std::string::npos)
+        {
+            headersComplete = true;
+            size_t clPos = requestData->find("Content-Length:");
+            if (clPos != std::string::npos)
+            {
+                size_t valueStart = requestData->find_first_not_of(" ", clPos + 15);
+                size_t valueEnd = requestData->find("\r\n", valueStart);
+                std::string len = requestData->substr(valueStart, valueEnd - valueStart);
+                contentLength = atoi(len.c_str());
+            }
+        }
+    }
+    while (requestData->size() < headerEnd + 4 + contentLength) {
+        ssize_t bytes = recv(fd, buf, sizeof(buf), 0);
+        if (bytes < 0) {
+            continue;
+        }
+        else if (bytes == 0) {
+            success = false;
+            return HttpRequest();
+        }
+        requestData->append(buf, bytes);
+    }
+    HttpRequest httpReq(*requestData);
+    success = true;
+    return(httpReq);
+}
 
+void    Select::readAndWrite(void) {
     for (selectIterator it = _selectFd.begin();
                         it != _selectFd.end();) {
-        if (FD_ISSET(*it, &_readFds)) {
-            bytes = recv(*it, buf, sizeof(buf), 0);
-            if (bytes <= 0) {
-                close(*it);
-                std::cout << "Client disconnected: FD " << *it << std::endl;
-                it = _selectFd.erase(it);
-                continue;
-            }
-            std::string request(buf, bytes);
-            HttpRequest httpReq(request);
+            HttpRequest httpReq;
+            std::string requestData;
+            if (FD_ISSET(*it, &_readFds)) {
+                bool success = false;
+                httpReq = readCompleteRequest(&requestData, *it, success);
+                if (!success) {
+                    close(*it);
+                    it = _selectFd.erase(it);
+                    continue;
+                }
             std::cout << BOLD ITALIC GREEN <<  "Received request:\n" << DEFAULT;
-            std::cout << MAGENTA << request << DEFAULT << std::endl;
+            std::cout << MAGENTA << requestData << DEFAULT << std::endl;
             HttpResponse httpRes(httpReq);
             std::string response = httpRes.getResponse();
             // std::cout << BOLD ITALIC GREEN <<  "Response sent:\n" << DEFAULT;
@@ -54,15 +100,11 @@ void    Select::manageRequest(void) {
             ssize_t totalSent = 0;
             const char* data = response.c_str();
             ssize_t totalSize = response.size();
-            while (totalSent < totalSize) {
+            int retry = 1000;
+            while (totalSent < totalSize && retry-- > 0) {
                 ssize_t sent = send(*it, data + totalSent, totalSize - totalSent, 0);
-                if (sent < 0) {
-                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                        continue;
-                    } else {
-                        printError();
-                        break;
-                    }
+                if (sent <= 0) {
+                    continue;
                 }
                 totalSent += sent;
             }
@@ -71,8 +113,9 @@ void    Select::manageRequest(void) {
         }
         else
             ++it;
+        }
     }
-}
+
 
 void    Select::run(WebServ<Select>& server) {
     server.printServerStatus("select");
