@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
   <diagram name="Page-1" id="OH3NMs44CPt9Rq75w--1">
-    <mxGraphModel dx="5165" dy="3123" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#E6E6E6" math="0" shadow="0">
+    <mxGraphModel dx="4132" dy="2498" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#E6E6E6" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -167,7 +167,7 @@
           <mxGeometry x="2365" y="228" width="130" height="30" as="geometry" />
         </mxCell>
         <mxCell id="bgMmDV7iXDeA02Te7cm9-28" value="&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;pid_t waitpid(pid_t pid, int *wstatus, int options);" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="2250" y="318" width="300" height="30" as="geometry" />
+          <mxGeometry x="2055" y="1250" width="300" height="30" as="geometry" />
         </mxCell>
         <mxCell id="bgMmDV7iXDeA02Te7cm9-29" value="&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;int kill(pid_t pid, int sig);" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="2060" y="1190" width="170" height="30" as="geometry" />
@@ -226,7 +226,7 @@
         <mxCell id="bgMmDV7iXDeA02Te7cm9-43" value="Send HTTP request" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="55" y="507" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="bgMmDV7iXDeA02Te7cm9-45" value="Get HTTP request" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="bgMmDV7iXDeA02Te7cm9-45" value="Get HTTP response" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="55" y="611" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="bgMmDV7iXDeA02Te7cm9-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="bgMmDV7iXDeA02Te7cm9-48" target="bgMmDV7iXDeA02Te7cm9-40">
@@ -288,6 +288,9 @@
         </mxCell>
         <mxCell id="bgMmDV7iXDeA02Te7cm9-76" value="&lt;b&gt;Token:&lt;/b&gt; word, semicolon, open_brace, close brace" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="320" y="1210" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bgMmDV7iXDeA02Te7cm9-77" value="&lt;b&gt;GET | POST | DELETE&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="507" width="150" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

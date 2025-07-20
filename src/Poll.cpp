@@ -77,6 +77,16 @@ void    Poll::run(WebServ<Poll>& server) {
         if (_pollFd[0].revents & POLLIN) // if socket got new client
             acceptClient(_pollFd[0].fd);
 
+        // for (size_t i = 1; i < _pollFd.size(); i++) {
+        //     if (_pollFd[i].revents & POLLIN) {
+        //         bytes = recv(_pollFd[i].fd, _buffer, sizeof(_buffer), 0);
+        //         if (bytes <= 0) {
+        //             close(_pollFd[i].fd);
+        //             _pollFd.erase(_pollFd.begin() + i);
+        //         } else
+        //             manageRequest(_pollFd[i].fd, bytes);
+        //     }
+        // }
         for (pollIterator it = _pollFd.begin() + 1;
                           it != _pollFd.end();) {
             if (it->revents & POLLIN) {
@@ -84,10 +94,10 @@ void    Poll::run(WebServ<Poll>& server) {
                 if (bytes <= 0) {
                     close(it->fd);
                     it = _pollFd.erase(it);
+                    continue;
                 } else
                     manageRequest(it, bytes);
             }
-            std::cout << "here\n";
         }
     }
 }
