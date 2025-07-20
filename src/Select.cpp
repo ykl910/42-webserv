@@ -1,21 +1,32 @@
 #include "../include/Select.hpp"
 #include "../include/WebServ.hpp"
 
-void    Select::acceptClient(int serverFd) {
-    errno = 0;
-    int newClient = accept(serverFd, NULL, NULL);
-    if (newClient == -1) {
-        printError();
-    } else {
-        int flags = fcntl(newClient, F_GETFL, 0);
-        if (flags == -1 || fcntl(newClient, F_SETFL, flags | O_NONBLOCK) == -1) {
+bool Select::acceptClient(int serverFd) {
+    if (FD_ISSET(serverFd, &_readFds)) {
+    /*
+        select() modifies the contents of the sets according to the rules
+        described below. After  calling  select(),  the FD_ISSET() macro
+        can be used to test if a file descriptor is still present in a set.
+        FD_ISSET() returns nonzero  if  the file descriptor fd is present
+        in set, and zero if it is not.
+    */
+        errno = 0;
+        int newClient = accept(serverFd, NULL, NULL);
+        if (newClient < 0) {
             printError();
-            close(newClient);
+            return true;
         } else {
-            _selectFd.push_back(newClient);
-            std::cout << "New client connected: FD " << newClient << std::endl;
+            int flags = fcntl(newClient, F_GETFL, 0);
+            if (flags == -1 || fcntl(newClient, F_SETFL, flags | O_NONBLOCK) == -1) {
+                printError();
+                close(newClient);
+            } else {
+                _selectFd.push_back(newClient);
+                std::cout << "New client connected: FD " << newClient << std::endl;
+            }
         }
     }
+    return false;
 }
 
 void    Select::manageRequest(void) {
@@ -100,18 +111,8 @@ void    Select::run(WebServ<Select>& server) {
         } else if (activity == 0) {
             continue;
         }
-
-        if (FD_ISSET(serverFd, &_readFds)) {
-        /*
-            select() modifies the contents of the sets according to the rules
-            described below. After  calling  select(),  the FD_ISSET() macro
-            can be used to test if a file descriptor is still present in a set.
-            FD_ISSET() returns nonzero  if  the file descriptor fd is present
-            in set, and zero if it is not.
-        */
-            //* new connexion -> accept connexion and add client to the list
-            acceptClient(serverFd);
-        }
+        //* new connexion -> accept connexion and add client to the list
+        acceptClient(serverFd);
         //* read request and send response
         manageRequest();
     }
