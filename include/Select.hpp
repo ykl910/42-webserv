@@ -12,7 +12,7 @@ class Select : public Socket {
 public:
     bool acceptClient(int serverFd);
     HttpRequest readCompleteRequest(std::string *requestData, int fd, bool &success);
-    void readAndWrite(void);
+    void manageRequest(void);
     void run(WebServ<Select>& server);
 
     Select();
