@@ -78,7 +78,7 @@ HttpRequest    Select::readCompleteRequest(std::string *requestData, int fd, boo
     return(httpReq);
 }
 
-void    Select::readAndWrite(void) {
+void    Select::manageRequest(void) {
     for (selectIterator it = _selectFd.begin();
                         it != _selectFd.end();) {
             HttpRequest httpReq;
