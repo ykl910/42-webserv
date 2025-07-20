@@ -59,6 +59,7 @@ class Config {
 public:
     typedef std::vector<t_config_node>  configParser;
 
+    bool isConfigMaskValid(uint8_t value);
     bool isDirective(const std::string& line);
     void getMainContext(std::ifstream& file, std::string& line);
     void getHttpContext(std::ifstream& file, std::string& line);
