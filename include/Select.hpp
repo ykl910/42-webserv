@@ -9,7 +9,7 @@ class WebServ;
 
 class Select : public Socket {
 public:
-    bool acceptClient(int serverFd);
+    void acceptClient(int serverFd);
     void manageRequest(void);
     void run(WebServ<Select>& server);
 

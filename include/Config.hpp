@@ -9,7 +9,8 @@
 template <class Multiplexer>
 class WebServ;
 
-enum e_context {MAIN_CONTEXT, HTTP_CONTEXT, SERVER_CONTEXT, LOCATION_CONTEXT};
+enum e_token    {SEMI_COLON, OPENING_CURLY_BRACE, CLOSING_CURLY_BRACE};
+enum e_context  {MAIN_CONTEXT, HTTP_CONTEXT, SERVER_CONTEXT, LOCATION_CONTEXT};
 
 enum e_main_directive {
 
@@ -40,34 +41,29 @@ typedef struct s_configMask {
     uint32_t    serverContext;
 }t_configMask;
 
+typedef struct s_directive {
+    std::string                 name;
+    std::vector<std::string>    argument;
+}t_directive;
+
+typedef struct s_context {
+    std::vector<t_directive>        directive;
+    std::vector<struct s_context>   context;
+}t_context;
+
+typedef struct s_config_node {
+
+}t_config_node;
+
 class Config {
 public:
-    typedef std::string context_name;
-    typedef std::string subcontext_name;
-    typedef std::string directive_name;
-
-    typedef std::vector<std::string> directive_argument;
-    typedef std::map<directive_name, directive_argument> context;
-    typedef std::map<directive_name, directive_argument> directive;
-    typedef std::map<subcontext_name, context> mainContext;
-    typedef std::map<subcontext_name, context> httpContext;
-    typedef std::map<subcontext_name, context> serverContext;
-
-    typedef mainContext::iterator mainContextIt;
-    typedef httpContext::iterator httpContextIt;
-    typedef serverContext::iterator serverContextIt;
-    typedef directive::iterator directiveIt;
+    typedef std::vector<t_config_node>  configParser;
 
     bool isDirective(const std::string& line);
-    bool isDirective(const directiveIt& it);
     void getMainContext(std::ifstream& file, std::string& line);
     void getHttpContext(std::ifstream& file, std::string& line);
     void getServerContext(std::ifstream& file, std::string& line);
-    void getNextContext(std::ifstream& file, context& context, std::string& line);
 
-    template <typename Context>
-    void getNextDirective(std::ifstream& file, Context& context,
-                          std::string& line);
     void parseConfigFile(void);
     void printConfig(void);
 
@@ -78,25 +74,7 @@ public:
 private:
     std::string                 _configPath;
     t_configMask                _configMask;
-    mainContext                 _mainContext;
-    httpContext                 _httpContext;
-    serverContext               _serverContext;
+    configParser                _configParser;
     std::vector<std::string>    _port;
-};
 
-/* NGINX context hierarchy
-main
-├── events
-├── http
-│   ├── server
-│   │   ├── location
-│   │   │   ├── if
-│   │   │   └── limit_except
-│   ├── upstream
-│   ├── map
-│   └── geo
-├── stream
-│   └── server
-└── mail
-    └── server
-*/
+};
