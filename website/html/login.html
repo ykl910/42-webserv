@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="../css/style.css">
+   <link rel="icon" href="../assets/icon.png" type="image/png">
+   <title>Upload</title>
+</head>
+<body>
+   <nav class="navbar">
+      <div class="left-side">
+         <img src="../images/post42logo.png" alt="logo" class="logo" />
+         <a href="about.html">about us</a>
+         <a href="index.html">latest posts</a>
+      </div>
+      <div class="site-name">post42_</div>
+      <div class="right-side">
+         <a href="upload.html" class="upload">upload</a>
+         <a href="remove.html" class="upload">remove</a>
+      </div>
+   </nav>
+   <main>
+   <h1>Login</h1>
+   <div class="upload">
+      <form action="/login" method="POST" enctype="multipart/form-data" id="loginForm">
+         <input type="hidden" name="action" id="actionType" value="login">
+         <div class="form-group">
+         <label for="username">Username:</label>
+         <input type="text" id="username" name="username" placeholder="Enter username" required autocomplete="off">
+         </div>
+         <div class="form-group">
+         <label for="password">Password:</label>
+         <input type="text" id="password" name="password" placeholder="Enter password" required autocomplete="off">
+         </div>
+         <div class="form-group button-group">
+         <button type="submit" class="upload-btn login-btn">Login</button>
+         <button type="button" id="registerBtn" class="upload-btn register-btn">Register</button>
+         </div>
+      </form>
+   </div>
+   </main>
+
+   <!-- <script>
+      const loginForm = document.getElementById('loginForm');
+      const registerBtn = document.getElementById('registerBtn');
+      const actionField = document.getElementById('actionType');
+      
+      registerBtn.addEventListener('click', function(e) {
+         actionField.value = 'register';
+         loginForm.submit();
+      });
+      
+   </script> -->
+</body>
+</html>

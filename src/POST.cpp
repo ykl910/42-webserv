@@ -21,10 +21,10 @@ std::string getContentType(std::string &line) {
     return NULL;
 }
 
-int createFile(std::string filename) {
+int createFile(std::string dir, std::string filename) {
 
-    std::string filepath = DIRPATH + filename;
-    int fd = open(filepath.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    std::string fullpath = dir + filename;
+    int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if(fd == -1)
         printError();
     return fd;
@@ -33,7 +33,7 @@ int createFile(std::string filename) {
 int storeTitle(std::string title, int threadNb) {
 
     std::string filename = itos(threadNb) + "_title.txt";
-    int fd = createFile(filename);
+    int fd = createFile(DIRPATH, filename);
     if(fd == -1)
         return -1;
     size_t startPos = title.find("\r\n\r\n") + 4;
@@ -49,7 +49,7 @@ int storeTitle(std::string title, int threadNb) {
 int storeText(std::string body, int threadNb) {
 
     std::string filename = itos(threadNb) + "_body.txt";
-    int fd = createFile(filename);
+    int fd = createFile(DIRPATH, filename);
     if(fd == -1)
         return -1;
     size_t startPos = body.find("\r\n\r\n") + 4;
@@ -66,8 +66,7 @@ int storeImg(std::string img, int threadNb) {
 
     std::string filename;
     filename = itos(threadNb) + "_img.jpg";
-
-    int fd = createFile(filename);
+    int fd = createFile(DIRPATH, filename);
     if(fd == -1)
         return -1;
     size_t startPos = img.find("\r\n\r\n") + 4;
@@ -141,6 +140,62 @@ int storeThread(HttpRequest &request, std::string boundary) {
     return 0;
 }
 
+
+// cookies management
+int storeUsername(std::string username) {
+
+    std::string fullpath = "website/users/userinfo";
+    int fd = open(fullpath.c_str(), O_WRONLY | O_APPEND);
+    if(fd == -1)
+        return -1;
+    size_t startPos = username.find("\r\n\r\n") + 4;
+    size_t endPos = username.size() - 4;
+
+    std::string txt = username.substr(startPos, endPos - startPos) + ";";
+
+    write(fd, txt.c_str(), txt.size());
+    close(fd);
+    return 0;
+}
+
+int storePassword(std::string password) {
+
+    std::string fullpath = "website/users/userinfo";
+    int fd = open(fullpath.c_str(), O_WRONLY | O_APPEND);
+    if(fd == -1)
+        return -1;        
+    size_t startPos = password.find("\r\n\r\n") + 4;
+    size_t endPos = password.size() - 2;
+
+    std::string txt = password.substr(startPos, endPos - startPos);
+
+    write(fd, txt.c_str(), txt.size());
+    close(fd);
+    return 0;
+}
+
+int storeUser(HttpRequest &request, std::string boundary) {
+
+    std::vector<std::string> tokens = split(request.getBody(), boundary);
+    std::vector<std::string>::iterator tokenIt;
+
+    for(tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt)
+    {
+        std::string line = *tokenIt;
+        if(line.find("Content-Disposition: form-data; name=\"username\"") != std::string::npos)
+        {
+            if(storeUsername(line) == -1)
+                return -1;
+        }
+        if(line.find("Content-Disposition: form-data; name=\"password\"")!= std::string::npos)
+        {
+            if(storePassword(line) == -1)
+                return -1;
+        }
+    }
+    return 0;
+}
+
 void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::string msg) {
 
     response.setStatusLine(request.getHttpVersion(), code, msg);
@@ -168,13 +223,29 @@ void handlePost(HttpRequest& request, HttpResponse& response) {
     std::string contentType = getContentType(headers["Content-Type"]);
     std::string boundary = getBoundary(headers["Content-Type"]);
 
-    if((!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
+
+    if(request.getPath() == "/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
     {
-        if(storeThread(request, boundary) == -1)
+        if (storeThread(request, boundary) == -1)
+            buildResponse(request, response, 500, "Internal error");
+        else
+            buildResponse(request, response, 201, "Created");
+    }
+    else if (request.getPath() == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
+    {
+        if (storeUser(request, boundary) == -1)
+            buildResponse(request, response, 500, "Internal error");
+        else
+            buildResponse(request, response, 201, "Created");
+    }
+    else if (request.getPath() == "register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
+    {
+        if (storeUser(request, boundary) == -1)
             buildResponse(request, response, 500, "Internal error");
         else
             buildResponse(request, response, 201, "Created");
     }
     else
         buildResponse(request, response, 400, "Bad Request");
+
 }
