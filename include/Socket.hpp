@@ -17,7 +17,7 @@ public:
     ~Socket();
 
 private:
-    int _socketFd;
+    int             _socketFd;
     struct addrinfo _hints;
-    // std::vector<struct addrinfo> _hints;
+    Config          _config;
 };

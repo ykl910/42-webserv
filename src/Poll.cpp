@@ -74,19 +74,12 @@ void    Poll::run(WebServ<Poll>& server) {
         if (activity == -1)
             printError();
 
-        if (_pollFd[0].revents & POLLIN) // if socket got new client
+        // if socket got a new client
+        if (_pollFd[0].revents & POLLIN) {
             acceptClient(_pollFd[0].fd);
+            std::cout << BOLD WHITE << "Poll got a new client\n" << DEFAULT;
+        }
 
-        // for (size_t i = 1; i < _pollFd.size(); i++) {
-        //     if (_pollFd[i].revents & POLLIN) {
-        //         bytes = recv(_pollFd[i].fd, _buffer, sizeof(_buffer), 0);
-        //         if (bytes <= 0) {
-        //             close(_pollFd[i].fd);
-        //             _pollFd.erase(_pollFd.begin() + i);
-        //         } else
-        //             manageRequest(_pollFd[i].fd, bytes);
-        //     }
-        // }
         for (pollIterator it = _pollFd.begin() + 1;
                           it != _pollFd.end();) {
             if (it->revents & POLLIN) {
