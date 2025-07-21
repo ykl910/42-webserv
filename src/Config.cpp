@@ -44,91 +44,80 @@ main
 └── include              (directive, includes external config)
 */
 
-uint64_t server_nbr = 0;
+std::map<uint8_t, std::string>  serverDirective;
 
-bool    Config::isDirective(const std::string& line) {
-    return line == "listen";
+bool    isRightIndentation(const std::string& line, uint8_t indentSize) {
+    return line.size() > indentSize
+        && line.substr(0, indentSize).find_first_not_of(" ");
 }
 
-bool    isContext(const std::string& line) {
-    return line == "http" || line == "server";
-}
+void    Config::getServerLocationContext(std::ifstream& file,
+            std::string& line, t_server& server, uint8_t directiveNbr) {
 
-bool    isServerContext(std::ifstream& file, std::string& line) {
-    size_t i = 0;
-
-    while (line[i] && std::isspace(line[i])) { ++i; }
-    if (line.substr(i, 6) != "server")
-    return false;
-
-    i += 5;
-    while (line[i] && line[i] != '{') {
-        if (!std::isspace(line[i]) || line[i] != '{')
-        return false;
-        i++;
-    }
-    std::streampos offset = file.tellg();
     while (std::getline(file, line)) {
-        if (line.find("}")) {
-            file.seekg(offset);
-            return true;
-        }
-    }
-    return false;
-}
-
-bool    isHttpContext(std::ifstream& file, std::string& line) {
-    size_t i = 0;
-
-    while (line[i] && std::isspace(line[i])) { ++i; }
-    if (line.substr(i, 4) != "http")
-    return false;
-
-    i += 5;
-    while (line[i] && line[i] != '{') {
-        if (!std::isspace(line[i]) || line[i] != '{')
-        return false;
-        i++;
-    }
-    std::streampos offset = file.tellg();
-    while (std::getline(file, line)) {
-        if (line.find("}")) {
-            file.seekg(offset);
-            return true;
-        }
-    }
-    return false;
-}
-
-void    Config::printConfig(void) {
-    
-    // std::cout << BOLD WHITE ITALIC << "MAIN CONTEXT\n" << DEFAULT;
-    return;
-}
-
-void    Config::getMainContext(std::ifstream& file, std::string& line) {
-    (void)file;
-    for (size_t i = 0; line[i]; i++)
         (void)line;
+        (void)server;
+        (void)directiveNbr;
+    }
+}
+
+std::string    getServerDirectiveName(uint8_t directiveNbr) {
+    std::string result;
+    switch (directiveNbr) {
+        case SERVER_NAME:
+            return result = std::string("server_name");
+        case LISTEN:
+            return result = std::string("listen");
+        case CLIENT_MAX_BODY_SIZE:
+            return result = std::string("client_max_body_size");
+        default:
+            return result = std::string(" ");
+    }
+}
+
+void    Config::getServerDirective(
+            std::string& line, t_server& server, uint8_t directiveNbr) {
+    if (server.mask & 1 << directiveNbr)
+        throw std::runtime_error("Error: got doublon in config file.");
+    else if (!isRightIndentation(line, 4))
+        throw std::runtime_error("Error: wrong indentation in config file.");
+    t_directive directive;
+    directive.name = getServerDirectiveName(directiveNbr);
+    if (directive.name == line.substr(5, directive.name.length())
+        && line[directive.name.length() + 1] == ' ')
+    server.mask |= 1 << directiveNbr;
+    server.directiveList.push_back(directive);
+    // std::cout << line << std::endl;
+}
+
+bool    serverContextNameValid(const std::string& line) {
+    return line == "server:";
 }
 
 void    Config::getServerContext(std::ifstream& file, std::string& line) {
-    (void)file;
-    // std::cout << BOLD MAGENTA ITALIC
-    // << "        SERVER CONTEXT " << server_nbr + 1 << "\n" << DEFAULT;
-    for (size_t i = 0; line[i]; i++)
-        (void)line;
+    t_server    server;
+    uint8_t     directiveNbr = 0;
+    bool        isLocation = false;
 
+    server.mask = 0;
+    while (std::getline(file, line)) {
+        if (line.empty())
+            break;
+        else if (!isLocation) {
+            getServerDirective(line, server, directiveNbr);
+            directiveNbr++;
+            // isLocation = true;
+        } else
+            getServerLocationContext(file, line, server, directiveNbr);
+    }
+    _webservConfig.serverList.push_back(server);
 }
 
-void    Config::getHttpContext(std::ifstream& file, std::string& line) {
-    (void)file;
-    (void)line;
-    // std::cout << BOLD BLUE ITALIC << "    HTTP CONTEXT\n" << DEFAULT;
-    while (std::getline(file, line)) {
-        if (isServerContext(file, line)) {
-            getServerContext(file, line);
-            // exit(0);
+void    Config::printServerConfig(void) {
+    for (size_t i = 0; i < _webservConfig.serverList.size(); i++) {
+        for (size_t j = 0; j < _webservConfig.serverList[i].directiveList.size(); j++) {
+            std::cout << _webservConfig.serverList[i].directiveList[j].name << std::endl;
+            std::cout << _webservConfig.serverList[i].directiveList[j].argument << std::endl;
         }
     }
 }
@@ -138,17 +127,10 @@ void    Config::parseConfigFile(void) {
 
     if (!file)
         throw std::runtime_error("Error: can't open config file");
-
     std::string line;
     while (std::getline(file, line)) {
-        if (isHttpContext(file, line)) {
-            if (!(_configMask.mainContext & HTTP_CONTEXT)) {
-                _configMask.mainContext |= 1 << HTTP;
-                getHttpContext(file, line);
-            } else
-                throw std::runtime_error("Error: config file have more than one HTTP context");
-        }
-            // getNextDirective(file, _mainContext, line);
+        if (!line.empty() && serverContextNameValid(line))
+            getServerContext(file, line);
     }
     file.close();
 }
