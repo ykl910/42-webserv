@@ -107,9 +107,15 @@ void handleThread(HttpRequest& request, HttpResponse& response) {
     response.setBody(jsonResponse);
 }
 
+void handleCgi(HttpRequest& request, HttpResponse& response) {
+    Cgi cgi(request, response);
+}
+
 void handleGet(HttpRequest& request, HttpResponse& response) {
     std::string root = "./website";
     std::string path = request.getPath();
+    if(path.find(".gci") != std::string::npos)
+        handleCgi(request, response);
     if (path == "" || path == "/")
         path = "/index.html";
     std::string extension;
@@ -120,7 +126,7 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
     bool success = false;
     std::stringstream buffer;
     if (request.getPath() == "/list-files") {
-        handleThread(request, response);        
+        handleThread(request, response);
     } else if (extension == "html" || extension == "htm" || extension == "") {
         success = handleHtml(request, response, path, &buffer);
         if (!success)

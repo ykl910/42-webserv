@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HttpRequest.hpp"
+#include "CGI.hpp"
 #include <netinet/in.h>
 #include <unistd.h>
 #include <cstdio>

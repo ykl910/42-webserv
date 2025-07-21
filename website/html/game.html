@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>post42_</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/assets/icon.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="left-side">
+            <img src="/images/post42logo.png" alt="logo" class="logo" />
+            <a href="/about.html">about us</a>
+            <a href="/index.html">latest posts</a>
+        </div>
+        <div class="site-name">post42_</div>
+        <div class="right-side">
+            <a href="/upload.html" class="upload">upload</a>
+            <a href="/remove.html" class="upload">remove</a>
+            <a href="/game.html" class="upload">wtf</a>
+        </div>
+    </nav>
+    <main>
+        <h1>MINIGAMES</h1>
+        <h2>Russian Roulette</h2>
+        <div class="gif">
+            <img src="/assets/roulette.gif" alt="Animated GIF">
+        </div>
+        <form method="get" action="/cgi/bin/roulette.cgi">
+            <center>
+                <p>Select a number between 0 and 9</p>
+                <input name="number" type="number" min="0" max="9" required>
+                <br><br>
+                <button type="submit">Fire!</button>
+            </center>
+        </form>
+    </main>
+</body>
+</html>
