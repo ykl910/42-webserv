@@ -8,6 +8,6 @@ print("""
 <body>
 <h1>Hello from Python CGI!</h1>
 <p>This is a CGI script written in Python.</p>
-</body>
+</body> printf("")
 </html>
 """)

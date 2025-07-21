@@ -93,6 +93,8 @@ void    Select::manageRequest(void) {
                 }
             std::cout << BOLD ITALIC GREEN <<  "Received request:\n" << DEFAULT;
             std::cout << MAGENTA << requestData << DEFAULT << std::endl;
+            //std::cout << MAGENTA << httpReq.getPath() << DEFAULT << std::endl;
+
             HttpResponse httpRes(httpReq);
             std::string response = httpRes.getResponse();
             // std::cout << BOLD ITALIC GREEN <<  "Response sent:\n" << DEFAULT;

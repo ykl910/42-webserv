@@ -352,3 +352,19 @@ body::before {
   text-shadow: none;
   box-shadow: 0 0 15px #33ff33;
 }
+
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.login-btn, .register-btn {
+    flex: 1;
+}
+
+.form-group.button-group {
+  flex-direction: row !important; /* Override the column direction from form-group */
+  justify-content: space-between;
+  align-items: center;
+}
