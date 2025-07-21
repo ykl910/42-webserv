@@ -42,7 +42,7 @@ void Epoll::createEpollInstance() {
 
     std::cout << "Creating new epool instance" << std::endl;
 
-    _epollFd = epoll_create1(0);
+    _epollFd = epoll_create(1);
     if (_epollFd == -1)
         printErrorAndThrow("epoll_create1");
 }
