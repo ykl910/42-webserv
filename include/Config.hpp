@@ -37,6 +37,8 @@ typedef struct s_webservConfig {
 
 class Config {
 public:
+    const char* getConfigFilePath(void) const;
+
     void printServerConfig(void);
     void getServerLocationContext(std::ifstream& file, std::string& line,
         t_server& server, uint8_t directiveNbr);
@@ -45,11 +47,10 @@ public:
     void getServerContext(std::ifstream& file, std::string& line);
     void parseConfigFile(void);
 
-    Config();
-    Config(const std::string& configPath);
+    Config(const char* configFilePath);
     ~Config();
 
 private:
-    std::string     _configPath;
+    std::string     _configFilePath;
     t_webservConfig _webservConfig;
 };

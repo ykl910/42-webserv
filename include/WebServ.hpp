@@ -20,10 +20,9 @@ private:
     Multiplexer _multiplexer;
 
 public:
-    WebServ();
-    WebServ(const char* configFile);
+    WebServ(const char* configFilePath);
     ~WebServ();
-    void printServerStatus(const char* multiplexer) const;
+    void printServerStatus(const char* multiplexer, const char* configFilePath) const;
     void runMultiplexer() {
         _multiplexer.run(*this);
     }

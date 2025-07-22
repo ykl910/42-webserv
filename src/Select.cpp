@@ -120,7 +120,7 @@ void    Select::manageRequest(void) {
 
 
 void    Select::run(WebServ<Select>& server) {
-    server.printServerStatus("select");
+    server.printServerStatus("select", getConfigFilePath());
 
     _tv.tv_sec = 10;
     _tv.tv_usec = 0;
@@ -163,7 +163,7 @@ void    Select::run(WebServ<Select>& server) {
     }
 }
 
-Select::Select() {}
+Select::Select(const char *configFilePath) : Socket(configFilePath) {}
 
 Select::~Select() {
     for (selectIterator it = _selectFd.begin();

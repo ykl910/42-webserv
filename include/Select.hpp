@@ -15,7 +15,7 @@ public:
     void manageRequest(void);
     void run(WebServ<Select>& server);
 
-    Select();
+    Select(const char *configFilePath);
     ~Select();
 
 private:

@@ -34,7 +34,7 @@ public:
     void addClientToEpoll(int const &clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
 
-    Epoll();
+    Epoll(const char *configFilePath);
     ~Epoll();
 
 private:

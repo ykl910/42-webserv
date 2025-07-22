@@ -1,7 +1,7 @@
 #include "../include/WebServ.hpp"
 #include "../include/HttpRequest.hpp"
 
-bool    got_config_file(const int argc, const char* argv) {
+bool    got_config_file_path(const int argc, const char* argv) {
     if (argc == 2 || argc == 3) {
         try {
             std::string config_file(argv);
@@ -9,14 +9,11 @@ bool    got_config_file(const int argc, const char* argv) {
                 throw std::runtime_error("Error: no config file name.");
             if (access(config_file.c_str(), R_OK) != 0)
                 throw std::runtime_error("Error: can't read config file.");
+            return true;
         } catch (std::exception& e) {
             std::cerr << BOLD RED << e.what() << DEFAULT << std::endl;
-            return false;
         }
-        return true;
     }
-    std::cout << BOLD WHITE << "Usage: ./webserv [config file]" << DEFAULT
-    << std::endl;
     return false;
 }
 
@@ -25,29 +22,31 @@ bool    had_choosen_multiplexer(const std::string& input) {
         || input == "poll" || input == "epoll");
 }
 
-void    run_specific_multiplexer(const std::string& multiplexer) {
+void    run_specific_multiplexer(const std::string& multiplexer,
+                                 const char* configFilePath) {
     if (multiplexer == "select")
-        WebServ<Select> server;
+        WebServ<Select> server(configFilePath);
     else if (multiplexer == "poll")
-        WebServ<Poll>   server;
+        WebServ<Poll>   server(configFilePath);
     else if (multiplexer == "epoll")
-        WebServ<Epoll>  server;
+        WebServ<Epoll>  server(configFilePath);
 }
 
 int main(int argc, char **argv) {
-    if (got_config_file(argc, argv[1])) {
-        try {
-            if (argc == 3 && had_choosen_multiplexer(argv[2]))
-                run_specific_multiplexer(argv[2]);
-            else
-                WebServ<Select> server;
-        } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            return EXIT_FAILURE;
-        }
-        return EXIT_SUCCESS;
+    std::string configFilePath("config/webserv.conf");
+
+    if (got_config_file_path(argc, argv[1]))
+        configFilePath = std::string(argv[1]);
+    try {
+        if ((argc == 2 || argc == 3) && had_choosen_multiplexer(argv[argc - 1]))
+            run_specific_multiplexer(argv[2], configFilePath.c_str());
+        else
+            WebServ<Select> server(configFilePath.c_str());
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
 //test response parsing

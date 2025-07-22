@@ -60,7 +60,7 @@ void Socket::setOnListening(){
         printErrorAndThrow("listen");
 }
 
-Socket::Socket() {
+Socket::Socket(const char *configFilePath) : Config(configFilePath) {
     createAndBind();
     setOnListening();
 }

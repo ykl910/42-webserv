@@ -13,11 +13,11 @@ public:
     void setSocketOpt();
     void setOnListening();
 
-    Socket();
+    Socket(const char *configFilePath);
     ~Socket();
 
 private:
     int             _socketFd;
     struct addrinfo _hints;
-    Config          _config;
+    // Config          _config;
 };

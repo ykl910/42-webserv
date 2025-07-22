@@ -18,7 +18,7 @@ public:
     void initPoll(void);
     void run(WebServ<Poll>& server);
 
-    Poll();
+    Poll(const char* configFilePath);
     ~Poll();
 
 private:
