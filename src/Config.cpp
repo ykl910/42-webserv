@@ -44,7 +44,18 @@ main
 └── include              (directive, includes external config)
 */
 
-std::map<uint8_t, std::string>  serverDirective;
+
+bool    serverContextNameValid(const std::string& line) {
+    return line == "server:";
+}
+
+bool    locationContextNameValid(const std::string& line) {
+    return line == "location:";
+}
+
+bool    errorContextNameValid(const std::string& line) {
+    return line == "error:";
+}
 
 bool    isRightIndentation(const std::string& line, uint8_t indentSize) {
     return line.size() > indentSize
@@ -87,11 +98,6 @@ void    Config::getServerDirective(
         && line[directive.name.length() + 1] == ' ')
     server.mask |= 1 << directiveNbr;
     server.directiveList.push_back(directive);
-    // std::cout << line << std::endl;
-}
-
-bool    serverContextNameValid(const std::string& line) {
-    return line == "server:";
 }
 
 void    Config::getServerContext(std::ifstream& file, std::string& line) {
@@ -122,9 +128,10 @@ void    Config::printServerConfig(void) {
     }
 }
 
-void    Config::parseConfigFile(void) {
+void    Config::parseConfigFile(directive& directiveList) {
     std::ifstream file(_configFilePath.c_str());
 
+    (void)directiveList;
     if (!file)
         throw std::runtime_error("Error: can't open config file");
     std::string line;
@@ -139,8 +146,54 @@ const char* Config::getConfigFilePath(void) const {
     return _configFilePath.c_str();
 }
 
+void    Config::initConfig(directive& directiveList) {
+
+    // serverDirective
+    directiveList[SERVER][0] = "server_name";
+    directiveList[SERVER][1] = "listen";
+    directiveList[SERVER][2] = "client_max_body_size";
+
+    // errorDirective
+    directiveList[ERROR_PAGE][0] = "";
+    directiveList[ERROR_PAGE][1] = "";
+    directiveList[ERROR_PAGE][2] = "";
+
+    // returnDirective
+    directiveList[RETURN][0] = "";
+    directiveList[RETURN][1] = "";
+    directiveList[RETURN][2] = "";
+
+    // locationDirective
+    directiveList[LOCATION][0] = "";
+    directiveList[LOCATION][1] = "";
+    directiveList[LOCATION][2] = "";
+
+    // cgiDirective
+    directiveList[CGI][0] = "";
+    directiveList[CGI][1] = "";
+    directiveList[CGI][2] = "";
+
+}
+
 Config::Config(const char* configFilePath) : _configFilePath(configFilePath) {
-    parseConfigFile();
+    directive directiveList;
+
+    std::map<uint8_t, std::string>  serverDirective;
+    std::map<uint8_t, std::string>  errorDirective;
+    std::map<uint8_t, std::string>  returnDirective;
+    std::map<uint8_t, std::string>  locationDirective;
+    std::map<uint8_t, std::string>  cgiDirective;
+
+    directiveList[0] = serverDirective;
+    directiveList[1] = errorDirective;
+    directiveList[2] = returnDirective;
+    directiveList[3] = locationDirective;
+    directiveList[4] = cgiDirective;
+
+    initConfig(directiveList);
+    for (size_t i = 0; i < serverDirective.size(); i++)
+        std::cout << serverDirective[i] << std::endl;
+    parseConfigFile(directiveList);
     // exit(0);
 }
 
