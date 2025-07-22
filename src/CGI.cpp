@@ -14,6 +14,7 @@ int Cgi::execFromGet(HttpRequest &request, HttpResponse &response) {
     size_t varStart = header.find('?') + 1;
     size_t varEnd = header.size();
     std::string var = header.substr(varStart, varEnd - varStart);
+    std::cout << "var: " << var << std::endl;
     char* envp[] = { const_cast<char*>(var.c_str()), NULL};
     char* argv[] = { const_cast<char*>("./cgi-bin/multiplication.cgi"), NULL};
 
@@ -69,6 +70,7 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response) {
 }
 
 Cgi::Cgi(HttpRequest &request, HttpResponse &response) {
+    std::cout << "HELLO FRON CGI" << std::endl;
     this->execute(request, response);
 }
 
