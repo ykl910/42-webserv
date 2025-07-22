@@ -1,8 +1,6 @@
 #include "../include/Poll.hpp"
 #include "../include/WebServ.hpp"
 
-// int ppoll(struct pollfd *fds, nfds_t nfds,
-//      const struct timespec *tmo_p, const sigset_t *sigmask);
 // struct pollfd {
 //        int   fd;         /* file descriptor */
 //        short events;     /* requested events */
@@ -33,6 +31,9 @@ void    Poll::acceptClient(int socketFd) {
     newClientPoll.events = POLLIN | POLLERR;
     newClientPoll.revents = 0;
     _pollFd.push_back(newClientPoll);
+
+    std::cout << BOLD WHITE << "POLL: new client accepted with fd "
+    << BOLD BLUE << newClientPoll.fd << std::endl;
 }
 
 void    Poll::manageRequest(pollIterator& it, ssize_t bytes) {
