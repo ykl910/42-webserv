@@ -24,7 +24,8 @@ INCLUDE             := CGI.hpp \
                     WebServ.hpp \
                     GET.hpp \
                     POST.hpp \
-                    DELETE.hpp
+                    DELETE.hpp \
+                    Cookies.hpp
 
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
@@ -45,7 +46,8 @@ SRC                 := CGI.cpp \
                     GET.cpp \
                     POST.cpp \
                     DELETE.cpp \
-                    utils.cpp
+                    utils.cpp \
+                    Cookies.cpp
 
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 

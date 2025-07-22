@@ -10,7 +10,7 @@
 <body>
    <nav class="navbar">
       <div class="left-side">
-         <!-- <img src="../images/post42logo.png" alt="logo" class="logo" /> -->
+         <img src="../images/post42logo.png" alt="logo" class="logo" />
          <a href="about.html">about us</a>
          <a href="index.html">latest posts</a>
       </div>
@@ -21,28 +21,30 @@
       </div>
    </nav>
    <main>
-   <h1>Login</h1>
+   <h1>Register</h1>
    <div class="upload">
-      <form id="loginForm" method="POST" enctype="multipart/form-data">
+      <form id="registerForm" method="POST" enctype="multipart/form-data">
          <div class="form-group">
-         <label for="username">Username:</label>
-         <input type="text" id="username" name="username" placeholder="Enter username" required autocomplete="off">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter username" required autocomplete="off">
          </div>
          <div class="form-group">
-         <label for="password">Password:</label>
-         <input type="text" id="password" name="password" placeholder="Enter password" required autocomplete="off">
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" placeholder="Enter email" required autocomplete="off">
+         </div>
+         <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" placeholder="Enter password" required autocomplete="off">
          </div>
          <div class="form-group button-group">
-         <button type="submit" class="upload-btn">Login</button>
-         <a href="register.html" class="upload-btn">Register</a>
+         <button type="submit" class="upload-btn">Register</button>
          </div>
       </form>
    </div>
-   </main>
 
    <script>
       window.addEventListener("DOMContentLoaded", function () {
-         document.getElementById("loginForm").addEventListener("submit", async function (e) {
+         document.getElementById("registerForm").addEventListener("submit", async function (e) {
             e.preventDefault();
             console.log("Submitting with JS fetch...");
 
@@ -50,7 +52,7 @@
             const formData = new FormData(form);
 
             try {
-               const res = await fetch("/login", {
+               const res = await fetch("/register", {
                   method: "POST",
                   body: formData,
                });
@@ -58,17 +60,20 @@
                const text = await res.text();
 
                if (res.ok) {
-                  alert("You are now logged ! Welcome back :)");
-                  location.href = "/index.html";
+                  alert("User created, you may login now");
+                  location.href = "/login.html";
                } else {
-                  alert("username or password incorrect, please try again");
+                  alert("Registration failed: " + text);
                }
             } catch (err) {
-               alert("Error during login: " + err.message);
+               alert("Error during registration: " + err.message);
             }
          });
       });
-      
    </script>
+
+   </main>
+
+
 </body>
 </html>
