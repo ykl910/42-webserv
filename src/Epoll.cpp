@@ -102,8 +102,8 @@ void Epoll::getRequest(int clientFd) {
 
     if (receivedCompleteRequest(_buffers[clientFd])) {
 
-        //std::cout << BOLD ITALIC GREEN << "\nreceived:\n" << DEFAULT;
-        //std::cout << MAGENTA << _buffers[clientFd] << DEFAULT << std::endl;
+        std::cout << BOLD ITALIC GREEN << "\nreceived:\n" << DEFAULT;
+        std::cout << MAGENTA << _buffers[clientFd] << DEFAULT << std::endl;
         HttpRequest request(_buffers[clientFd]);
         _requests[clientFd] = request;
         _gotFullRequest[clientFd] = true;
@@ -146,8 +146,8 @@ void Epoll::sendResponse(int clientFd, HttpRequest request) {
     }
     else
     {
-        //std::cout << BOLD ITALIC GREEN << "\nresponse:\n" << DEFAULT;
-        //std::cout << YELLOW << response.c_str() << std::endl;
+        std::cout << BOLD ITALIC GREEN << "\nresponse:\n" << DEFAULT;
+        std::cout << YELLOW << response.c_str() << std::endl;
         _pendingResponse.erase(clientFd);
         disableWriteEvent(clientFd);
         _gotFullRequest.erase(clientFd);
