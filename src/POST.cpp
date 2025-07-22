@@ -1,6 +1,7 @@
 #include "../include/POST.hpp"
 #include "../include/textFormatting.hpp"
 #include "../include/WebServ.hpp"
+#include "../include/Cookies.hpp"
 
 # define DIRPATH "website/threads/"
 
@@ -140,62 +141,6 @@ int storeThread(HttpRequest &request, std::string boundary) {
     return 0;
 }
 
-
-// cookies management
-int storeUsername(std::string username) {
-
-    std::string fullpath = "website/users/userinfo";
-    int fd = open(fullpath.c_str(), O_WRONLY | O_APPEND);
-    if(fd == -1)
-        return -1;
-    size_t startPos = username.find("\r\n\r\n") + 4;
-    size_t endPos = username.size() - 4;
-
-    std::string txt = username.substr(startPos, endPos - startPos) + ";";
-
-    write(fd, txt.c_str(), txt.size());
-    close(fd);
-    return 0;
-}
-
-int storePassword(std::string password) {
-
-    std::string fullpath = "website/users/userinfo";
-    int fd = open(fullpath.c_str(), O_WRONLY | O_APPEND);
-    if(fd == -1)
-        return -1;        
-    size_t startPos = password.find("\r\n\r\n") + 4;
-    size_t endPos = password.size() - 2;
-
-    std::string txt = password.substr(startPos, endPos - startPos);
-
-    write(fd, txt.c_str(), txt.size());
-    close(fd);
-    return 0;
-}
-
-int storeUser(HttpRequest &request, std::string boundary) {
-
-    std::vector<std::string> tokens = split(request.getBody(), boundary);
-    std::vector<std::string>::iterator tokenIt;
-
-    for(tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt)
-    {
-        std::string line = *tokenIt;
-        if(line.find("Content-Disposition: form-data; name=\"username\"") != std::string::npos)
-        {
-            if(storeUsername(line) == -1)
-                return -1;
-        }
-        if(line.find("Content-Disposition: form-data; name=\"password\"")!= std::string::npos)
-        {
-            if(storePassword(line) == -1)
-                return -1;
-        }
-    }
-    return 0;
-}
-
 void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::string msg) {
 
     response.setStatusLine(request.getHttpVersion(), code, msg);
@@ -233,17 +178,11 @@ void handlePost(HttpRequest& request, HttpResponse& response) {
     }
     else if (request.getPath() == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
     {
-        if (storeUser(request, boundary) == -1)
-            buildResponse(request, response, 500, "Internal error");
-        else
-            buildResponse(request, response, 201, "Created");
+        Cookies cookie(request, response, boundary);
     }
-    else if (request.getPath() == "register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
+    else if (request.getPath() == "/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
     {
-        if (storeUser(request, boundary) == -1)
-            buildResponse(request, response, 500, "Internal error");
-        else
-            buildResponse(request, response, 201, "Created");
+        Cookies cookie(request, response, boundary);
     }
     else
         buildResponse(request, response, 400, "Bad Request");

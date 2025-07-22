@@ -97,8 +97,8 @@ void    Select::manageRequest(void) {
 
             HttpResponse httpRes(httpReq);
             std::string response = httpRes.getResponse();
-            // std::cout << BOLD ITALIC GREEN <<  "Response sent:\n" << DEFAULT;
-            // std::cout << YELLOW << response << DEFAULT << std::endl;
+            //std::cout << BOLD ITALIC GREEN <<  "Response sent:\n" << DEFAULT;
+            //std::cout << YELLOW << response << DEFAULT << std::endl;
             ssize_t totalSent = 0;
             const char* data = response.c_str();
             ssize_t totalSize = response.size();

@@ -212,6 +212,8 @@ body::before {
   margin: 2rem auto;
   max-width: 500px;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .upload h3 {
@@ -271,9 +273,9 @@ body::before {
   font-family: 'Share Tech Mono', monospace;
   cursor: pointer;
   border-radius: 4px;
-  width: 200px;
   text-shadow: 0 0 5px #33ff33;
   transition: all 0.3s;
+  flex: 1; /* Make it grow to fill available space */
 }
 
 .upload-btn:hover {
@@ -289,6 +291,7 @@ body::before {
   align-items: flex-start;
   margin-bottom: 1.5rem;
   width: 100%;
+  max-width: 100%; /* Ensure no overflow */
 }
 
 .form-group label {
@@ -299,6 +302,7 @@ body::before {
 }
 
 .form-group input[type="text"],
+.form-group input[type="password"],
 .form-group textarea {
   width: 100%;
   background-color: #000000;
@@ -311,6 +315,7 @@ body::before {
   text-shadow: 0 0 3px #33ff33;
   box-shadow: 0 0 8px #00ff00;
   outline: none;
+  box-sizing: border-box;
 }
 
 .form-group input[type="text"]::placeholder,
@@ -357,17 +362,50 @@ body::before {
 .button-group {
     display: flex;
     gap: 10px;
-}
-
-.login-btn, .register-btn {
-    flex: 1;
+    width: 100%;
 }
 
 .form-group.button-group {
-  flex-direction: row !important; /* Override the column direction from form-group */
+  flex-direction: row !important;
   justify-content: space-between;
   align-items: center;
+  width: 100%; /* Make sure it takes full width */
+  box-sizing: border-box;
 }
+
+.button-group .upload-btn {
+  height: 45px;  /* Set explicit height */
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+/* Special styling for the anchor button */
+a.upload-btn {
+  text-decoration: none;  /* No underline */
+  cursor: pointer;  /* Show pointer cursor */
+}
+
+/* Make both buttons equal width */
+.button-group button, 
+.button-group a {
+  flex: 1;
+}
+
+/* Add/update these CSS rules */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 100%; /* Ensure no overflow */
+}
+
+
 
 .result-box {
     margin-top: 20px;
