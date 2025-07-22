@@ -19,11 +19,13 @@ class Cgi
 	void execute(HttpRequest &request, HttpResponse &response);
 
   private:
-	int execFromGet(HttpRequest &request, HttpResponse &response);
-	int execFromPost(HttpRequest &request, HttpResponse &response);
+	int execFromGet(HttpRequest &request);
+	int execFromPost(HttpRequest &request);
 	void generateErrorMsg(HttpRequest &request, HttpResponse &response);
-	void generateResponse(HttpRequest &HttpRequest, HttpResponse &response);
+	void generateResponse(HttpRequest &request, HttpResponse &response);
+	std::string extractQuery(HttpRequest &request);
+	std::vector<char*> createEnv(HttpRequest &Request);
+	void extractOutput(int *fd);
+
 	std::string _stdout;
-	std::vector<std::string> _rawEnvp;
-	std::vector<char *> _envp;
 };

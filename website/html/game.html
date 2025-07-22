@@ -20,13 +20,16 @@
             <a href="/game.html" class="upload">wtf</a>
         </div>
     </nav>
+
     <main>
         <h1>MINIGAMES</h1>
         <h2>Russian Roulette</h2>
+
         <div class="gif">
             <img src="/assets/roulette.gif" alt="Animated GIF">
         </div>
-        <form method="get" action="/cgi/bin/roulette.cgi">
+
+        <form id="roulette-form">
             <center>
                 <p>Select a number between 0 and 9</p>
                 <input name="number" type="number" min="0" max="9" required>
@@ -34,6 +37,31 @@
                 <button type="submit">Fire!</button>
             </center>
         </form>
+
+        <!-- Encart pour afficher la réponse CGI -->
+        <div id="roulette-result" class="result-box"></div>
     </main>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("roulette-form");
+        const resultBox = document.getElementById("roulette-result");
+
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const number = form.number.value;
+
+            fetch("/cgi-bin/roulette.cgi?number=" + encodeURIComponent(number))
+                .then(response => response.text())
+                .then(text => {
+                    resultBox.innerText = text;
+                })
+                .catch(error => {
+                    resultBox.innerText = "Error: " + error;
+                });
+        });
+    });
+    </script>
 </body>
 </html>
