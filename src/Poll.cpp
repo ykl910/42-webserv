@@ -65,7 +65,7 @@ void    Poll::manageRequest(pollIterator& it, ssize_t bytes) {
 }
 
 void    Poll::run(WebServ<Poll>& server) {
-    server.printServerStatus("poll");
+    server.printServerStatus("poll", getConfigFilePath());
 
     initPoll();
     ssize_t bytes;
@@ -95,7 +95,7 @@ void    Poll::run(WebServ<Poll>& server) {
     }
 }
 
-Poll::Poll() {}
+Poll::Poll(const char* configFilePath) : Socket(configFilePath) {}
 
 Poll::~Poll() {
     for (pollIterator it = _pollFd.begin();

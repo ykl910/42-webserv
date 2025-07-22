@@ -123,7 +123,7 @@ void    Config::printServerConfig(void) {
 }
 
 void    Config::parseConfigFile(void) {
-    std::ifstream file(_configPath.c_str());
+    std::ifstream file(_configFilePath.c_str());
 
     if (!file)
         throw std::runtime_error("Error: can't open config file");
@@ -135,12 +135,11 @@ void    Config::parseConfigFile(void) {
     file.close();
 }
 
-Config::Config() : _configPath("config/webserv.conf") {
-    parseConfigFile();
-    // exit(0);
+const char* Config::getConfigFilePath(void) const {
+    return _configFilePath.c_str();
 }
 
-Config::Config(const std::string& configPath) : _configPath(configPath) {
+Config::Config(const char* configFilePath) : _configFilePath(configFilePath) {
     parseConfigFile();
     // exit(0);
 }

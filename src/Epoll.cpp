@@ -189,7 +189,7 @@ void Epoll::eventManager(epoll_ev &event) {
 
 void Epoll::run(WebServ<Epoll>& server) {
 
-    server.printServerStatus("epoll");
+    server.printServerStatus("epoll", getConfigFilePath());
 
     createEpollInstance();
     addServerToEpoll();
@@ -203,7 +203,8 @@ void Epoll::run(WebServ<Epoll>& server) {
     }
 }
 
-Epoll::Epoll() : _eventsQueue(MAXEVENTS) {
+Epoll::Epoll(const char *configFilePath)
+    : Socket(configFilePath), _eventsQueue(MAXEVENTS) {
 
 }
 
