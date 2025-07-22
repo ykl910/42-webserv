@@ -176,8 +176,7 @@ void    Config::initConfig(directive& directiveList) {
 }
 
 Config::Config(const char* configFilePath) : _configFilePath(configFilePath) {
-    directive directiveList;
-
+    directive                       directiveList;
     std::map<uint8_t, std::string>  serverDirective;
     std::map<uint8_t, std::string>  errorDirective;
     std::map<uint8_t, std::string>  returnDirective;
@@ -191,8 +190,6 @@ Config::Config(const char* configFilePath) : _configFilePath(configFilePath) {
     directiveList[4] = cgiDirective;
 
     initConfig(directiveList);
-    for (size_t i = 0; i < serverDirective.size(); i++)
-        std::cout << serverDirective[i] << std::endl;
     parseConfigFile(directiveList);
     // exit(0);
 }
