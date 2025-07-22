@@ -107,35 +107,34 @@ void handleThread(HttpRequest& request, HttpResponse& response) {
     response.setBody(jsonResponse);
 }
 
-void handleCgi(HttpRequest& request, HttpResponse& response) {
-    Cgi cgi(request, response);
-}
-
 void handleGet(HttpRequest& request, HttpResponse& response) {
     std::string root = "./website";
     std::string path = request.getPath();
-    if(path.find(".gci") != std::string::npos)
-        handleCgi(request, response);
-    if (path == "" || path == "/")
-        path = "/index.html";
-    std::string extension;
-    size_t dot_pos = path.find_last_of(".");
-    if (dot_pos != std::string::npos) {
-        extension = path.substr(dot_pos + 1);
-    }
-    bool success = false;
-    std::stringstream buffer;
-    if (request.getPath() == "/list-files") {
-        handleThread(request, response);
-    } else if (extension == "html" || extension == "htm" || extension == "") {
-        success = handleHtml(request, response, path, &buffer);
-        if (!success)
+    if(path.find(".cgi") != std::string::npos)
+        Cgi cgi(request, response);
+    else
+    {
+        if (path == "" || path == "/")
+            path = "/index.html";
+        std::string extension;
+        size_t dot_pos = path.find_last_of(".");
+        if (dot_pos != std::string::npos) {
+            extension = path.substr(dot_pos + 1);
+        }
+        bool success = false;
+        std::stringstream buffer;
+        if (request.getPath() == "/list-files") {
+            handleThread(request, response);
+        } else if (extension == "html" || extension == "htm" || extension == "") {
+            success = handleHtml(request, response, path, &buffer);
+            if (!success)
+                handleHtmlError(request, response, &buffer);
+        } else if (extension == "css") {
+            success = handleCss(request, response, path, &buffer);
+        } else if (extension == "png" || extension == "gif" || extension == "webp") {
+            success = handleImg(request, response, path, extension);
+        } else {
             handleHtmlError(request, response, &buffer);
-    } else if (extension == "css") {
-        success = handleCss(request, response, path, &buffer);
-    } else if (extension == "png" || extension == "gif" || extension == "webp") {
-        success = handleImg(request, response, path, extension);
-    } else {
-        handleHtmlError(request, response, &buffer);
+        }
     }
 }
