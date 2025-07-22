@@ -23,7 +23,7 @@ public:
     const std::string &getBody() const;
 
 private:
-    void    _parse(const std::string &request);
+    void _parse(const std::string &request);
     std::string _method;
     std::string _path;
     std::string _http_version;

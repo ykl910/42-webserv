@@ -90,12 +90,12 @@ $(ASM_DIR)/%.s: $(SRC_DIR)/%.cpp
 
 clean:
 	$(RM) -rf $(OBJ) $(PP) $(ASM)
-	echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) objects removed!$(DEFAULT)"
+	@echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) objects removed!$(DEFAULT)"
 
 fclean: clean
 	$(RM) -rf $(OBJ_DIR) $(PP_DIR) $(ASM_DIR)
 	$(RM) $(NAME)
-	echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) entirely cleaned!$(DEFAULT)"
+	@echo "$(BOLD)$(ITALIC)$(YELLOW)> $(NAME) entirely cleaned!$(DEFAULT)"
 
 re: fclean all
 

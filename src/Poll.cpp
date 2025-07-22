@@ -13,7 +13,7 @@ void    Poll::initPoll(void) {
     struct pollfd serverPoll;
 
     serverPoll.fd = getSocketFd();
-    serverPoll.events = POLLIN;
+    serverPoll.events = POLLIN | POLLERR;
     serverPoll.revents = 0;
     _pollFd.push_back(serverPoll);
 }
@@ -30,7 +30,7 @@ void    Poll::acceptClient(int socketFd) {
     struct pollfd newClientPoll;
 
     newClientPoll.fd = clientFd;
-    newClientPoll.events = POLLIN;
+    newClientPoll.events = POLLIN | POLLERR;
     newClientPoll.revents = 0;
     _pollFd.push_back(newClientPoll);
 }
