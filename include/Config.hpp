@@ -9,14 +9,17 @@
 template <class Multiplexer>
 class WebServ;
 
+enum e_directive_list {SERVER, ERROR_PAGE, RETURN, LOCATION, CGI};
+
 enum e_server_directive {
     SERVER_NAME,
     LISTEN,
-    CLIENT_MAX_BODY_SIZE,
-    ERROR_PAGE,
-    RETURN,
-    LOCATION,
-    CGI
+    CLIENT_MAX_BODY_SIZE
+};
+
+enum e_error_page_directive {
+    E_404,
+    E_
 };
 
 enum e_location_directive {};
@@ -37,15 +40,18 @@ typedef struct s_webservConfig {
 
 class Config {
 public:
+    typedef std::map<uint8_t, std::map<uint8_t, std::string> > directive;
+
     const char* getConfigFilePath(void) const;
 
+    void initConfig(directive& directiveList);
     void printServerConfig(void);
     void getServerLocationContext(std::ifstream& file, std::string& line,
         t_server& server, uint8_t directiveNbr);
     void getServerDirective(std::string& line,
         t_server& server, uint8_t directiveNbr);
     void getServerContext(std::ifstream& file, std::string& line);
-    void parseConfigFile(void);
+    void parseConfigFile(directive& directiveList);
 
     Config(const char* configFilePath);
     ~Config();
@@ -53,4 +59,5 @@ public:
 private:
     std::string     _configFilePath;
     t_webservConfig _webservConfig;
+
 };
