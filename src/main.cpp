@@ -33,7 +33,7 @@ void    run_specific_multiplexer(const std::string& multiplexer,
 }
 
 int main(int argc, char **argv) {
-    std::string configFilePath("config/webserv.conf");
+    std::string configFilePath("config/simple.conf");
 
     if (got_config_file_path(argc, argv[1]))
         configFilePath = std::string(argv[1]);
