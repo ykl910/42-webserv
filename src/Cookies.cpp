@@ -29,7 +29,7 @@ void Cookies::loadUserInfo() {
 int Cookies::parseUsernamePwd(std::string username, std::string password) {
 
     std::string fullpath = "website/users/userinfo";
-    int fd = open(fullpath.c_str(), O_WRONLY | O_APPEND);
+    int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
     if(fd == -1)
         return -1;
     size_t startPosUser = username.find("\r\n\r\n") + 4;
@@ -140,26 +140,6 @@ int Cookies::authUserInfo(HttpRequest &request, std::string boundary) {
     if (userLine == "" || pwdLine == "")
         return -1;
     return 0;
-}
-
-
-void Cookies::writeUserInfo() {
-
-    std::string fullpath = "website/users/userinfo";
-    int fd = open(fullpath.c_str(), O_WRONLY | O_APPEND);
-    if(fd == -1)
-        return;
-    std::vector<std::map<std::string, std::string> >::iterator it;
-
-    for(it = _userInfo.begin(); it != _userInfo.end(); ++it) {
-        std::map<std::string, std::string> &user = *it;
-        std::map<std::string, std::string>::iterator mapit;
-        for(mapit = user.begin(); mapit != user.end(); ++mapit) {
-            std::string ent = mapit->first + ":" + mapit->second + "\n";
-            write(fd, ent.c_str(), ent.length());
-        }
-    }
-    close(fd);
 }
 
 // sessions

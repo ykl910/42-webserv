@@ -122,6 +122,7 @@ void Epoll::sendResponse(int clientFd, HttpRequest request) {
     if(!_gotResponse[clientFd])
     {
         HttpResponse Response(request);
+        writeUserInfo(request, Response);
         response = Response.getResponse();
         _responses[clientFd] = Response;
         _gotResponse[clientFd] = true;
