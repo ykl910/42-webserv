@@ -49,7 +49,10 @@ void Cgi::createArgv(HttpRequest &request) {
     //TODO: recup le path du .cgi via le config file, Harcode pour l'instant
     (void)request;
 
-    this->_argv.push_back("./cgi/bin/roulette.cgi");
+    if(request.getMethod() == "GET")
+        this->_argv.push_back("./cgi/bin/roulette.cgi");
+    else
+        this->_argv.push_back("./cgi/bin/magicBall.cgi");
 }
 
 void Cgi::createEnvpStr(std::vector<char*> &envp) {
@@ -161,7 +164,7 @@ int Cgi::execFromPost(HttpRequest &request) {
         close(outputPipe[0]);
         close(outputPipe[1]);
 
-        execve("./cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
+        execve("./cgi/bin/magicBall.cgi", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     }
