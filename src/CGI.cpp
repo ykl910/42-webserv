@@ -29,10 +29,19 @@ std::string Cgi::extractQuery(HttpRequest &request) {
 
 void Cgi::createEnvp(HttpRequest &request) {
 
-    this->_envp.push_back("REQUEST_METHOD=" + request.getMethod());
-    this->_envp.push_back("QUERY_STRING=" + extractQuery(request));
+    std::string method = request.getMethod();
+
+    this->_envp.push_back("REQUEST_METHOD=" + method);
     this->_envp.push_back("SCRIPT_NAME=" + request.getPath());
-    //TODO : CONTENT_LENGTH= + CONTENT_TYPE= pour POST
+    if(method == "GET")
+        this->_envp.push_back("QUERY_STRING=" + extractQuery(request));
+    else
+    {
+        std::map<std::string, std::string> header = request.getHeaders();
+
+        this->_envp.push_back("CONTENT_LENGTH=" + header["Content-Length"]);
+        this->_envp.push_back("CONTENT_TYPE=" + header["Content-Type"]);
+    }
 }
 
 void Cgi::createArgv(HttpRequest &request) {
@@ -90,9 +99,6 @@ int Cgi::execFromGet() {
         createEnvpStr(envpStr);
         createArgvStr(argvStr);
 
-        for(size_t i = 0; i < envpStr.size(); ++i)
-            std::cerr << "envp[" << i << "]: " << envpStr[i] << std::endl;
-
         if(dup2(fds[1], STDOUT_FILENO) == -1)
         {
             printError();
@@ -115,9 +121,64 @@ int Cgi::execFromGet() {
     }
 }
 
-int Cgi::execFromPost() {
-    //TODO
-    return EXIT_SUCCESS;
+
+int Cgi::execFromPost(HttpRequest &request) {
+
+    int inputPipe[2];
+    int outputPipe[2];
+
+    if(pipe(inputPipe) == -1 || pipe(outputPipe) == -1)
+    {
+        printError();
+        return EXIT_FAILURE;
+    }
+    pid_t pid = fork();
+    if(pid == -1)
+    {
+        printError();
+        return EXIT_FAILURE;
+    }
+    else if (pid == 0)
+    {
+        std::vector<char*> envpStr;
+        std::vector<char*> argvStr;
+
+        createEnvpStr(envpStr);
+        createArgvStr(argvStr);
+
+        if(dup2(inputPipe[0], STDIN_FILENO) == -1)
+        {
+            printError();
+            exit(EXIT_FAILURE);
+        }
+        if(dup2(outputPipe[1], STDOUT_FILENO) == -1)
+        {
+            printError();
+            exit(EXIT_FAILURE);
+        }
+        close(inputPipe[0]);
+        close(inputPipe[1]);
+        close(outputPipe[0]);
+        close(outputPipe[1]);
+
+        execve("./cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
+        printError();
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        std::string body = request.getBody();
+
+        close(inputPipe[0]);
+        write(inputPipe[1], body.c_str(), body.size());
+        close(inputPipe[1]);
+
+        int status;
+        waitpid(pid, &status, 0);
+        extractOutput(outputPipe);
+
+        return WEXITSTATUS(status);
+    }
 }
 
 void Cgi::execute(HttpRequest &request, HttpResponse &response) {
@@ -131,7 +192,7 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response) {
     }
     if(request.getMethod() == "POST")
     {
-        if(execFromPost() == EXIT_FAILURE)
+        if(execFromPost(request) == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
             generateResponse(request, response);
