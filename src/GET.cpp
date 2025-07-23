@@ -70,6 +70,7 @@ bool handleImg(HttpRequest& request, HttpResponse& response, std::string path, s
         response.setHeaders("Content-Type", "image/webp");
     response.setHeaders("Content-Length", itos(data.size()));
     response.setBody(std::string(&data[0], data.size()));
+    file.close();
     return true;
 }
 
