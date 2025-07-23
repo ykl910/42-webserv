@@ -20,7 +20,6 @@ class Cookies {
     public:
         Cookies(HttpRequest &request, HttpResponse &response, std::string boundary);
         ~Cookies();
-        //void execute(HttpRequest &request, HttpResponse &response);
 
     private:
         void loadUserInfo();
@@ -30,7 +29,6 @@ class Cookies {
         int checkUsernamePwd(std::string username, std::string password);
         int authUserInfo(HttpRequest &request, std::string boundary);
         std::vector<std::map<std::string, std::string> > _userInfo;
-        void writeUserInfo();
         std::string generateSessionID();
 
 };

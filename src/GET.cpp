@@ -107,6 +107,18 @@ void handleThread(HttpRequest& request, HttpResponse& response) {
     response.setBody(jsonResponse);
 }
 
+int isLogged(HttpRequest& request) {
+    std::map<std::string, std::string>::const_iterator mapit;
+    std::string sessionId;
+    for (mapit = request.getHeaders().begin(); mapit != request.getHeaders().end(); ++mapit) {
+        if (mapit->first == "Cookie")
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void handleGet(HttpRequest& request, HttpResponse& response) {
     std::string root = "./website";
     std::string path = request.getPath();
@@ -121,6 +133,8 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
         if (dot_pos != std::string::npos) {
             extension = path.substr(dot_pos + 1);
         }
+        if (path == "/login.html" && isLogged(request))
+            path = "/isLogged.html";
         bool success = false;
         std::stringstream buffer;
         if (request.getPath() == "/list-files") {

@@ -45,6 +45,10 @@ std::string HttpResponse::getResponse() const {
     return fullResponse;
 }
 
+std::string HttpResponse::getStatusLine() const {
+    return _statusLine;
+}
+
 HttpResponse::HttpResponse(HttpRequest &request){
     this->build(request);
 }
