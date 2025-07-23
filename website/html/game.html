@@ -23,12 +23,12 @@
 
     <main>
         <h1>MINIGAMES</h1>
-        <h2>Russian Roulette</h2>
 
+        <!-- 🎯 Russian Roulette -->
+        <h2>Russian Roulette</h2>
         <div class="gif">
             <img src="/assets/roulette.gif" alt="Animated GIF">
         </div>
-
         <form id="roulette-form">
             <center>
                 <p>Select a number between 0 and 9</p>
@@ -38,25 +38,58 @@
             </center>
         </form>
         <div id="roulette-result" class="result-box"></div>
+
+        <!-- 🎱 Magic 8 Ball -->
+        <h2>Magic 8 Ball</h2>
+        <div class="gif">
+            <img src="/assets/8ball.gif" alt="Magic 8 Ball GIF">
+        </div>
+        <form id="8ball-form">
+            <center>
+                <p>Ask your question to the mighty 8 Ball</p>
+                <input name="question" type="text" placeholder="Will I segfault today?" required>
+                <br><br>
+                <button type="submit">Ask!</button>
+            </center>
+        </form>
+        <div id="8ball-result" class="result-box"></div>
     </main>
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("roulette-form");
-        const resultBox = document.getElementById("roulette-result");
+        // Roulette logic
+        const rouletteForm = document.getElementById("roulette-form");
+        const rouletteResult = document.getElementById("roulette-result");
 
-        form.addEventListener("submit", function(e) {
+        rouletteForm.addEventListener("submit", function(e) {
             e.preventDefault();
-
-            const number = form.number.value;
+            const number = rouletteForm.number.value;
 
             fetch("/cgi-bin/roulette.cgi?number=" + encodeURIComponent(number))
                 .then(response => response.text())
                 .then(text => {
-                    resultBox.innerText = text;
+                    rouletteResult.innerText = text;
                 })
                 .catch(error => {
-                    resultBox.innerText = "Error: " + error;
+                    rouletteResult.innerText = "Error: " + error;
+                });
+        });
+
+        // 8 Ball logic
+        const ballForm = document.getElementById("8ball-form");
+        const ballResult = document.getElementById("8ball-result");
+
+        ballForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const question = ballForm.question.value;
+
+            fetch("/cgi-bin/8ball.cgi?question=" + encodeURIComponent(question))
+                .then(response => response.text())
+                .then(text => {
+                    ballResult.innerText = text;
+                })
+                .catch(error => {
+                    ballResult.innerText = "Error: " + error;
                 });
         });
     });
