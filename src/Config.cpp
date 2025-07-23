@@ -70,14 +70,33 @@ void    Config::printConfigFormat(void) const {
     }
 }
 
+void    Config::printServer(server server) {
+    for (serverIterator it = server.begin(); it != server.end(); it++) {
+        for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); it2 ++) {
+            // std::cout << it2->first << std::endl;
+            // std::cout << it2->second[0] << std::endl;
+            // for (size_t i = 0; i < it2->second.size(); i++) {
+            //     std::cout << it2->second[i];
+            // }
+        }
+    }
+}
+
+// void    Config::printServer(serverIterator server) {
+//     for (contextIterator it2 = server->second.begin(); it2 != server->second.end(); it2 ++) {
+//         for (size_t i = 0; i < it2->second.size(); i++) {
+//             std::cout << it2->second[i];
+//         }
+//     }
+// }
+
 void    Config::printConfig(void) const {
     server server;
-    std::cout << "Here\n";
+
     for (configIterator it = _webservConfig.begin();
                         it != _webservConfig.end(); it++) {
-        for (size_t i = 0; i < CONTEXT_NUMBER ; i++) {
-            std::cout << BOLD WHITE << contextNameList[i] << DEFAULT << std::endl;
-        }
+        // printServer(it->begin());
+        // printServer(it);
     }
 }
 
@@ -122,7 +141,7 @@ void    Config::getContextDirective(std::string& line, directive& newDirective, 
                 || !isRightIndentation(line, indentSize))
         throw std::runtime_error("Error: wrong indentation in config file.");
     if (_contextFormat[_contextIndex][_directiveIndex][FORMAT] == line)
-        newDirective.push_back(line);
+        newDirective.push_back(line.substr());
     else
         newDirective.push_back("");
     _serverMask |= 1 << _directiveIndex;
@@ -141,8 +160,10 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
         std::getline(file, line);
         if (line.empty())
             break;
-        if (isContextDirectiveFormatValid(line, indentSize))
+        if (isContextDirectiveFormatValid(line, indentSize)) {
             getContextDirective(line, newDirective, indentSize);
+            // std::cout << line << std::endl;
+        }
         server[_contextIndex][_directiveIndex] = newDirective;
         _directiveIndex++;
     }
@@ -154,7 +175,6 @@ void    Config::getServer(std::ifstream& file, std::string& line, server& server
     while (_contextIndex < CONTEXT_NUMBER) {
         std::getline(file, line);
         if (isContextFormatValid(line)) {
-            // std::cout << line << std::endl;
             getContext(file, line, server);
         }
         _contextIndex++;
@@ -179,9 +199,10 @@ void    Config::parseConfigFile(void) {
         server  server;
 
         getServer(file, line, server);
+        // printServer(server);
+        _webservConfig.push_back(server);
         if (!got_an_other_server(file, line))
             break;
-        _webservConfig.push_back(server);
     }
     file.close();
 }
@@ -237,7 +258,7 @@ Config::Config(const char* configFilePath) : _configFilePath(configFilePath) {
     initConfigParser();
     // printConfigFormat();
     parseConfigFile();
-    printConfig();
+    // printConfig();
 }
 
 Config::~Config() {}

@@ -45,15 +45,18 @@ public:
 
     typedef std::vector<std::string> directive;
     typedef std::map<directiveName, directive> context;
+    typedef context::const_iterator contextIterator;
     typedef std::map<contextName, context> server;
+    typedef server::const_iterator serverIterator;
     typedef std::vector<server> config;
     typedef config::const_iterator configIterator;
 
     typedef std::map<contextName, context> configFormat;
 
     typedef configFormat::const_iterator contextFormatIterator;
-    typedef context::const_iterator contextIterator;
 
+    void printServer(server server);
+    void printServer(serverIterator server);
     void printConfigFormat(void) const;
     void printConfig(void) const;
 
@@ -63,6 +66,7 @@ public:
 
     void checkDirectiveFormat(const std::string& line);
     void checkContextFormat(const std::string& line);
+
     void getContextDirective(std::string& line, directive& newDirective, int indentSize);
     void getContext(std::ifstream& file, std::string& line, server& server);
     void getServer(std::ifstream& file, std::string& line, server& server);
