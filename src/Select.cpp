@@ -91,14 +91,13 @@ void    Select::manageRequest(void) {
                     it = _selectFd.erase(it);
                     continue;
                 }
-            std::cout << BOLD ITALIC GREEN <<  "Received request:\n" << DEFAULT;
+            std::cout << BOLD ITALIC GREEN <<  "Request:\n" << DEFAULT;
             std::cout << MAGENTA << requestData << DEFAULT << std::endl;
-            //std::cout << MAGENTA << httpReq.getPath() << DEFAULT << std::endl;
-
             HttpResponse httpRes(httpReq);
             std::string response = httpRes.getResponse();
-            //std::cout << BOLD ITALIC GREEN <<  "Response sent:\n" << DEFAULT;
-            //std::cout << YELLOW << response << DEFAULT << std::endl;
+            std::cout << BOLD ITALIC GREEN <<  "Response:\n" << DEFAULT;
+            std::cout << YELLOW << httpRes.getStatusLine() << DEFAULT << std::endl;
+            writeUserInfo(httpReq, httpRes);
             ssize_t totalSent = 0;
             const char* data = response.c_str();
             ssize_t totalSize = response.size();

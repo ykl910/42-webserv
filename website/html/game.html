@@ -18,18 +18,18 @@
             <a href="/upload.html" class="upload">upload</a>
             <a href="/remove.html" class="upload">remove</a>
             <a href="/game.html" class="upload">wtf</a>
+            <a href="/login.html" class="upload">login</a>
         </div>
     </nav>
 
     <main>
         <h1>MINIGAMES</h1>
 
-        <!-- 🎯 Russian Roulette -->
         <h2>Russian Roulette</h2>
         <div class="gif">
             <img src="/assets/roulette.gif" alt="Animated GIF">
         </div>
-        <form id="roulette-form">
+        <form id="roulette-form" method="GET">
             <center>
                 <p>Select a number between 0 and 9</p>
                 <input name="number" type="number" min="0" max="9" required>
@@ -39,15 +39,14 @@
         </form>
         <div id="roulette-result" class="result-box"></div>
 
-        <!-- 🎱 Magic 8 Ball -->
         <h2>Magic 8 Ball</h2>
         <div class="gif">
             <img src="/assets/8ball.gif" alt="Magic 8 Ball GIF">
         </div>
-        <form id="8ball-form">
+        <form id="8ball-form" method="POST">
             <center>
                 <p>Ask your question to the mighty 8 Ball</p>
-                <input name="question" type="text" placeholder="Will I segfault today?" required>
+                <input name="question" type="text" required>
                 <br><br>
                 <button type="submit">Ask!</button>
             </center>
@@ -57,7 +56,6 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Roulette logic
         const rouletteForm = document.getElementById("roulette-form");
         const rouletteResult = document.getElementById("roulette-result");
 
@@ -75,22 +73,32 @@
                 });
         });
 
-        // 8 Ball logic
         const ballForm = document.getElementById("8ball-form");
         const ballResult = document.getElementById("8ball-result");
 
         ballForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            const question = ballForm.question.value;
 
-            fetch("/cgi-bin/8ball.cgi?question=" + encodeURIComponent(question))
-                .then(response => response.text())
-                .then(text => {
-                    ballResult.innerText = text;
-                })
-                .catch(error => {
-                    ballResult.innerText = "Error: " + error;
-                });
+            const formData = new FormData(ballForm);
+            const params = new URLSearchParams();
+            for (const pair of formData) {
+                params.append(pair[0], pair[1]);
+            }
+
+            fetch("/cgi-bin/8ball.cgi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: params.toString()
+            })
+            .then(response => response.text())
+            .then(text => {
+                ballResult.innerText = text;
+            })
+            .catch(error => {
+                ballResult.innerText = "Error: " + error;
+            });
         });
     });
     </script>

@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Socket.hpp"
+#include "utils.hpp"
 #include <sys/select.h>
 #include <vector>
+#include <map>
 #include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 template <class Multiplexer>
 class WebServ;

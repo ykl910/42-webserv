@@ -23,6 +23,7 @@ public:
     void setHeaders(const std::string &key, const std::string &value);
     void setBody(const std::string &body);
     std::string getResponse() const;
+    std::string getStatusLine() const;
     void    build(HttpRequest &request);
 
 private:
