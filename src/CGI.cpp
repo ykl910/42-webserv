@@ -27,22 +27,34 @@ std::string Cgi::extractQuery(HttpRequest &request) {
     return var;
 }
 
-std::vector<char*> Cgi::createEnv(HttpRequest &request) {
+void Cgi::createEnvp(HttpRequest &request) {
 
-    std::vector<std::string> temp;
-    std::vector<char*> envp;
-
-    temp.push_back("REQUEST_METHOD=" + request.getMethod());
-    temp.push_back("QUERY_STRING=" + extractQuery(request));
-    temp.push_back("SCRIPT_NAME=" + request.getPath());
-
+    this->_envp.push_back("REQUEST_METHOD=" + request.getMethod());
+    this->_envp.push_back("QUERY_STRING=" + extractQuery(request));
+    this->_envp.push_back("SCRIPT_NAME=" + request.getPath());
     //TODO : CONTENT_LENGTH= + CONTENT_TYPE= pour POST
+}
 
-    for(size_t i = 0; i < temp.size(); ++i)
-        envp.push_back(const_cast<char*>(temp[i].c_str()));
+void Cgi::createArgv(HttpRequest &request) {
+
+    //TODO: recup le path du .cgi via le config file, Harcode pour l'instant
+    (void)request;
+
+    this->_argv.push_back("./cgi/bin/roulette.cgi");
+}
+
+void Cgi::createEnvpStr(std::vector<char*> &envp) {
+
+    for(size_t i = 0; i < this->_envp.size(); ++i)
+        envp.push_back(const_cast<char*>(this->_envp[i].c_str()));
     envp.push_back(NULL);
+}
 
-    return envp;
+void Cgi::createArgvStr(std::vector<char*> &argv) {
+
+    for(size_t i = 0; i < this->_argv.size(); ++i)
+        argv.push_back(const_cast<char*>(this->_argv[i].c_str()));
+    argv.push_back(NULL);
 }
 
 void Cgi::extractOutput(int *fd) {
@@ -56,7 +68,7 @@ void Cgi::extractOutput(int *fd) {
     close(fd[0]);
 }
 
-int Cgi::execFromGet(HttpRequest &request) {
+int Cgi::execFromGet() {
 
     int fds[2];
     if(pipe(fds) == -1)
@@ -72,29 +84,25 @@ int Cgi::execFromGet(HttpRequest &request) {
     }
     else if (pid == 0)
     {
-        std::vector<std::string> temp;
-        std::vector<char*> envp;
+        std::vector<char*> envpStr;
+        std::vector<char*> argvStr;
 
-        temp.push_back("REQUEST_METHOD=" + request.getMethod());
-        temp.push_back("QUERY_STRING=" + extractQuery(request));
-        temp.push_back("SCRIPT_NAME=" + request.getPath());
+        createEnvpStr(envpStr);
+        createArgvStr(argvStr);
 
-        //TODO : CONTENT_LENGTH= + CONTENT_TYPE= pour POST
-
-        for(size_t i = 0; i < temp.size(); ++i)
-            envp.push_back(const_cast<char*>(temp[i].c_str()));
-        envp.push_back(NULL);
-
-        char* argv[] = {const_cast<char*>("./cgi/bin/roulette.cgi"), NULL};
+        for(size_t i = 0; i < envpStr.size(); ++i)
+            std::cerr << "envp[" << i << "]: " << envpStr[i] << std::endl;
 
         if(dup2(fds[1], STDOUT_FILENO) == -1)
         {
             printError();
             exit(EXIT_FAILURE);
         }
+
         close(fds[0]);
         close(fds[1]);
-        execve("./cgi/bin/roulette.cgi", argv, envp.data());
+
+        execve("./cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     }
@@ -107,8 +115,7 @@ int Cgi::execFromGet(HttpRequest &request) {
     }
 }
 
-int Cgi::execFromPost(HttpRequest &request) {
-    (void)request;
+int Cgi::execFromPost() {
     //TODO
     return EXIT_SUCCESS;
 }
@@ -117,14 +124,14 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response) {
 
     if(request.getMethod() == "GET")
     {
-        if(execFromGet(request) == EXIT_FAILURE)
+        if(execFromGet() == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
             generateResponse(request, response);
     }
     if(request.getMethod() == "POST")
     {
-        if(execFromPost(request) == EXIT_FAILURE)
+        if(execFromPost() == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
             generateResponse(request, response);
@@ -132,7 +139,10 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response) {
 }
 
 Cgi::Cgi(HttpRequest &request, HttpResponse &response) {
-    this->execute(request, response);
+
+    createEnvp(request);
+    createArgv(request);
+    execute(request, response);
 }
 
 Cgi::~Cgi() {
