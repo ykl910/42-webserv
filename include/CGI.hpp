@@ -22,7 +22,7 @@ class Cgi
 	void createArgv(HttpRequest &request);
 	void execute(HttpRequest &request, HttpResponse &response);
 	int execFromGet();
-	int execFromPost();
+	int execFromPost(HttpRequest &request);
 	void createEnvpStr(std::vector<char*>&envp);
 	void createArgvStr(std::vector<char*>&argv);
 	std::string extractQuery(HttpRequest &request);
