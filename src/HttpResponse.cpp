@@ -15,8 +15,7 @@ void HttpResponse::build(HttpRequest &request){
         handleDelete(request, *this);
     }
     else {
-
-        //TODO : response with code 501
+        this->setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
     }
 }
 
