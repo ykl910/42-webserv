@@ -48,7 +48,7 @@ main
 #define GETTING_ALL_SERVERS 1
 
 const char* contextNameList[] = {"server:", "error_page:", "redirection:", "location:", "cgi:"};
-const int   directiveNbr[5] = {3, 4, 1, 2, 3};
+const int   directiveNbr[5]   = {3, 4, 1, 2, 3};
 
 void    Config::printConfigFormat(void) const {
     size_t i = 0;
@@ -82,23 +82,23 @@ void    Config::printServer(server server) {
     }
 }
 
-// void    Config::printServer(serverIterator server) {
-//     for (contextIterator it2 = server->second.begin(); it2 != server->second.end(); it2 ++) {
-//         for (size_t i = 0; i < it2->second.size(); i++) {
-//             std::cout << it2->second[i];
-//         }
-//     }
-// }
-
-void    Config::printConfig(void) const {
-    server server;
-
-    for (configIterator it = _webservConfig.begin();
-                        it != _webservConfig.end(); it++) {
-        // printServer(it->begin());
-        // printServer(it);
+void    Config::printServer(serverIterator server) {
+    for (contextIterator it2 = server->second.begin(); it2 != server->second.end(); it2 ++) {
+        for (size_t i = 0; i < it2->second.size(); i++) {
+            std::cout << it2->second[i];
+        }
     }
 }
+
+// void    Config::printConfig(void) const {
+//     server server;
+
+//     for (configIterator it = _webservConfig.begin();
+//                         it != _webservConfig.end(); it++) {
+//         printServer(it->begin());
+//         // printServer(it);
+//     }
+// }
 
 bool    isRightIndentation(const std::string& line, uint32_t indentSize) {
     return line.length() > indentSize
