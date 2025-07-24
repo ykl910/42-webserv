@@ -3,6 +3,9 @@
 #include <map>
 #include <unistd.h>
 #include <time.h>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 int getSize()
 {
@@ -13,16 +16,59 @@ int getSize()
     return std::atoi(sizeStr.c_str());
 }
 
+std::string decodeHexa(std::string code)
+{
+    if(code.length() != 3 || code[0] != '%')
+        return "";
+    std::string hex = code.substr(1, 2);
+
+    int asciiCode;
+    std::istringstream(hex) >> std::hex >> asciiCode;
+
+    return std::string(1, static_cast<char>(asciiCode));
+}
+
+std::string decode(char *str)
+{
+    while(*str && *(str) != '=')
+        str++;
+
+    if(!str || *(str + 1) == '\0')
+        return NULL;
+    str++;
+
+    std::string question(str);
+
+    std::string::iterator it;
+    for(size_t i = 0; question[i]; ++i)
+    {
+        if (question[i] == '+')
+            question[i] = ' ';
+        if(question[i] == '%')
+        {
+            std::string decoded = decodeHexa(question.substr(i, 3));
+            question.replace(i, 3, decoded);
+        }
+    }
+    return question;
+}
+
 int main()
 {
     int size = getSize();
     if(size <= 0)
         exit(EXIT_FAILURE);
 
-    char *buffer[size + 1];
+    char buffer[size + 1];
 
     read(STDIN_FILENO, buffer, size);
-    buffer[size + 1] = NULL;
+    buffer[size + 1] = '\0';
+
+    std::cerr << "buffer: " << buffer << std::endl;
+
+    std::string question = decode(buffer);
+
+    std::cerr << "decoded: " << question << std::endl;
 
     std::map<int, std::string> response;
     response[0] = "It is certain";
@@ -48,6 +94,7 @@ int main()
     srand(time(NULL));
     unsigned int index = rand() % 19;
 
-    printf("%s\n", response[index].c_str());
+    std::cout << "To the question: \"" << question << "\", my response is: " << std::endl;
+    std::cout << response[index] << std::endl;
     return 0;
 }
