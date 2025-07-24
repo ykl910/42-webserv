@@ -41,7 +41,7 @@ int main(void)
     }
     srand(time(NULL));
     unsigned int guessed = atoi(value);
-    unsigned int number = rand() % 10;
+    unsigned int number = rand() % 2;
     if(guessed != number)
         printf("You live !");
     else
