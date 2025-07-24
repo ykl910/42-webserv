@@ -4,8 +4,9 @@
 
 void handleDelete(HttpRequest& request, HttpResponse& response) {
     std::string fullPath = "./website" + request.getPath();
+    if (fullPath == "./website/threads/")
+        fullPath = "./website/threads/nothingSelected";
     std::string body;
-    response.setHeaders("Content-Type", "text/plain");
     if (access(fullPath.c_str(), F_OK) != 0) {
         body = "Not Found";
         response.setStatusLine(request.getHttpVersion(), 404, body);
@@ -15,13 +16,14 @@ void handleDelete(HttpRequest& request, HttpResponse& response) {
         response.setStatusLine(request.getHttpVersion(), 403, body);
     }
     else if (unlink(fullPath.c_str()) == 0) {
-        body = "File deleted successfully.";
+        body = "File deleted successfully";
         response.setStatusLine(request.getHttpVersion(), 200, body);
     }
     else {
         body = "Internal Server Error";
         response.setStatusLine(request.getHttpVersion(), 500, body);
     }
+    response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(body.length()));
     response.setBody(body);
 }

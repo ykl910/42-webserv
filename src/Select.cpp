@@ -22,7 +22,7 @@ bool Select::acceptClient(int serverFd) {
                 close(newClient);
             } else {
                 _selectFd.push_back(newClient);
-                std::cout << "New client connected: FD " << newClient << std::endl;
+                //std::cout << "New client connected: FD " << newClient << std::endl;
             }
         }
     }
@@ -91,17 +91,18 @@ void    Select::manageRequest(void) {
                     it = _selectFd.erase(it);
                     continue;
                 }
-            std::cout << BOLD ITALIC GREEN <<  "Request:\n" << DEFAULT;
-            std::cout << MAGENTA << requestData << DEFAULT << std::endl;
+            //std::cout << BOLD ITALIC GREEN <<  "Request:\n" << DEFAULT;
+            std::cout << MAGENTA << httpReq.getMethod() + " " + httpReq.getPath() << std::endl;
+            //std::cout << MAGENTA << requestData << DEFAULT << std::endl;
             HttpResponse httpRes(httpReq);
             std::string response = httpRes.getResponse();
-            std::cout << BOLD ITALIC GREEN <<  "Response:\n" << DEFAULT;
+            //std::cout << BOLD ITALIC GREEN <<  "Response:\n" << DEFAULT;
             std::cout << YELLOW << httpRes.getStatusLine() << DEFAULT << std::endl;
             writeUserInfo(httpReq, httpRes);
             ssize_t totalSent = 0;
             const char* data = response.c_str();
             ssize_t totalSize = response.size();
-            int retry = 1000;
+            int retry = 10000;
             while (totalSent < totalSize && retry-- > 0) {
                 ssize_t sent = send(*it, data + totalSent, totalSize - totalSent, 0);
                 if (sent <= 0) {
