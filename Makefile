@@ -12,20 +12,21 @@ FLAGS               = -g -Wall -Wextra -Werror -std=c++98
 INCLUDE_DIR         := include
 INCLUDE             := CGI.hpp \
                     Config.hpp \
+                    Cookies.hpp \
+                    DELETE.hpp \
                     Epoll.hpp \
                     Error.hpp \
+                    GET.hpp \
+                    HttpManager.hpp \
                     HttpRequest.hpp \
                     HttpResponse.hpp \
                     Poll.hpp \
+                    POST.hpp \
                     Select.hpp \
                     Signal.hpp \
                     Socket.hpp \
                     textFormatting.hpp \
-                    WebServ.hpp \
-                    GET.hpp \
-                    POST.hpp \
-                    DELETE.hpp \
-                    Cookies.hpp
+                    WebServ.hpp
 
 INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 
@@ -34,20 +35,21 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 SRC_DIR             := src
 SRC                 := CGI.cpp \
                     Config.cpp \
+                    Cookies.cpp \
+                    DELETE.cpp \
                     Epoll.cpp \
                     Error.cpp \
+                    GET.cpp \
+                    HttpManager.cpp \
                     HttpRequest.cpp \
                     HttpResponse.cpp \
                     main.cpp \
                     Poll.cpp \
+                    POST.cpp \
                     Select.cpp \
                     Signal.cpp \
                     Socket.cpp \
-                    GET.cpp \
-                    POST.cpp \
-                    DELETE.cpp \
-                    utils.cpp \
-                    Cookies.cpp
+                    utils.cpp
 
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 

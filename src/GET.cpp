@@ -2,22 +2,18 @@
 #include "../include/textFormatting.hpp"
 #include "../include/WebServ.hpp"
 
-void handleError(HttpRequest& request, HttpResponse& response, std::stringstream *buffer, int success, std::string type) {
+void handleError(HttpRequest& request, HttpResponse& response, std::stringstream *buffer, int success, std::string type)
+{
     std::string fullPath;
     std::string body;
     if (type == "html") {
-        if (success == 404)
-        {
+        if (success == 404) {
             fullPath = "./website/html/404.html";
             response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
-        }
-        else if (success == 403)
-        {
+        } else if (success == 403) {
             fullPath = "./website/html/403.html";
             response.setStatusLine(request.getHttpVersion(), 403, "Forbidden");
-        }
-        else
-        {
+        } else {
             fullPath = "./website/html/500.html";
             response.setStatusLine(request.getHttpVersion(), 500, "Internal error");
         }
@@ -39,13 +35,13 @@ void handleError(HttpRequest& request, HttpResponse& response, std::stringstream
     }
 }
 
-int handleHtml(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer) {
+int handleHtml(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer)
+{
     std::string fullPath = "./website/html" + path;
     std::ifstream file(fullPath.c_str());
     if (access(fullPath.c_str(), F_OK) != 0) {
         return 404;
-    }
-    else if (access(fullPath.c_str(), R_OK) != 0) {
+    } else if (access(fullPath.c_str(), R_OK) != 0) {
         return 403;
     }
     if (!file.is_open())
@@ -59,13 +55,13 @@ int handleHtml(HttpRequest& request, HttpResponse& response, std::string path, s
     return 200;
 }
 
-int handleCss(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer) {
+int handleCss(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer)
+{
     std::string fullPath = "./website" + path;
     std::ifstream file(fullPath.c_str());
     if (access(fullPath.c_str(), F_OK) != 0) {
         return 404;
-    }
-    else if (access(fullPath.c_str(), R_OK) != 0) {
+    } else if (access(fullPath.c_str(), R_OK) != 0) {
         return 403;
     }
     if (!file.is_open())
@@ -79,13 +75,13 @@ int handleCss(HttpRequest& request, HttpResponse& response, std::string path, st
     return 200;
 }
 
-int handleImg(HttpRequest& request, HttpResponse& response, std::string path, std::string extension) {
+int handleImg(HttpRequest& request, HttpResponse& response, std::string path, std::string extension)
+{
     std::string fullPath = "./website" + path;
     std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::binary);
     if (access(fullPath.c_str(), F_OK) != 0) {
         return 404;
-    }
-    else if (access(fullPath.c_str(), R_OK) != 0) {
+    } else if (access(fullPath.c_str(), R_OK) != 0) {
         return 403;
     }
     if (!file.is_open())
@@ -111,7 +107,8 @@ int handleImg(HttpRequest& request, HttpResponse& response, std::string path, st
     return 200;
 }
 
-void handleThread(HttpRequest& request, HttpResponse& response) {
+void handleThread(HttpRequest& request, HttpResponse& response)
+{
     std::string targetDir = "./website/threads";
     DIR* dir = opendir(targetDir.c_str());
     if (!dir) {
@@ -145,24 +142,23 @@ void handleThread(HttpRequest& request, HttpResponse& response) {
     response.setBody(jsonResponse);
 }
 
-int isLogged(HttpRequest& request) {
+int isLogged(HttpRequest& request)
+{
     std::map<std::string, std::string>::const_iterator mapit;
     std::string sessionId;
     for (mapit = request.getHeaders().begin(); mapit != request.getHeaders().end(); ++mapit) {
         if (mapit->first == "Cookie")
-        {
             return 1;
-        }
     }
     return 0;
 }
 
-void handleGet(HttpRequest& request, HttpResponse& response) {
+void handleGet(HttpRequest& request, HttpResponse& response)
+{
     std::string path = request.getPath();
     if(path.find(".cgi") != std::string::npos)
         Cgi cgi(request, response);
-    else
-    {
+    else {
         if (path == "" || path == "/")
             path = "/index.html";
         std::string extension;
