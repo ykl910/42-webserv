@@ -7,12 +7,13 @@
 
 class HttpManager {
 public:
+    void sendResponse(int clientFd);
+
     HttpManager(int clientFd);
     ~HttpManager();
 
 private:
     HttpRequest     _request;
     HttpResponse    _response;
-    char            _buffer[4096];
     ssize_t         _bytes;
 };

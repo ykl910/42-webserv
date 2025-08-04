@@ -1,8 +1,74 @@
 #include "../include/HttpRequest.hpp"
 
-void    HttpRequest::parse(const std::string &request)
+const bool &HttpRequest::getState() const {
+    return _state;
+}
+
+const std::string &HttpRequest::getMethod() const {
+    return _method;
+}
+
+const std::string &HttpRequest::getPath() const {
+    return _path;
+}
+
+const std::string &HttpRequest::getHttpVersion() const {
+    return _http_version;
+}
+
+const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
+    return _headers;
+}
+
+const std::string &HttpRequest::getBody() const {
+    return _body;
+}
+
+void    HttpRequest::readRequest(int clientFd)
 {
-    std::stringstream ss(request);
+    size_t totalBytes = 0;
+    size_t headerEnd = 0;
+    size_t contentLength = 0;
+    bool headersComplete = false;
+
+    while (!headersComplete) {
+        ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
+        if (bytes < 0)
+            continue;
+        else if (bytes == 0) {
+            _state = FAILURE;
+            return;
+        }
+        _content.append(_buffer, bytes);
+        totalBytes += bytes;
+        headerEnd = _content.find("\r\n\r\n");
+        if (headerEnd != std::string::npos) {
+            headersComplete = true;
+            size_t clPos = _content.find("Content-Length:");
+            if (clPos != std::string::npos) {
+                size_t valueStart = _content.find_first_not_of(" ", clPos + 15);
+                size_t valueEnd = _content.find("\r\n", valueStart);
+                std::string len = _content.substr(valueStart, valueEnd - valueStart);
+                contentLength = atoi(len.c_str());
+            }
+        }
+    }
+    while (_content.size() < headerEnd + 4 + contentLength) {
+        ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
+        if (bytes < 0)
+            continue;
+        else if (bytes == 0) {
+            _state = FAILURE;
+            return;
+        }
+        _content.append(_buffer, bytes);
+    }
+    _state = SUCCESS;
+}
+
+void    HttpRequest::parseRequest(void)
+{
+    std::stringstream ss(_content);
     std::string line;
     std::getline(ss, line);
 
@@ -29,27 +95,8 @@ void    HttpRequest::parse(const std::string &request)
     }
 }
 
-const std::string &HttpRequest::getMethod() const {
-    return _method;
-}
-
-const std::string &HttpRequest::getPath() const {
-    return _path;
-}
-
-const std::string &HttpRequest::getHttpVersion() const {
-    return _http_version;
-}
-
-const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
-    return _headers;
-}
-
-const std::string &HttpRequest::getBody() const {
-    return _body;
-}
-
-HttpRequest::HttpRequest(const std::string &request)
+HttpRequest::HttpRequest(int clientFd)
 {
-    parse(request);
+    readRequest(clientFd);
+    parseRequest();
 }
