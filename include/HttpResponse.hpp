@@ -19,7 +19,6 @@ public:
     std::string getResponse() const;
     std::string getStatusLine() const;
 
-    void build(HttpRequest &request);
     void setBody(const std::string &body);
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);

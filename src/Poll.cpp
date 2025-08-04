@@ -62,7 +62,9 @@ void    Poll::run(WebServ<Poll>& server)
                 HttpManager(it->fd);
                 close(it->fd);
                 it = _pollFd.erase(it);
-            } else
+            } else if (it->revents & POLLOUT)
+                continue;
+            else
                 ++it;
         }
     }

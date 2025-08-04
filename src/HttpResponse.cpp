@@ -40,18 +40,6 @@ void Epoll::sendResponse(int clientFd, HttpRequest request) {
 }
 */
 
-void HttpResponse::build(HttpRequest &request)
-{
-    if (request.getMethod() == "GET")
-        handleGet(request, *this);
-    else if (request.getMethod() == "POST")
-        handlePost(request, *this);
-    else if (request.getMethod() == "DELETE")
-        handleDelete(request, *this);
-    else
-        this->setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
-}
-
 void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason)
 {
     std::ostringstream oss;
@@ -69,6 +57,11 @@ void HttpResponse::setBody(const std::string &body)
     _body = body;
 }
 
+std::string HttpResponse::getStatusLine() const
+{
+    return _statusLine;
+}
+
 std::string HttpResponse::getResponse() const
 {
     std::string fullResponse;
@@ -81,12 +74,14 @@ std::string HttpResponse::getResponse() const
     return fullResponse;
 }
 
-std::string HttpResponse::getStatusLine() const
-{
-    return _statusLine;
-}
-
 HttpResponse::HttpResponse(HttpRequest &request)
 {
-    this->build(request);
+    if (request.getMethod() == "GET")
+        handleGet(request, *this);
+    else if (request.getMethod() == "POST")
+        handlePost(request, *this);
+    else if (request.getMethod() == "DELETE")
+        handleDelete(request, *this);
+    else
+        setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
 }
