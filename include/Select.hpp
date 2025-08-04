@@ -4,18 +4,14 @@
 #include "utils.hpp"
 #include <sys/select.h>
 #include <vector>
-#include <map>
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
 
 template <class Multiplexer>
 class WebServ;
 
 class Select : public Socket {
 public:
-    bool acceptClient(int serverFd);
-    HttpRequest readCompleteRequest(std::string *requestData, int fd, bool &success);
-    void manageRequest(void);
+    // HttpRequest readCompleteRequest(std::string *requestData, int fd, bool &success);
+    void initSelect(void);
     void run(WebServ<Select>& server);
 
     Select(const char *configFilePath);
@@ -23,9 +19,13 @@ public:
 
 private:
     typedef std::vector<int>::iterator selectIterator;
+
+    int                 _maxFd;
+    int                 _activity;
+    int                 _socketFd;
     fd_set              _readFds;
-    std::vector<int>    _selectFd;
     struct timeval      _tv;
+    std::vector<int>    _selectFd;
 };
 
 /*

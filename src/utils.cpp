@@ -1,13 +1,14 @@
 #include "../include/utils.hpp"
 
-std::string itos(int value) {
+std::string itos(int value)
+{
     std::ostringstream oss;
     oss << value;
     return oss.str();
 }
 
-std::vector<std::string>split(std::string string, std::string &boundary) {
-
+std::vector<std::string>split(std::string string, std::string &boundary)
+{
     std::vector<std::string> tokens;
     std::string::size_type start = 0;
     std::string::size_type end;
@@ -22,13 +23,13 @@ std::vector<std::string>split(std::string string, std::string &boundary) {
 }
 
 
-void writeUserInfo(HttpRequest &request, HttpResponse &response) {
-
+void writeUserInfo(HttpRequest &request, HttpResponse &response)
+{
     std::map<std::string, std::string>::const_iterator mapit;
     std::string sessionId;
-    for (mapit = request.getHeaders().begin(); mapit != request.getHeaders().end(); ++mapit) {
-        if (mapit->first == "Cookie")
-        {
+    for (mapit = request.getHeaders().begin();
+         mapit != request.getHeaders().end(); ++mapit) {
+        if (mapit->first == "Cookie") {
             size_t sesStartPos = mapit->second.find("session=");
             if (sesStartPos != std::string::npos) {
                 sessionId = mapit->second.substr(sesStartPos + 8, 18);
@@ -37,19 +38,17 @@ void writeUserInfo(HttpRequest &request, HttpResponse &response) {
         }
     }
 
-    if(!sessionId.empty())
-    {
+    if(!sessionId.empty()) {
         std::string fullpath = "website/users/sessionLog_" + sessionId;
         int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
-        if(fd == -1)
-        {
+        if(fd == -1) {
             printError();
             return;
         }
 
-        for (mapit = request.getHeaders().begin(); mapit != request.getHeaders().end(); ++mapit) {
-            if (mapit->first == "Cookie")
-            {
+        for (mapit = request.getHeaders().begin();
+             mapit != request.getHeaders().end(); ++mapit) {
+            if (mapit->first == "Cookie") {
                 std::string req = request.getMethod() + " " + request.getPath() + "\n";
                 std::string res = response.getStatusLine() + "\n";
                 std::string tot = "request:" + req + "response:" + res;
@@ -57,7 +56,6 @@ void writeUserInfo(HttpRequest &request, HttpResponse &response) {
                 break;
             }
         }
-        close(fd);        
+        close(fd);
     }
-
 }

@@ -1,10 +1,6 @@
 #include "../include/HttpRequest.hpp"
 
-HttpRequest::HttpRequest(const std::string &request) {
-    _parse(request);
-}
-
-void    HttpRequest::_parse(const std::string &request)
+void    HttpRequest::parse(const std::string &request)
 {
     std::stringstream ss(request);
     std::string line;
@@ -15,13 +11,11 @@ void    HttpRequest::_parse(const std::string &request)
     requestLine >> _method >> _path >> _http_version;
 
     // parse headers
-    while (std::getline(ss, line) && line != "\r")
-    {
+    while (std::getline(ss, line) && line != "\r") {
         if (!line.empty() && line[line.length() - 1] == '\r')
             line = line.substr(0, line.length() - 1);
         size_t pos = line.find(": ");
-        if (pos != std::string::npos)
-        {
+        if (pos != std::string::npos) {
             std::string key = line.substr(0, pos);
             std::string value = line.substr(pos + 2);
             _headers[key] = value;
@@ -53,4 +47,9 @@ const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
 
 const std::string &HttpRequest::getBody() const {
     return _body;
+}
+
+HttpRequest::HttpRequest(const std::string &request)
+{
+    parse(request);
 }
