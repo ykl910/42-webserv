@@ -55,17 +55,14 @@ public:
 
     typedef configFormat::const_iterator contextFormatIterator;
 
-    void printServer(server server);
-    void printServer(serverIterator server);
+    void printServer(const server& srv) const;
     void printConfigFormat(void) const;
     void printConfig(void) const;
 
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
+    bool isDirectiveFormatValid(const std::string& line);
     bool isContextFormatValid(std::string& line);
     bool isContextDirectiveFormatValid(std::string& line, int indentSize);
-
-    void checkDirectiveFormat(const std::string& line);
-    void checkContextFormat(const std::string& line);
 
     void getContextDirective(std::string& line, directive& newDirective, int indentSize);
     void getContext(std::ifstream& file, std::string& line, server& server);

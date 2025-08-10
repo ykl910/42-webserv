@@ -53,12 +53,12 @@ const int   directiveNbr[5]   = {3, 4, 1, 2, 3};
 void    Config::printConfigFormat(void) const {
     size_t i = 0;
     std::cout << BOLD ITALIC BLUE << "[ WEBSERV CONFIGURATION FILE FORMAT ]" << DEFAULT << std::endl;
-    std::cout << BOLD WHITE << contextNameList[0] << ":" << DEFAULT << std::endl;
+    std::cout << BOLD WHITE << contextNameList[0] << DEFAULT << std::endl;
     for (contextFormatIterator it = _contextFormat.begin();
-                               it != _contextFormat.end(); it++) {
+                               it != _contextFormat.end(); ++it) {
         if (i != 0)
-            std::cout << "    " << BOLD WHITE << contextNameList[i] << ":" << DEFAULT << std::endl;
-        for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); it2++) {
+            std::cout << "    " << BOLD WHITE << contextNameList[i] << DEFAULT << std::endl;
+        for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
                 for (size_t j = 0; j < it2->second.size(); j++) {
                     if (i == 0)
                         std::cout << "    " << it2->second[j] << std::endl;
@@ -70,9 +70,9 @@ void    Config::printConfigFormat(void) const {
     }
 }
 
-void    Config::printServer(server server) {
-    for (serverIterator it = server.begin(); it != server.end(); it++) {
-        for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); it2 ++) {
+void    Config::printServer(const server& srv) const {
+    for (serverIterator it = srv.begin(); it != srv.end(); it++) {
+        for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
             // std::cout << it2->first << std::endl;
             // std::cout << it2->second[0] << std::endl;
             // for (size_t i = 0; i < it2->second.size(); i++) {
@@ -82,23 +82,12 @@ void    Config::printServer(server server) {
     }
 }
 
-void    Config::printServer(serverIterator server) {
-    for (contextIterator it2 = server->second.begin(); it2 != server->second.end(); it2 ++) {
-        for (size_t i = 0; i < it2->second.size(); i++) {
-            std::cout << it2->second[i];
-        }
+void    Config::printConfig(void) const {
+    for (configIterator it = _webservConfig.begin();
+                        it != _webservConfig.end(); ++it) {
+        printServer(*it);
     }
 }
-
-// void    Config::printConfig(void) const {
-//     server server;
-
-//     for (configIterator it = _webservConfig.begin();
-//                         it != _webservConfig.end(); it++) {
-//         printServer(it->begin());
-//         // printServer(it);
-//     }
-// }
 
 bool    isRightIndentation(const std::string& line, uint32_t indentSize) {
     return line.length() > indentSize
@@ -123,15 +112,7 @@ bool    Config::isEndOfConfigFile(std::ifstream& file, std::string& line) {
     return line.empty() && file.eof();
 }
 
-void    Config::checkDirectiveFormat(const std::string& line) {
-    static uint8_t directiveIndex;
-
-    (void)line;
-    (void)directiveIndex;
-}
-
-void    Config::checkContextFormat(const std::string& line) {
-    (void)line;
+bool    Config::isDirectiveFormatValid(const std::string& line) {
 }
 
 void    Config::getContextDirective(std::string& line, directive& newDirective, int indentSize) {
@@ -256,9 +237,10 @@ void    Config::initConfigParser(void) {
 
 Config::Config(const char* configFilePath) : _configFilePath(configFilePath) {
     initConfigParser();
-    // printConfigFormat();
+    printConfigFormat();
     parseConfigFile();
     // printConfig();
+    exit(0);
 }
 
 Config::~Config() {}
