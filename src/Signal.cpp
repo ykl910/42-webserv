@@ -31,7 +31,7 @@ SIGUSR1
     Reopen log files.
 */
 
-void    Signal::sigHandler(int signum)
+void    sigHandler(int signum)
 {
     switch (signum) {
         // Ctrl-C
@@ -48,12 +48,3 @@ void    Signal::sigHandler(int signum)
             break;
     }
 }
-
-Signal::Signal()
-{
-    if (signal(SIGINT, this->sigHandler) == SIG_ERR
-        || signal(SIGQUIT, this->sigHandler) == SIG_ERR)
-        throw std::runtime_error("Error: signal init.");
-}
-
-Signal::~Signal() {}

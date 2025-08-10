@@ -120,7 +120,7 @@ void Socket::createAndBind()
     freeaddrinfo(servInfosLst);
 }
 
-Socket::Socket(const char *configFilePath) : Config(configFilePath)
+Socket::Socket()
 {
     createAndBind();
     /*

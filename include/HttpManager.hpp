@@ -15,5 +15,5 @@ public:
 private:
     HttpRequest     _request;
     HttpResponse    _response;
-    ssize_t         _bytes;
+    // ssize_t         _bytes;
 };

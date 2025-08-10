@@ -8,13 +8,12 @@
 template <class Multiplexer>
 class WebServ;
 
-class Select : public Socket {
+class Select {
 public:
     // HttpRequest readCompleteRequest(std::string *requestData, int fd, bool &success);
-    void initSelect(void);
-    void run(WebServ<Select>& server);
+    void run();
 
-    Select(const char *configFilePath);
+    Select();
     ~Select();
 
 private:
@@ -24,6 +23,7 @@ private:
     int                 _activity;
     int                 _socketFd;
     fd_set              _readFds;
+    Socket              _socket;
     struct timeval      _tv;
     std::vector<int>    _selectFd;
 };

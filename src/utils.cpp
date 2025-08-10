@@ -13,8 +13,7 @@ std::vector<std::string>split(std::string string, std::string &boundary)
     std::string::size_type start = 0;
     std::string::size_type end;
 
-    while((end = string.find(boundary, start)) != std::string::npos)
-    {
+    while ((end = string.find(boundary, start)) != std::string::npos) {
         tokens.push_back(string.substr(start, end - start));
         start = end + boundary.length();
     }
@@ -38,7 +37,7 @@ void writeUserInfo(HttpRequest &request, HttpResponse &response)
         }
     }
 
-    if(!sessionId.empty()) {
+    if (!sessionId.empty()) {
         std::string fullpath = "website/users/sessionLog_" + sessionId;
         int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
         if(fd == -1) {

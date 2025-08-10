@@ -67,7 +67,7 @@ void    Config::printConfigFormat(void) const
                         std::cout << "        " << it2->second[j] << std::endl;
                 }
         }
-        i++;
+        ++i;
     }
 }
 
@@ -106,7 +106,8 @@ bool    Config::isContextDirectiveFormatValid(std::string& line, int indentSize)
 {
     size_t directiveNameLength = _contextFormat[_contextIndex][_directiveIndex][0].length();
     if (line.empty() || line.length() - indentSize < directiveNameLength
-        || _contextFormat[_contextIndex][_directiveIndex][0] != line.substr(indentSize, directiveNameLength))
+        || _contextFormat[_contextIndex][_directiveIndex][0]
+            != line.substr(indentSize, directiveNameLength))
         throw std::runtime_error("Error: directive format not valid.");
     return true;
 }
@@ -116,18 +117,6 @@ bool    Config::isEndOfConfigFile(std::ifstream& file, std::string& line)
     return line.empty() && file.eof();
 }
 
-void    Config::checkDirectiveFormat(const std::string& line)
-{
-    static uint8_t directiveIndex;
-
-    (void)line;
-    (void)directiveIndex;
-}
-
-void    Config::checkContextFormat(const std::string& line)
-{
-    (void)line;
-}
 
 void    Config::getContextDirective(std::string& line, directive& newDirective, int indentSize)
 {
@@ -258,11 +247,11 @@ void    Config::initConfigParser(void)
 
 Config::Config(const char* configFilePath) : _configFilePath(configFilePath)
 {
-    initConfigParser();
-    printConfigFormat();
-    parseConfigFile();
+    // initConfigParser();
+    // printConfigFormat();
+    // parseConfigFile();
     // printConfig();
-    exit(0);
+    // exit(0);
 }
 
 Config::~Config() {}
