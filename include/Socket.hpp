@@ -6,18 +6,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-class Socket : public Config {
+class Socket {
 public:
     int getSocketFd() const;
     int acceptClient();
     void createAndBind();
     void setSocketOpt();
 
-    Socket(const char *configFilePath);
+    Socket();
     ~Socket();
 
 private:
     int             _socketFd;
     struct addrinfo _hints;
-    // Config          _config;
 };

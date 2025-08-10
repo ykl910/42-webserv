@@ -2,6 +2,20 @@
 #include "../include/HttpManager.hpp"
 #include "../include/WebServ.hpp"
 
+/*
+    typedef union epoll_data {
+        void        *ptr;
+        int          fd;
+        uint32_t     u32;
+        uint64_t     u64;
+    } epoll_data_t;
+
+    struct epoll_event {
+        uint32_t     events;      // Epoll events
+        epoll_data_t data;        // User data variable
+    };
+*/
+
 void Epoll::enableWriteEvent(int clientFd)
 {
     epoll_ev ev;
@@ -102,7 +116,6 @@ void Epoll::sendResponse(int clientFd, HttpRequest request)
 void Epoll::eventManager(epoll_ev &event)
 {
     if (event.events & EPOLLERR) {
-
         int err = 0;
         socklen_t len = sizeof(err);
 
@@ -111,19 +124,20 @@ void Epoll::eventManager(epoll_ev &event)
         _buffers.erase(event.data.fd);
         epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
-    } else if (event.events & EPOLLHUP) {
 
+    } else if (event.events & EPOLLHUP) {
         std::cout << "Connexion closed with a client" << std::endl;
         _buffers.erase(event.data.fd);
         epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
-    } else if ((event.events & EPOLLIN) && event.data.fd == getSocketFd()) {
 
-        int clientFd = acceptClient();
+    } else if ((event.events & EPOLLIN)
+        && event.data.fd == _socket.getSocketFd()) {
+        int clientFd = _socket.acceptClient();
         if (clientFd)
             addClientToEpoll(clientFd);
-    }
-    else if (event.events & EPOLLIN)
+
+    } else if (event.events & EPOLLIN)
         HttpManager(event.data.fd);
         // getRequest(event.data.fd);
     // else if ((event.events & EPOLLOUT) && _gotFullRequest[event.data.fd])
@@ -132,33 +146,23 @@ void Epoll::eventManager(epoll_ev &event)
 
 void Epoll::addClientToEpoll(int const &clientFd)
 {
-    std::cout << "Adding client to epoll instance" << std::endl;
+    epoll_ev newClient;
 
-    epoll_ev client_ev;
-    client_ev.events = EPOLLIN;
-    client_ev.data.fd = clientFd;
+    newClient.events = EPOLLIN;
+    newClient.data.fd = clientFd;
+    std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
+    BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
 
-    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &client_ev) == -1)
+    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1)
         printErrorAndThrow("epoll_ctl");
 }
 
 void Epoll::initEpoll()
 {
-    _epollFd = epoll_create(1);
-    if (_epollFd == -1)
-        printErrorAndThrow("epoll_create");
-
-    epoll_ev server_ev;
-    server_ev.events = EPOLLIN;
-    server_ev.data.fd = getSocketFd();
-    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)
-        printErrorAndThrow("epoll_ctl");
 }
 
-void Epoll::run(WebServ<Epoll>& server)
+void Epoll::run()
 {
-    initEpoll();
-    server.printServerStatus("epoll", getConfigFilePath());
     while (true) {
         _nbEvents = epoll_wait(_epollFd, _eventsQueue.data(), MAXEVENTS, 0);
         if (_nbEvents == -1)
@@ -168,8 +172,18 @@ void Epoll::run(WebServ<Epoll>& server)
     }
 }
 
-Epoll::Epoll(const char *configFilePath)
-    : Socket(configFilePath), _eventsQueue(MAXEVENTS) {}
+Epoll::Epoll() : _socket()
+{
+    _epollFd = epoll_create(1);
+    if (_epollFd == -1)
+        printErrorAndThrow("epoll_create");
+
+    epoll_ev server_ev;
+    server_ev.events = EPOLLIN;
+    server_ev.data.fd = _socket.getSocketFd();
+    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)
+        printErrorAndThrow("epoll_ctl");
+}
 
 Epoll::~Epoll()
 {

@@ -12,15 +12,15 @@
 template <class Multiplexer>
 class WebServ;
 
-class Epoll : public Socket {
+class Epoll {
 public:
     typedef struct epoll_event epoll_ev;
     typedef std::vector<epoll_ev> vector;
     typedef std::map<int, std::string>::iterator buffersIt;
     typedef std::map<int, HttpRequest>::iterator requestsIt;
 
+    void run();
     void initEpoll();
-    void run(WebServ<Epoll>& server);
     void addClientToEpoll(int const &clientFd);
 
     void enableWriteEvent(int clientFd);
@@ -30,13 +30,14 @@ public:
     void sendResponse(int clientFd, HttpRequest request);
     bool receivedCompleteRequest(std::string &rawData) const;
 
-    Epoll(const char *configFilePath);
+    Epoll();
     ~Epoll();
 
 private:
     int                         _epollFd;
     int                         _nbEvents;
     vector                      _eventsQueue;
+    Socket                      _socket;
     std::map<int, std::string>  _buffers;
     std::map<int, bool>         _gotResponse;
     std::map<int, bool>         _gotFullRequest;

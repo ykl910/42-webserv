@@ -22,20 +22,8 @@ void    Poll::addClientToPoll(int clientFd)
     << BOLD BLUE << newClient.fd << DEFAULT << "\n";
 }
 
-void    Poll::initPoll(void)
+void    Poll::run()
 {
-    struct pollfd serverPoll;
-
-    serverPoll.fd = getSocketFd();
-    serverPoll.events = POLLIN;
-    serverPoll.revents = 0;
-    _pollFd.push_back(serverPoll);
-}
-
-void    Poll::run(WebServ<Poll>& server)
-{
-    initPoll();
-    server.printServerStatus("poll", getConfigFilePath());
     while (true) {
         _activity = poll(&_pollFd[0], _pollFd.size(), 10); // 10 ms timeout
         if (_activity == -1)
@@ -45,7 +33,7 @@ void    Poll::run(WebServ<Poll>& server)
             std::cout << "Poll: error catched from socket fd.\n";
         // if socket got a new client
         else if (_pollFd[0].revents & POLLIN) {
-            int clientFd = acceptClient();
+            int clientFd = _socket.acceptClient();
             if (clientFd)
                 addClientToPoll(clientFd);
         }
@@ -70,7 +58,14 @@ void    Poll::run(WebServ<Poll>& server)
     }
 }
 
-Poll::Poll(const char* configFilePath) : Socket(configFilePath) {}
+Poll::Poll() : _socket() {
+    struct pollfd serverPoll;
+
+    serverPoll.fd = _socket.getSocketFd();
+    serverPoll.events = POLLIN;
+    serverPoll.revents = 0;
+    _pollFd.push_back(serverPoll);
+}
 
 Poll::~Poll()
 {

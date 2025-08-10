@@ -9,18 +9,18 @@
 template <class Multiplexer>
 class WebServ;
 
-class Poll : public Socket {
+class Poll {
 public:
     typedef std::vector<struct pollfd>::iterator pollIterator;
 
-    void initPoll(void);
+    void run();
     void addClientToPoll(int clientFd);
-    void run(WebServ<Poll>& server);
 
-    Poll(const char* configFilePath);
+    Poll();
     ~Poll();
 
 private:
     int                         _activity;
+    Socket                      _socket;
     std::vector<struct pollfd>  _pollFd;
 };

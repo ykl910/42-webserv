@@ -2,19 +2,8 @@
 #include "../include/HttpManager.hpp"
 #include "../include/WebServ.hpp"
 
-void    Select::initSelect(void)
+void    Select::run()
 {
-    _activity = 0;
-    _tv.tv_sec = 10;
-    _tv.tv_usec = 0;
-    _socketFd = getSocketFd();
-    _maxFd = _socketFd;
-}
-
-void    Select::run(WebServ<Select>& server)
-{
-    initSelect();
-    server.printServerStatus("select", getConfigFilePath());
     while (true) {
         FD_ZERO(&_readFds);
         /*
@@ -51,7 +40,7 @@ void    Select::run(WebServ<Select>& server)
             in set, and zero if it is not.
         */
             //* new connexion -> accept connexion and add client to the list
-            int clientFd = acceptClient();
+            int clientFd = _socket.acceptClient();
             if (clientFd)
                 _selectFd.push_back(clientFd);
         }
@@ -69,7 +58,14 @@ void    Select::run(WebServ<Select>& server)
     }
 }
 
-Select::Select(const char *configFilePath) : Socket(configFilePath) {}
+Select::Select() : _socket()
+{
+    _activity = 0;
+    _tv.tv_sec = 10;
+    _tv.tv_usec = 0;
+    _socketFd = _socket.getSocketFd();
+    _maxFd = _socketFd;
+}
 
 Select::~Select()
 {

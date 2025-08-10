@@ -192,6 +192,4 @@ Cookies::Cookies(HttpRequest &request, HttpResponse &response, std::string bound
     }
 }
 
-Cookies::~Cookies() {
-
-}
+Cookies::~Cookies() {}

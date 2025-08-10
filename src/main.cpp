@@ -1,6 +1,6 @@
 #include "../include/WebServ.hpp"
 
-#define DEFAULT_PATH "config/simple.conf"
+#define DEFAULT_PATH "config/webserv.conf"
 
 bool    had_choosen_multiplexer(const std::string& input)
 {
@@ -38,11 +38,11 @@ void    run_specific_multiplexer(const std::string& multiplexer,
                                  const char* configFilePath)
 {
     if (multiplexer == "select")
-        WebServ<Select> server(configFilePath);
+        WebServ<Select> server(configFilePath, "select");
     else if (multiplexer == "poll")
-        WebServ<Poll>   server(configFilePath);
+        WebServ<Poll>   server(configFilePath, "poll");
     else if (multiplexer == "epoll")
-        WebServ<Epoll>  server(configFilePath);
+        WebServ<Epoll>  server(configFilePath, "epoll");
 }
 
 int main(int argc, char **argv)
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
         if ((argc == 2 || argc == 3) && had_choosen_multiplexer(argv[argc - 1]))
             run_specific_multiplexer(argv[argc - 1], configFilePath.c_str());
         else
-            WebServ<Select> server(configFilePath.c_str());
+            WebServ<Select> server(configFilePath.c_str(), "select");
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
