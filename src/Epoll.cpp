@@ -80,7 +80,8 @@ void Epoll::sendResponse(int clientFd, HttpRequest request)
     size_t responseLen = response.length();
 
     while (totalBytesSent < responseLen) {
-        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
+        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent,
+                                 responseLen - totalBytesSent, 0);
         if (bytesSent <= 0)
             break ;
         totalBytesSent += bytesSent;
