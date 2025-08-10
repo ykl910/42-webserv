@@ -15,7 +15,6 @@
 
 int Socket::acceptClient(void)
 {
-    std::cout << "New pending connexion..." << std::endl;
     errno = 0;
     int clientFd = accept(_socketFd, NULL, NULL);
     /*
@@ -29,6 +28,8 @@ int Socket::acceptClient(void)
     */
     if (clientFd == -1)
         printErrorAndThrow("accept");
+
+    std::cout << "New pending connexion..." << std::endl;
 
     int flags = fcntl(clientFd, F_GETFL, 0);
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)

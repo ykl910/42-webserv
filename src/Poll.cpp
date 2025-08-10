@@ -41,9 +41,9 @@ void    Poll::run(WebServ<Poll>& server)
         if (_activity == -1)
             printError();
 
-        // if socket got a new client
         if (_pollFd[0].revents & POLLERR)
             std::cout << "Poll: error catched from socket fd.\n";
+        // if socket got a new client
         else if (_pollFd[0].revents & POLLIN) {
             int clientFd = acceptClient();
             if (clientFd)
