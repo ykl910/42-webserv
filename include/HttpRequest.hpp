@@ -2,31 +2,42 @@
 
 #include <netinet/in.h>
 #include <unistd.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cerrno>
 #include <iostream>
-#include <cstring>
-#include <string>
+#include <cstdlib>
 #include <sstream>
+#include <cstring>
+#include <cerrno>
+#include <string>
+#include <cstdio>
 #include <vector>
 #include <map>
 
+#define FAILURE 0
+#define SUCCESS 1
+
 class HttpRequest {
 public:
-    HttpRequest() {};
-    HttpRequest(const std::string &request);
-    const std::string &getMethod() const;
+    const bool &getState() const;
     const std::string &getPath() const;
+    const std::string &getBody() const;
+    const std::string &getMethod() const;
     const std::string &getHttpVersion() const;
     const std::map<std::string, std::string> &getHeaders() const;
-    const std::string &getBody() const;
+
+    void parseRequest(void);
+    void readRequest(int clientFd);
+
+    HttpRequest() {};
+    HttpRequest(int clientFd);
+    ~HttpRequest() {};
 
 private:
-    void _parse(const std::string &request);
-    std::string _method;
-    std::string _path;
-    std::string _http_version;
-    std::map<std::string, std::string> _headers;
-    std::string _body;
+    bool                                _state;
+    char                                _buffer[4096];
+    std::string                         _path;
+    std::string                         _body;
+    std::string                         _method;
+    std::string                         _content;
+    std::string                         _http_version;
+    std::map<std::string, std::string>  _headers;
 };

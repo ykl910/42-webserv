@@ -5,8 +5,8 @@
 
 # define DIRPATH "website/threads/"
 
-std::string getBoundary(std::string &line) {
-
+std::string getBoundary(std::string &line)
+{
     size_t boundaryStart = line.find("=");
     size_t boundaryEnd = line.length();
     if(boundaryStart != std::string::npos && boundaryEnd != std::string::npos)
@@ -14,16 +14,16 @@ std::string getBoundary(std::string &line) {
     return NULL;
 }
 
-std::string getContentType(std::string &line) {
-
+std::string getContentType(std::string &line)
+{
     size_t typeEnd = line.find(";");
     if(typeEnd != std::string::npos)
         return line.substr(0, typeEnd);
     return NULL;
 }
 
-int createFile(std::string dir, std::string filename) {
-
+int createFile(std::string dir, std::string filename)
+{
     std::string fullpath = dir + filename;
     int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if(fd == -1)
@@ -31,8 +31,8 @@ int createFile(std::string dir, std::string filename) {
     return fd;
 }
 
-int storeTitle(std::string title, int threadNb) {
-
+int storeTitle(std::string title, int threadNb)
+{
     std::string filename = itos(threadNb) + "_title.txt";
     int fd = createFile(DIRPATH, filename);
     if(fd == -1)
@@ -47,8 +47,8 @@ int storeTitle(std::string title, int threadNb) {
     return 0;
 }
 
-int storeText(std::string body, int threadNb) {
-
+int storeText(std::string body, int threadNb)
+{
     std::string filename = itos(threadNb) + "_body.txt";
     int fd = createFile(DIRPATH, filename);
     if(fd == -1)
@@ -63,8 +63,8 @@ int storeText(std::string body, int threadNb) {
     return 0;
 }
 
-int storeImg(std::string img, int threadNb) {
-
+int storeImg(std::string img, int threadNb)
+{
     std::string filename;
     filename = itos(threadNb) + "_img.jpg";
     int fd = createFile(DIRPATH, filename);
@@ -80,8 +80,8 @@ int storeImg(std::string img, int threadNb) {
     return 0;
 }
 
-bool directoryExist() {
-
+bool directoryExist()
+{
     DIR *directory = opendir(DIRPATH);
     if(directory)
     {
@@ -91,45 +91,39 @@ bool directoryExist() {
     return false;
 }
 
-int createDirectory() {
-
-    if(mkdir(DIRPATH, 0755) == -1)
-    {
+int createDirectory()
+{
+    if (mkdir(DIRPATH, 0755) == -1) {
         printError();
         return -1;
     }
     return 0;
 }
 
-int storeThread(HttpRequest &request, std::string boundary) {
-
+int storeThread(HttpRequest &request, std::string boundary)
+{
     static int threadNb = 0;
 
-   if(!directoryExist())
-   {
-       if(createDirectory() == -1)
-           return -1;
-   }
+    if (!directoryExist()) {
+        if(createDirectory() == -1)
+            return -1;
+    }
 
 
     std::vector<std::string> tokens = split(request.getBody(), boundary);
     std::vector<std::string>::iterator tokenIt;
 
-    for(tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt)
-    {
+    for(tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt) {
         std::string line = *tokenIt;
-        if(line.find("Content-Disposition: form-data; name=\"title\"") != std::string::npos)
-        {
+        if(line.find("Content-Disposition: form-data; name=\"title\"") != std::string::npos) {
             if(storeTitle(line, threadNb) == -1)
                 return -1;
         }
-        if(line.find("Content-Disposition: form-data; name=\"body\"")!= std::string::npos)
-        {
+        if(line.find("Content-Disposition: form-data; name=\"body\"") != std::string::npos) {
             if(storeText(line, threadNb) == -1)
                 return -1;
         }
-        if(line.find("Content-Disposition: form-data; name=\"uploadFile\"")!= std::string::npos)
-        {
+        if(line.find("Content-Disposition: form-data; name=\"uploadFile\"") != std::string::npos) {
             if(storeImg(line, threadNb) == -1)
                 return -1;
         }
@@ -141,8 +135,8 @@ int storeThread(HttpRequest &request, std::string boundary) {
     return 0;
 }
 
-void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::string msg) {
-
+void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::string msg)
+{
     response.setStatusLine(request.getHttpVersion(), code, msg);
     response.setHeaders("Content-Type", "text/html");
     std::string path;
@@ -162,32 +156,25 @@ void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::
     response.setBody(body);
 }
 
-void handlePost(HttpRequest& request, HttpResponse& response) {
-
+void handlePost(HttpRequest& request, HttpResponse& response)
+{
     if(request.getPath().find(".cgi") != std::string::npos)
         Cgi cgi(request, response);
-    else
-    {
+    else {
         std::map<std::string, std::string> headers = request.getHeaders();
         std::string contentType = getContentType(headers["Content-Type"]);
         std::string boundary = getBoundary(headers["Content-Type"]);
 
-        if(request.getPath() == "/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
-        {
+        if (request.getPath() == "/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             if (storeThread(request, boundary) == -1)
                 buildResponse(request, response, 500, "Internal error");
             else
                 buildResponse(request, response, 201, "Created");
-        }
-        else if (request.getPath() == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
-        {
+        } else if (request.getPath() == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             Cookies cookie(request, response, boundary);
-        }
-        else if (request.getPath() == "/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty())
-        {
+        } else if (request.getPath() == "/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             Cookies cookie(request, response, boundary);
-        }
-        else
+        } else
             buildResponse(request, response, 400, "Bad Request");
     }
 }

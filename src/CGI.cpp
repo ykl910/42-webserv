@@ -1,7 +1,8 @@
 #include "../include/CGI.hpp"
 #include "../include/utils.hpp"
 
-void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response) {
+void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response)
+{
     std::string msg = "Oops, something went wrong :(";
     response.setStatusLine(request.getHttpVersion(), 500, "Internal error");
     response.setHeaders("Content-Type", "text/plain");
@@ -9,15 +10,16 @@ void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response) {
     response.setBody(msg);
 }
 
-void Cgi::generateResponse(HttpRequest &request, HttpResponse &response) {
+void Cgi::generateResponse(HttpRequest &request, HttpResponse &response)
+{
     response.setStatusLine(request.getHttpVersion(), 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(this->_stdout.size()));
     response.setBody(this->_stdout);
 }
 
-std::string Cgi::extractQuery(HttpRequest &request) {
-
+std::string Cgi::extractQuery(HttpRequest &request)
+{
     std::string header = request.getPath();
     size_t varStart = header.find('?') + 1;
     size_t varEnd = header.size();
@@ -27,8 +29,8 @@ std::string Cgi::extractQuery(HttpRequest &request) {
     return var;
 }
 
-void Cgi::createEnvp(HttpRequest &request) {
-
+void Cgi::createEnvp(HttpRequest &request)
+{
     std::string method = request.getMethod();
 
     this->_envp.push_back("REQUEST_METHOD=" + method);
@@ -44,8 +46,8 @@ void Cgi::createEnvp(HttpRequest &request) {
     }
 }
 
-void Cgi::createArgv(HttpRequest &request) {
-
+void Cgi::createArgv(HttpRequest &request)
+{
     //TODO: recup le path du .cgi via le config file, Harcode pour l'instant
     (void)request;
 
@@ -55,22 +57,22 @@ void Cgi::createArgv(HttpRequest &request) {
         this->_argv.push_back("./cgi/bin/magicBall.cgi");
 }
 
-void Cgi::createEnvpStr(std::vector<char*> &envp) {
-
+void Cgi::createEnvpStr(std::vector<char*> &envp)
+{
     for(size_t i = 0; i < this->_envp.size(); ++i)
         envp.push_back(const_cast<char*>(this->_envp[i].c_str()));
     envp.push_back(NULL);
 }
 
-void Cgi::createArgvStr(std::vector<char*> &argv) {
-
+void Cgi::createArgvStr(std::vector<char*> &argv)
+{
     for(size_t i = 0; i < this->_argv.size(); ++i)
         argv.push_back(const_cast<char*>(this->_argv[i].c_str()));
     argv.push_back(NULL);
 }
 
-void Cgi::extractOutput(int *fd) {
-
+void Cgi::extractOutput(int *fd)
+{
     char buffer[1024];
     ssize_t bytesRead;
 
@@ -80,30 +82,25 @@ void Cgi::extractOutput(int *fd) {
     close(fd[0]);
 }
 
-int Cgi::execFromGet() {
-
+int Cgi::execFromGet()
+{
     int fds[2];
-    if(pipe(fds) == -1)
-    {
+    if (pipe(fds) == -1) {
         printError();
         return EXIT_FAILURE;
     }
     pid_t pid = fork();
-    if(pid == -1)
-    {
+    if (pid == -1) {
         printError();
         return EXIT_FAILURE;
-    }
-    else if (pid == 0)
-    {
+    } else if (pid == 0) {
         std::vector<char*> envpStr;
         std::vector<char*> argvStr;
 
         createEnvpStr(envpStr);
         createArgvStr(argvStr);
 
-        if(dup2(fds[1], STDOUT_FILENO) == -1)
-        {
+        if(dup2(fds[1], STDOUT_FILENO) == -1) {
             printError();
             exit(EXIT_FAILURE);
         }
@@ -114,9 +111,7 @@ int Cgi::execFromGet() {
         execve("./cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
-    }
-    else
-    {
+    } else {
         int status;
         waitpid(pid, &status, 0);
         extractOutput(fds);
@@ -124,38 +119,31 @@ int Cgi::execFromGet() {
     }
 }
 
-
-int Cgi::execFromPost(HttpRequest &request) {
-
+int Cgi::execFromPost(HttpRequest &request)
+{
     int inputPipe[2];
     int outputPipe[2];
 
-    if(pipe(inputPipe) == -1 || pipe(outputPipe) == -1)
-    {
+    if(pipe(inputPipe) == -1 || pipe(outputPipe) == -1) {
         printError();
         return EXIT_FAILURE;
     }
     pid_t pid = fork();
-    if(pid == -1)
-    {
+    if(pid == -1) {
         printError();
         return EXIT_FAILURE;
-    }
-    else if (pid == 0)
-    {
+    } else if (pid == 0) {
         std::vector<char*> envpStr;
         std::vector<char*> argvStr;
 
         createEnvpStr(envpStr);
         createArgvStr(argvStr);
 
-        if(dup2(inputPipe[0], STDIN_FILENO) == -1)
-        {
+        if(dup2(inputPipe[0], STDIN_FILENO) == -1) {
             printError();
             exit(EXIT_FAILURE);
         }
-        if(dup2(outputPipe[1], STDOUT_FILENO) == -1)
-        {
+        if(dup2(outputPipe[1], STDOUT_FILENO) == -1) {
             printError();
             exit(EXIT_FAILURE);
         }
@@ -167,9 +155,7 @@ int Cgi::execFromPost(HttpRequest &request) {
         execve("./cgi/bin/magicBall.cgi", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
-    }
-    else
-    {
+    } else {
         std::string body = request.getBody();
 
         close(inputPipe[0]);
@@ -184,17 +170,15 @@ int Cgi::execFromPost(HttpRequest &request) {
     }
 }
 
-void Cgi::execute(HttpRequest &request, HttpResponse &response) {
-
-    if(request.getMethod() == "GET")
-    {
+void Cgi::execute(HttpRequest &request, HttpResponse &response)
+{
+    if(request.getMethod() == "GET") {
         if(execFromGet() == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
             generateResponse(request, response);
     }
-    if(request.getMethod() == "POST")
-    {
+    if(request.getMethod() == "POST") {
         if(execFromPost(request) == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
@@ -202,13 +186,11 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response) {
     }
 }
 
-Cgi::Cgi(HttpRequest &request, HttpResponse &response) {
-
+Cgi::Cgi(HttpRequest &request, HttpResponse &response)
+{
     createEnvp(request);
     createArgv(request);
     execute(request, response);
 }
 
-Cgi::~Cgi() {
-
-}
+Cgi::~Cgi() {}

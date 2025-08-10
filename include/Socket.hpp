@@ -8,10 +8,10 @@
 
 class Socket : public Config {
 public:
-    int  getSocketFd() const;
+    int getSocketFd() const;
+    int acceptClient();
     void createAndBind();
     void setSocketOpt();
-    void setOnListening();
 
     Socket(const char *configFilePath);
     ~Socket();

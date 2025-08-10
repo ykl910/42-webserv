@@ -59,15 +59,16 @@
          // Handle delete action
          function deleteSelected() {
             const file = document.getElementById('fileSelect').value;
-            if (!file) return alert('No file selected.');
-               fetch(`/threads/${file}`, { method: 'DELETE' })
-                  .then(res => {
-                     if (res.status >= 200 && res.status < 300) {
-                        alert(`${file} deleted.`);
-                        location.href = '/remove.html';
-                     }
-                     else alert(`Failed to delete: ${res.status}`);
-                  });
+            fetch(`/threads/${file}`, { method: 'DELETE' })
+               .then(res => {
+                  if (res.status >= 200 && res.status < 300) {
+                     alert(`${file} deleted.`);
+                     location.href = '/remove.html';
+                  } else if (res.status == 404) {
+                     alert('No file selected: 404');
+                  }
+                  else alert(`Failed to delete: ${res.status}`);
+               });
          }
       </script>
       </div>

@@ -1,0 +1,12 @@
+400.html
+404.html
+500.html
+about.html
+game.html
+index.html
+isLogged.html
+login.html
+register.html
+remove.html
+upload.html
+uploadSuccess.html
