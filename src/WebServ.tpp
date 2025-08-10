@@ -2,7 +2,8 @@
 
 template <class Multiplexer>
 void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
-                                             const char* configFilePath) const {
+                                             const char* configFilePath) const
+{
     std::cout << BOLD WHITE << "Server status: "
     << BOLD ITALIC GREEN << "running\n" << DEFAULT
     << BOLD WHITE << "Config: "
@@ -16,7 +17,8 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
 
 template <class Multiplexer>
 WebServ<Multiplexer>::WebServ(const char* configFilePath)
-    : _signalHandler(), _multiplexer(configFilePath) {
+    : _signalHandler(), _multiplexer(configFilePath)
+{
     runMultiplexer();
 }
 

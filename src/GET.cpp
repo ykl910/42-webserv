@@ -2,57 +2,90 @@
 #include "../include/textFormatting.hpp"
 #include "../include/WebServ.hpp"
 
-bool handleHtmlError(HttpRequest& request, HttpResponse& response, std::stringstream *buffer) {
-    std::string fullPath = "./website/html/404.html";
-    std::ifstream file(fullPath.c_str());
-    *buffer << file.rdbuf();
-    std::string body = buffer->str();
-    response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
-    response.setHeaders("Content-Type", "text/html");
+void handleError(HttpRequest& request, HttpResponse& response, std::stringstream *buffer, int success, std::string type)
+{
+    std::string fullPath;
+    std::string body;
+    if (type == "html") {
+        if (success == 404) {
+            fullPath = "./website/html/404.html";
+            response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
+        } else if (success == 403) {
+            fullPath = "./website/html/403.html";
+            response.setStatusLine(request.getHttpVersion(), 403, "Forbidden");
+        } else {
+            fullPath = "./website/html/500.html";
+            response.setStatusLine(request.getHttpVersion(), 500, "Internal error");
+        }
+        std::ifstream file(fullPath.c_str());
+        *buffer << file.rdbuf();
+        body = buffer->str();
+        response.setHeaders("Content-Type", "text/html");
+    } else if (type == "img") {
+        if (success == 404)
+            body = "Not Found";
+        else if (success == 403)
+            body = "Forbidden";
+        else
+            body = "Internal error";
+        response.setStatusLine(request.getHttpVersion(), success, body);
+        response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(body.length()));
     response.setBody(body);
-    return true;
+    }
 }
 
-bool handleHtml(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer) {
+int handleHtml(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer)
+{
     std::string fullPath = "./website/html" + path;
     std::ifstream file(fullPath.c_str());
+    if (access(fullPath.c_str(), F_OK) != 0) {
+        return 404;
+    } else if (access(fullPath.c_str(), R_OK) != 0) {
+        return 403;
+    }
     if (!file.is_open())
-        return false;
+        return 500;
     *buffer << file.rdbuf();
     std::string body = buffer->str();
     response.setStatusLine(request.getHttpVersion(), 200, "OK");
     response.setHeaders("Content-Type", "text/html");
     response.setHeaders("Content-Length", itos(body.length()));
     response.setBody(body);
-    return true;
+    return 200;
 }
 
-bool handleCss(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer) {
-    std::string fullPath = "./website/css" + path;
+int handleCss(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer)
+{
+    std::string fullPath = "./website" + path;
     std::ifstream file(fullPath.c_str());
-    if (!file.is_open())
-    {
-        handleCss(request, response, "/style.css", buffer);
-        return true;
+    if (access(fullPath.c_str(), F_OK) != 0) {
+        return 404;
+    } else if (access(fullPath.c_str(), R_OK) != 0) {
+        return 403;
     }
+    if (!file.is_open())
+        return 500;
     *buffer << file.rdbuf();
     std::string body = buffer->str();
     response.setStatusLine(request.getHttpVersion(), 200, "OK");
     response.setHeaders("Content-Type", "text/css");
     response.setHeaders("Content-Length", itos(body.length()));
     response.setBody(body);
-    return true;
+    return 200;
 }
 
-bool handleImg(HttpRequest& request, HttpResponse& response, std::string path, std::string extension) {
+int handleImg(HttpRequest& request, HttpResponse& response, std::string path, std::string extension)
+{
     std::string fullPath = "./website" + path;
     std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::binary);
-    if (!file.is_open()) {
-        response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
-        std::cerr << "Image not found for path: " << fullPath << std::endl;
-        return false;
+    if (access(fullPath.c_str(), F_OK) != 0) {
+        return 404;
+    } else if (access(fullPath.c_str(), R_OK) != 0) {
+        return 403;
     }
+    if (!file.is_open())
+        return 500;
     std::vector<char> data;
     char temp[4096];
     while (file.read(temp, sizeof(temp))) {
@@ -71,10 +104,11 @@ bool handleImg(HttpRequest& request, HttpResponse& response, std::string path, s
     response.setHeaders("Content-Length", itos(data.size()));
     response.setBody(std::string(&data[0], data.size()));
     file.close();
-    return true;
+    return 200;
 }
 
-void handleThread(HttpRequest& request, HttpResponse& response) {
+void handleThread(HttpRequest& request, HttpResponse& response)
+{
     std::string targetDir = "./website/threads";
     DIR* dir = opendir(targetDir.c_str());
     if (!dir) {
@@ -108,25 +142,23 @@ void handleThread(HttpRequest& request, HttpResponse& response) {
     response.setBody(jsonResponse);
 }
 
-int isLogged(HttpRequest& request) {
+int isLogged(HttpRequest& request)
+{
     std::map<std::string, std::string>::const_iterator mapit;
     std::string sessionId;
     for (mapit = request.getHeaders().begin(); mapit != request.getHeaders().end(); ++mapit) {
         if (mapit->first == "Cookie")
-        {
             return 1;
-        }
     }
     return 0;
 }
 
-void handleGet(HttpRequest& request, HttpResponse& response) {
-    std::string root = "./website";
+void handleGet(HttpRequest& request, HttpResponse& response)
+{
     std::string path = request.getPath();
     if(path.find(".cgi") != std::string::npos)
         Cgi cgi(request, response);
-    else
-    {
+    else {
         if (path == "" || path == "/")
             path = "/index.html";
         std::string extension;
@@ -136,20 +168,24 @@ void handleGet(HttpRequest& request, HttpResponse& response) {
         }
         if (path == "/login.html" && isLogged(request))
             path = "/isLogged.html";
-        bool success = false;
+        int success = 0;
         std::stringstream buffer;
         if (request.getPath() == "/list-files") {
             handleThread(request, response);
         } else if (extension == "html" || extension == "htm" || extension == "") {
             success = handleHtml(request, response, path, &buffer);
-            if (!success)
-                handleHtmlError(request, response, &buffer);
+            if (success != 200)
+                handleError(request, response, &buffer, success, "html");
         } else if (extension == "css") {
             success = handleCss(request, response, path, &buffer);
+            if (success != 200)
+                handleError(request, response, &buffer, success, "img");
         } else if (extension == "png" || extension == "gif" || extension == "webp") {
             success = handleImg(request, response, path, extension);
+            if (success != 200)
+                handleError(request, response, &buffer, success, "img");
         } else {
-            handleHtmlError(request, response, &buffer);
+            handleError(request, response, &buffer, 500, "html");
         }
     }
 }

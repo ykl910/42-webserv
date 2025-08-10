@@ -1,21 +1,22 @@
 #include "../include/Cookies.hpp"
 
-void Cookies::loadUserInfo() {
+void Cookies::loadUserInfo()
+{
     std::string fullpath = "website/users/userinfo";
     std::ifstream file(fullpath.c_str());
     if(!file.is_open())
         return;
-    
+
     std::string line;
     while(std::getline(file, line)) {
         size_t usernamePos = line.find("username:");
         size_t usernameEnd = line.find(";");
         size_t passwordPos = line.find("password:");
-        
+
         if(usernamePos != std::string::npos && passwordPos != std::string::npos) {
             std::string username = line.substr(usernamePos + 9, usernameEnd - usernamePos - 9);
             std::string password = line.substr(passwordPos + 9);
-            
+
             std::map<std::string, std::string> user;
             user["username"] = username;
             user["password"] = password;
@@ -26,8 +27,8 @@ void Cookies::loadUserInfo() {
 }
 
 // register
-int Cookies::parseUsernamePwd(std::string username, std::string password) {
-
+int Cookies::parseUsernamePwd(std::string username, std::string password)
+{
     std::string fullpath = "website/users/userinfo";
     int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
     if(fd == -1)
@@ -56,9 +57,8 @@ int Cookies::parseUsernamePwd(std::string username, std::string password) {
     return 0;
 }
 
-
-int Cookies::registerUserInfo(HttpRequest &request, std::string boundary) {
-
+int Cookies::registerUserInfo(HttpRequest &request, std::string boundary)
+{
     std::vector<std::string> tokens = split(request.getBody(), boundary);
     std::vector<std::string>::iterator tokenIt;
     std::string userLine = "";
@@ -92,8 +92,8 @@ int Cookies::registerUserInfo(HttpRequest &request, std::string boundary) {
 }
 
 // login
-int Cookies::checkUsernamePwd(std::string username, std::string password) {
-
+int Cookies::checkUsernamePwd(std::string username, std::string password)
+{
     size_t startPosUser = username.find("\r\n\r\n") + 4;
     size_t endPosUser = username.size() - 4;
     std::string user = username.substr(startPosUser, endPosUser - startPosUser);
@@ -167,7 +167,7 @@ void Cookies::buildCookieResponse(HttpRequest& request, HttpResponse& response, 
 
 Cookies::Cookies(HttpRequest &request, HttpResponse &response, std::string boundary) {
 
-    
+
     int result = 0;
     if (request.getPath() == "/register")
     {
@@ -186,7 +186,7 @@ Cookies::Cookies(HttpRequest &request, HttpResponse &response, std::string bound
         if (result == -1)
             buildCookieResponse(request, response, 401, "Authentication failed");
         else if (result == 0)
-            buildCookieResponse(request, response, 200, "Success");   
+            buildCookieResponse(request, response, 200, "Success");
         else
             buildCookieResponse(request, response, 500, "Internal error");
     }

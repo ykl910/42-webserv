@@ -3,8 +3,6 @@
 #include "Socket.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
 #include <sys/epoll.h>
 #include <vector>
 
@@ -21,30 +19,28 @@ public:
     typedef std::map<int, std::string>::iterator buffersIt;
     typedef std::map<int, HttpRequest>::iterator requestsIt;
 
+    void initEpoll();
     void run(WebServ<Epoll>& server);
+    void addClientToEpoll(int const &clientFd);
+
     void enableWriteEvent(int clientFd);
     void disableWriteEvent(int clientFd);
-    void createEpollInstance();
-    void addServerToEpoll();
-    int acceptClient();
     void eventManager(epoll_ev &event);
     void getRequest(int clientfd);
     void sendResponse(int clientFd, HttpRequest request);
-
-    const int& getEpollFd(void) const;
-    void addClientToEpoll(int const &clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
 
     Epoll(const char *configFilePath);
     ~Epoll();
 
 private:
-    int _epollFd;
-    vector _eventsQueue;
-    std::map<int, std::string> _buffers;
-    std::map<int, HttpRequest> _requests;
-    std::map<int, bool> _gotFullRequest;
-    std::map<int, bool> _gotResponse;
+    int                         _epollFd;
+    int                         _nbEvents;
+    vector                      _eventsQueue;
+    std::map<int, std::string>  _buffers;
+    std::map<int, bool>         _gotResponse;
+    std::map<int, bool>         _gotFullRequest;
+    std::map<int, int>          _pendingResponse;
+    std::map<int, HttpRequest>  _requests;
     std::map<int, HttpResponse> _responses;
-    std::map<int, int> _pendingResponse;
 };

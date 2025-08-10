@@ -31,13 +31,14 @@ SIGUSR1
     Reopen log files.
 */
 
-void    Signal::sigHandler(int signum) {
+void    Signal::sigHandler(int signum)
+{
     switch (signum) {
         // Ctrl-C
         case SIGINT:
             std::cout << BOLD WHITE << "\nSIGINT catched" << DEFAULT
             << std::endl;
-            throw std::runtime_error("");
+            exit(EXIT_SUCCESS);
             break;
 
         // Ctrl-
@@ -48,11 +49,11 @@ void    Signal::sigHandler(int signum) {
     }
 }
 
-Signal::Signal() {
+Signal::Signal()
+{
     if (signal(SIGINT, this->sigHandler) == SIG_ERR
-        || signal(SIGQUIT, this->sigHandler) == SIG_ERR) {
+        || signal(SIGQUIT, this->sigHandler) == SIG_ERR)
         throw std::runtime_error("Error: signal init.");
-    }
 }
 
 Signal::~Signal() {}

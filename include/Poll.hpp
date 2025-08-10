@@ -13,16 +13,14 @@ class Poll : public Socket {
 public:
     typedef std::vector<struct pollfd>::iterator pollIterator;
 
-    void acceptClient(int socketFd);
-    void manageRequest(pollIterator& it, ssize_t bytes);
     void initPoll(void);
+    void addClientToPoll(int clientFd);
     void run(WebServ<Poll>& server);
 
     Poll(const char* configFilePath);
     ~Poll();
 
 private:
-    //nfds_t nfds;
-    char _buffer[4092];
-    std::vector<struct pollfd> _pollFd;
+    int                         _activity;
+    std::vector<struct pollfd>  _pollFd;
 };
