@@ -72,7 +72,7 @@ void    Config::printConfigFormat(void) const
 }
 
 void    Config::printServer(const server& srv) const {
-    for (serverIterator it = srv.begin(); it != srv.end(); it++) {
+    for (serverIterator it = srv.begin(); it != srv.end(); ++it) {
         for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
             // std::cout << it2->first << std::endl;
             // std::cout << it2->second[0] << std::endl;
@@ -144,6 +144,7 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
     while (_directiveIndex < directiveNbr[_contextIndex]) {
         directive newDirective;
         std::getline(file, line);
+        std::cout << line << "\n";
         if (line.empty())
             break;
         if (isContextDirectiveFormatValid(line, indentSize)) {
@@ -157,6 +158,7 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
 
 void    Config::getServer(std::ifstream& file, std::string& line, server& server)
 {
+    int lineNumber = 0;
     _serverMask = 0;
     _contextIndex = SERVER;
     while (_contextIndex < CONTEXT_NUMBER) {
@@ -164,13 +166,15 @@ void    Config::getServer(std::ifstream& file, std::string& line, server& server
         if (isContextFormatValid(line)) {
             getContext(file, line, server);
         }
+        lineNumber++;
         _contextIndex++;
     }
 }
 
-bool    got_an_other_server(std::ifstream& file, std::string& line)
+bool    gotAnOtherServer(std::ifstream& file, std::string& line)
 {
     std::getline(file, line);
+    std::cout << line << "\n";
     if (!line.empty())
         throw std::runtime_error("Error: config file not well formated.");
     std::getline(file, line);
@@ -190,7 +194,7 @@ void    Config::parseConfigFile(void)
         getServer(file, line, server);
         // printServer(server);
         _webservConfig.push_back(server);
-        if (!got_an_other_server(file, line))
+        if (!gotAnOtherServer(file, line))
             break;
     }
     file.close();
@@ -235,14 +239,13 @@ void    Config::initConfigParser(void)
     _contextFormat[REDIRECTION][R_302].push_back("302");
 
     // locationDirective
-    _contextFormat[LOCATION][0].push_back("");
-    _contextFormat[LOCATION][1].push_back("");
-    _contextFormat[LOCATION][2].push_back("");
+    // _contextFormat[LOCATION][0].push_back("");
 
     // cgiDirective
-    _contextFormat[CGI][0].push_back("");
-    _contextFormat[CGI][1].push_back("");
-    _contextFormat[CGI][2].push_back("");
+    _contextFormat[CGI][0].push_back(".php");
+    _contextFormat[CGI][1].push_back(".perl");
+    _contextFormat[CGI][2].push_back(".py");
+    _contextFormat[CGI][3].push_back(".c");
 }
 
 Config::Config(const char* configFilePath) : _configFilePath(configFilePath)

@@ -55,9 +55,10 @@ public:
 
     typedef configFormat::const_iterator contextFormatIterator;
 
-    void printServer(const server& srv) const;
     void printConfigFormat(void) const;
+
     void printConfig(void) const;
+    void printServer(const server& srv) const;
 
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
     bool isDirectiveFormatValid(const std::string& line);
@@ -76,10 +77,11 @@ public:
     ~Config();
 
 private:
-    std::string     _configFilePath;
-    config          _webservConfig;
-    configFormat    _contextFormat;
-    int             _contextIndex;
-    int             _directiveIndex;
-    int             _serverMask;
+    std::string                 _configFilePath;
+    config                      _webservConfig;
+    configFormat                _contextFormat;
+    std::map<int, std::string>  _errorPage;
+    int                         _contextIndex;
+    int                         _directiveIndex;
+    int                         _serverMask;
 };
