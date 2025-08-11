@@ -43,17 +43,19 @@ public:
     typedef uint32_t contextName;
     typedef uint32_t directiveName;
 
-    typedef std::vector<std::string> directive;
+    typedef std::string directive;
+
     typedef std::map<directiveName, directive> context;
     typedef context::const_iterator contextIterator;
+
     typedef std::map<contextName, context> server;
     typedef server::const_iterator serverIterator;
+
     typedef std::vector<server> config;
     typedef config::const_iterator configIterator;
 
     typedef std::map<contextName, context> configFormat;
-
-    typedef configFormat::const_iterator contextFormatIterator;
+    typedef configFormat::const_iterator configFormatIterator;
 
     void printConfigFormat(void) const;
 
@@ -61,9 +63,9 @@ public:
     void printServer(const server& srv) const;
 
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
-    bool isDirectiveFormatValid(const std::string& line);
-    bool isContextFormatValid(std::string& line);
-    bool isContextDirectiveFormatValid(std::string& line, int indentSize);
+    bool directiveFormatValid(const std::string& line);
+    bool contextFormatValid(std::string& line);
+    bool contextDirectiveFormatValid(std::string& line, int indentSize);
 
     void getContextDirective(std::string& line, directive& newDirective, int indentSize);
     void getContext(std::ifstream& file, std::string& line, server& server);
@@ -79,7 +81,7 @@ public:
 private:
     std::string                 _configFilePath;
     config                      _webservConfig;
-    configFormat                _contextFormat;
+    configFormat                _configFormat;
     std::map<int, std::string>  _errorPage;
     int                         _contextIndex;
     int                         _directiveIndex;

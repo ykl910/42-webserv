@@ -48,18 +48,22 @@ main
 #define GETTING_ALL_SERVERS 1
 
 const char* contextNameList[] = {"server:", "error_page:", "redirection:", "location:", "cgi:"};
-const int   directiveNbr[5]   = {3, 4, 1, 2, 3};
+const int   directiveNbr[5]   = {4, 4, 1, 2, 3};
 
 void    Config::printConfigFormat(void) const
 {
+    std::cout
+    << BOLD ITALIC BLUE << "[ WEBSERV CONFIGURATION FILE FORMAT ]\n"
+    << BOLD WHITE << contextNameList[0] << DEFAULT << std::endl;
+
     size_t i = 0;
-    std::cout << BOLD ITALIC BLUE << "[ WEBSERV CONFIGURATION FILE FORMAT ]" << DEFAULT << std::endl;
-    std::cout << BOLD WHITE << contextNameList[0] << DEFAULT << std::endl;
-    for (contextFormatIterator it = _contextFormat.begin();
-                               it != _contextFormat.end(); ++it) {
+    for (configFormatIterator it = _configFormat.begin();
+                               it != _configFormat.end(); ++it) {
         if (i != 0)
-            std::cout << "    " << BOLD WHITE << contextNameList[i] << DEFAULT << std::endl;
-        for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            std::cout << "    "
+            << BOLD WHITE << contextNameList[i] << DEFAULT << std::endl;
+        for (contextIterator it2 = it->second.begin();
+                             it2 != it->second.end(); ++it2) {
                 for (size_t j = 0; j < it2->second.size(); j++) {
                     if (i == 0)
                         std::cout << "    " << it2->second[j] << std::endl;
@@ -73,7 +77,8 @@ void    Config::printConfigFormat(void) const
 
 void    Config::printServer(const server& srv) const {
     for (serverIterator it = srv.begin(); it != srv.end(); ++it) {
-        for (contextIterator it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+        for (contextIterator it2 = it->second.begin();
+                             it2 != it->second.end(); ++it2) {
             // std::cout << it2->first << std::endl;
             // std::cout << it2->second[0] << std::endl;
             // for (size_t i = 0; i < it2->second.size(); i++) {
@@ -90,23 +95,23 @@ void    Config::printConfig(void) const {
     }
 }
 
-bool    isRightIndentation(const std::string& line, uint32_t indentSize) {
+bool    rightIndentation(const std::string& line, uint32_t indentSize) {
     return line.length() > indentSize
         && line.substr(0, indentSize).find_first_not_of(" ");
 }
 
-bool    Config::isContextFormatValid(std::string& line)
+bool    Config::contextFormatValid(std::string& line)
 {
     if (line.empty() || contextNameList[_contextIndex] != line)
         throw std::runtime_error("Error: context format not valid.");
     return true;
 }
 
-bool    Config::isContextDirectiveFormatValid(std::string& line, int indentSize)
+bool    Config::contextDirectiveFormatValid(std::string& line, int indentSize)
 {
-    size_t directiveNameLength = _contextFormat[_contextIndex][_directiveIndex][0].length();
+    size_t directiveNameLength = _configFormat[_contextIndex][_directiveIndex].length();
     if (line.empty() || line.length() - indentSize < directiveNameLength
-        || _contextFormat[_contextIndex][_directiveIndex][0]
+        || _configFormat[_contextIndex][_directiveIndex]
             != line.substr(indentSize, directiveNameLength))
         throw std::runtime_error("Error: directive format not valid.");
     return true;
@@ -117,18 +122,24 @@ bool    Config::isEndOfConfigFile(std::ifstream& file, std::string& line)
     return line.empty() && file.eof();
 }
 
+bool    Config::directiveFormatValid(const std::string& line)
+{
+    (void)line;
+    // if (line.)
+    return true;
+}
 
-void    Config::getContextDirective(std::string& line, directive& newDirective, int indentSize)
+void    Config::getContextDirective(std::string& line, directive& newDirective,
+                                    int indentSize)
 {
     if (_serverMask & 1 << _directiveIndex)
         throw std::runtime_error("Error: got doublon in config file.");
-    else if ((_contextIndex == 0 && !isRightIndentation(line, indentSize))
-                || !isRightIndentation(line, indentSize))
+    else if (!rightIndentation(line, indentSize))
         throw std::runtime_error("Error: wrong indentation in config file.");
-    if (_contextFormat[_contextIndex][_directiveIndex][FORMAT] == line)
-        newDirective.push_back(line.substr());
+    if (_configFormat[_contextIndex][_directiveIndex] == line)
+        newDirective = line.substr();
     else
-        newDirective.push_back("");
+        newDirective = "";
     _serverMask |= 1 << _directiveIndex;
 }
 
@@ -147,7 +158,7 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
         std::cout << line << "\n";
         if (line.empty())
             break;
-        if (isContextDirectiveFormatValid(line, indentSize)) {
+        if (contextDirectiveFormatValid(line, indentSize)) {
             getContextDirective(line, newDirective, indentSize);
             // std::cout << line << std::endl;
         }
@@ -158,26 +169,25 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
 
 void    Config::getServer(std::ifstream& file, std::string& line, server& server)
 {
-    int lineNumber = 0;
     _serverMask = 0;
     _contextIndex = SERVER;
     while (_contextIndex < CONTEXT_NUMBER) {
         std::getline(file, line);
-        if (isContextFormatValid(line)) {
+        if (contextFormatValid(line)) {
             getContext(file, line, server);
         }
-        lineNumber++;
         _contextIndex++;
     }
 }
 
-bool    gotAnOtherServer(std::ifstream& file, std::string& line)
+bool    gotAnotherServer(std::ifstream& file, std::string& line)
 {
     std::getline(file, line);
-    std::cout << line << "\n";
     if (!line.empty())
         throw std::runtime_error("Error: config file not well formated.");
+    std::ifstream::pos_type streamPos = file.tellg();
     std::getline(file, line);
+    file.seekg(streamPos);
     return !line.empty();
 }
 
@@ -192,9 +202,9 @@ void    Config::parseConfigFile(void)
         server  server;
 
         getServer(file, line, server);
-        // printServer(server);
         _webservConfig.push_back(server);
-        if (!gotAnOtherServer(file, line))
+        printConfig();
+        if (!gotAnotherServer(file, line))
             break;
     }
     file.close();
@@ -208,44 +218,44 @@ const char* Config::getConfigFilePath(void) const
 void    Config::initConfigParser(void)
 {
     context server;
-    context error;
-    context redirection;
-    context location;
-    context cgi;
+    // context error;
+    // context redirection;
+    // context location;
+    // context cgi;
 
-    _contextFormat[SERVER] = server;
-    _contextFormat[ERROR] = error;
-    _contextFormat[REDIRECTION] = redirection;
-    _contextFormat[LOCATION] = location;
-    _contextFormat[CGI] = cgi;
+    _configFormat[SERVER] = server;
+    // _configFormat[ERROR] = error;
+    // _configFormat[REDIRECTION] = redirection;
+    // _configFormat[LOCATION] = location;
+    // _configFormat[CGI] = cgi;
 
     // serverDirective
-    _contextFormat[SERVER][SERVER_NAME].push_back("server_name");
-    _contextFormat[SERVER][LISTEN].push_back("listen");
-    _contextFormat[SERVER][CLIENT_MAX_BODY_SIZE].push_back("client_max_body_size");
+    _configFormat[SERVER][SERVER_NAME] = "server_name";
+    _configFormat[SERVER][LISTEN] = "listen";
+    // _configFormat[SERVER][CLIENT_MAX_BODY_SIZE] = "client_max_body_size";
 
     // errorDirective
-    _contextFormat[ERROR][E_400].push_back("400");
-    _contextFormat[ERROR][E_401].push_back("401");
-    _contextFormat[ERROR][E_402].push_back("402");
+    // _configFormat[ERROR][E_400] = "400";
+    // _configFormat[ERROR][E_401] = "401";
+    // _configFormat[ERROR][E_402] = "402";
 
-    _contextFormat[ERROR][E_500].push_back("500");
-    _contextFormat[ERROR][E_501].push_back("501");
-    _contextFormat[ERROR][E_502].push_back("502");
+    // _configFormat[ERROR][E_500] = "500";
+    // _configFormat[ERROR][E_501] = "501";
+    // _configFormat[ERROR][E_502] = "502";
 
     // redirectionDirective
-    _contextFormat[REDIRECTION][R_300].push_back("300");
-    _contextFormat[REDIRECTION][R_301].push_back("301");
-    _contextFormat[REDIRECTION][R_302].push_back("302");
+    // _configFormat[REDIRECTION][R_300] = "300";
+    // _configFormat[REDIRECTION][R_301] = "301";
+    // _configFormat[REDIRECTION][R_302] = "302";
 
     // locationDirective
     // _contextFormat[LOCATION][0].push_back("");
 
     // cgiDirective
-    _contextFormat[CGI][0].push_back(".php");
-    _contextFormat[CGI][1].push_back(".perl");
-    _contextFormat[CGI][2].push_back(".py");
-    _contextFormat[CGI][3].push_back(".c");
+    // _contextFormat[CGI][0].push_back(".php");
+    // _contextFormat[CGI][1].push_back(".perl");
+    // _contextFormat[CGI][2].push_back(".py");
+    // _contextFormat[CGI][3].push_back(".c");
 }
 
 Config::Config(const char* configFilePath) : _configFilePath(configFilePath)

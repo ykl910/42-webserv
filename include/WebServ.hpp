@@ -1,7 +1,6 @@
 #pragma once
 
 #include "textFormatting.hpp"
-#include "Signal.hpp"
 #include "Select.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
@@ -14,7 +13,6 @@
 template <class Multiplexer>
 class WebServ {
 public:
-    void initSignalHandler(void);
     void printServerStatus(const char* multiplexer, const char* configFilePath) const;
 
     WebServ(const char* configFilePath, const char* multiplexer);
