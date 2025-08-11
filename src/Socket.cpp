@@ -85,7 +85,7 @@ void Socket::createAndBind()
        pointer to the start of the list in res.   The  items  in  the linked
        list are linked by the ai_next field.
     */
-    status = getaddrinfo(NULL, "8080", &_hints, &servInfosLst);
+    status = getaddrinfo("localhost", "8080", &_hints, &servInfosLst);
     if (status != 0)
         printGaiErrorAndThrow("getaddrinfo", status);
 

@@ -5,4 +5,5 @@
 #include <iostream>
 #include <csignal>
 
-void sigHandler(int signum);
+void initSignalHandler(void);
+void signalHandler(int signum);

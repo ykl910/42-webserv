@@ -15,19 +15,12 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
     << DEFAULT << std::endl;
 }
 
-template <class Multiplexer>
-void    WebServ<Multiplexer>::initSignalHandler(void)
-{
-    if (signal(SIGINT, sigHandler) == SIG_ERR
-        || signal(SIGQUIT, sigHandler) == SIG_ERR)
-        throw std::runtime_error("Error: signal init.");
-}
 
 template <class Multiplexer>
-WebServ<Multiplexer>::WebServ(const char* configFilePath, const char* multiplexer)
+WebServ<Multiplexer>::WebServ(const char* configFilePath,
+                              const char* multiplexer)
     : _config(configFilePath), _multiplexer()
 {
-    initSignalHandler();
     printServerStatus(multiplexer, configFilePath);
     _multiplexer.run();
 }

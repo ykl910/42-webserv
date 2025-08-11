@@ -1,28 +1,29 @@
 #include "../include/WebServ.hpp"
+#include "../include/Signal.hpp"
 
 #define DEFAULT_PATH "config/webserv.conf"
 
-bool    had_choosen_multiplexer(const std::string& input)
+bool    hadChoosenMultiplexer(const std::string& input)
 {
     return !input.empty() && (input == "select" || input == "poll"
                                                 || input == "epoll");
 }
 
-bool    got_right_suffix(const std::string& config_file)
+bool    gotRightSuffix(const std::string& config_file)
 {
     std::string suffix(".conf");
     return !config_file.compare(config_file.length() - suffix.length(),
             suffix.length(), suffix);
 }
 
-bool    got_config_file_path(const int argc, const char* argv)
+bool    gotConfigFilePath(const int argc, const char* argv)
 {
-    if ((argc == 2 || argc == 3) && !had_choosen_multiplexer(argv)) {
+    if ((argc == 2 || argc == 3) && !hadChoosenMultiplexer(argv)) {
         try {
             std::string config_file(argv);
             if (config_file.empty())
                 throw std::runtime_error("Error: no config file name.");
-            else if (!got_right_suffix(config_file))
+            else if (!gotRightSuffix(config_file))
                 throw std::runtime_error("Error: wrong config file name.");
             else if (access(config_file.c_str(), R_OK) != 0)
                 throw std::runtime_error("Error: can't read config file.");
@@ -34,7 +35,7 @@ bool    got_config_file_path(const int argc, const char* argv)
     return false;
 }
 
-void    run_specific_multiplexer(const std::string& multiplexer,
+void    runSpecificMultiplexer(const std::string& multiplexer,
                                  const char* configFilePath)
 {
     if (multiplexer == "select")
@@ -49,11 +50,12 @@ int main(int argc, char **argv)
 {
     std::string configFilePath(DEFAULT_PATH);
 
-    if (got_config_file_path(argc, argv[1]))
+    if (gotConfigFilePath(argc, argv[1]))
         configFilePath = std::string(argv[1]);
     try {
-        if ((argc == 2 || argc == 3) && had_choosen_multiplexer(argv[argc - 1]))
-            run_specific_multiplexer(argv[argc - 1], configFilePath.c_str());
+        initSignalHandler();
+        if ((argc == 2 || argc == 3) && hadChoosenMultiplexer(argv[argc - 1]))
+            runSpecificMultiplexer(argv[argc - 1], configFilePath.c_str());
         else
             WebServ<Select> server(configFilePath.c_str(), "select");
     } catch (std::exception& e) {
