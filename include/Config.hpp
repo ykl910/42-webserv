@@ -15,6 +15,7 @@ enum e_directive {FORMAT};
 
 enum e_server_directive {
     SERVER_NAME,
+    HOST,
     LISTEN,
     CLIENT_MAX_BODY_SIZE
 };
@@ -38,6 +39,15 @@ enum e_redirection_directive {
 
 enum e_location_directive {};
 
+typedef struct s_server {
+    int                         client_max_body_size;
+    std::string                 port;
+    std::string                 domain;
+    std::vector<std::string>    error_page;
+    std::vector<std::string>    location;
+    std::vector<std::string>    cgi;
+}t_server;
+
 class Config {
 public:
     typedef uint32_t contextName;
@@ -51,11 +61,14 @@ public:
     typedef std::map<contextName, context> server;
     typedef server::const_iterator serverIterator;
 
+    typedef std::map<contextName, context> configFormat;
+    typedef configFormat::const_iterator configFormatIterator;
+
     typedef std::vector<server> config;
     typedef config::const_iterator configIterator;
 
-    typedef std::map<contextName, context> configFormat;
-    typedef configFormat::const_iterator configFormatIterator;
+    // typedef std::vector<t_server> config;
+    // typedef config::const_iterator configIterator;
 
     void printConfigFormat(void) const;
 
@@ -79,11 +92,10 @@ public:
     ~Config();
 
 private:
-    std::string                 _configFilePath;
-    config                      _webservConfig;
-    configFormat                _configFormat;
-    std::map<int, std::string>  _errorPage;
-    int                         _contextIndex;
-    int                         _directiveIndex;
-    int                         _serverMask;
+    std::string     _configFilePath;
+    config          _config;
+    configFormat    _configFormat;
+    int             _contextIndex;
+    int             _directiveIndex;
+    int             _serverMask;
 };
