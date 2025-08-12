@@ -89,8 +89,8 @@ void    Config::printServer(const server& srv) const {
 }
 
 void    Config::printConfig(void) const {
-    for (configIterator it = _webservConfig.begin();
-                        it != _webservConfig.end(); ++it) {
+    for (configIterator it = _config.begin();
+                        it != _config.end(); ++it) {
         printServer(*it);
     }
 }
@@ -202,7 +202,7 @@ void    Config::parseConfigFile(void)
         server  server;
 
         getServer(file, line, server);
-        _webservConfig.push_back(server);
+        _config.push_back(server);
         printConfig();
         if (!gotAnotherServer(file, line))
             break;
