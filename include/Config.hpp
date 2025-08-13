@@ -42,6 +42,7 @@ enum e_location_directive {};
 typedef struct s_server {
     int                         client_max_body_size;
     std::string                 port;
+    std::string                 host;
     std::string                 domain;
     std::vector<std::string>    error_page;
     std::vector<std::string>    location;
