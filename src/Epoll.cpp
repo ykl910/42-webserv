@@ -157,10 +157,6 @@ void Epoll::addClientToEpoll(int const &clientFd)
         printErrorAndThrow("epoll_ctl");
 }
 
-void Epoll::initEpoll()
-{
-}
-
 void Epoll::run()
 {
     while (true) {

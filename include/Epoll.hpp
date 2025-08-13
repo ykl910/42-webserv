@@ -20,7 +20,6 @@ public:
     typedef std::map<int, HttpRequest>::iterator requestsIt;
 
     void run();
-    void initEpoll();
     void addClientToEpoll(int const &clientFd);
 
     void enableWriteEvent(int clientFd);
