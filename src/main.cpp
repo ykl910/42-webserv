@@ -36,7 +36,7 @@ bool    gotConfigFilePath(const int argc, const char* argv)
 }
 
 void    runSpecificMultiplexer(const std::string& multiplexer,
-                                 const char* configFilePath)
+                               const char* configFilePath)
 {
     if (multiplexer == "select")
         WebServ<Select> server(configFilePath, "select");

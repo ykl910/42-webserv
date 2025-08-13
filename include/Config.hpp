@@ -76,26 +76,25 @@ public:
     void printServer(const server& srv) const;
 
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
-    bool directiveFormatValid(const std::string& line);
+    bool directiveFormatValid(const std::string& line, int indentSize);
     bool contextFormatValid(std::string& line);
     bool contextDirectiveFormatValid(std::string& line, int indentSize);
 
-    void getContextDirective(std::string& line, directive& newDirective, int indentSize);
-    void getContext(std::ifstream& file, std::string& line, server& server);
     void getServer(std::ifstream& file, std::string& line, server& server);
+    void getContext(std::ifstream& file, std::string& line, server& server);
+    void getContextDirective(std::string& line, directive& newDirective, int indentSize);
 
     void parseConfigFile(void);
     void initConfigParser(void);
-    const char* getConfigFilePath(void) const;
 
     Config(const char* configFilePath);
     ~Config();
 
 private:
-    std::string     _configFilePath;
-    config          _config;
-    configFormat    _configFormat;
+    int             _serverMask;
     int             _contextIndex;
     int             _directiveIndex;
-    int             _serverMask;
+    config          _config;
+    configFormat    _configFormat;
+    std::string     _configFilePath;
 };
