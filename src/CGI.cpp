@@ -52,9 +52,9 @@ void Cgi::createArgv(HttpRequest &request)
     (void)request;
 
     if(request.getMethod() == "GET")
-        this->_argv.push_back("./cgi/bin/roulette.cgi");
+        this->_argv.push_back("./www/website-1/cgi/bin/roulette.cgi");
     else
-        this->_argv.push_back("./cgi/bin/magicBall.cgi");
+        this->_argv.push_back("./www/website-1/cgi/bin/magicBall.cgi");
 }
 
 void Cgi::createEnvpStr(std::vector<char*> &envp)
@@ -108,7 +108,7 @@ int Cgi::execFromGet()
         close(fds[0]);
         close(fds[1]);
 
-        execve("./cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
+        execve("./www/website-1/cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     } else {
