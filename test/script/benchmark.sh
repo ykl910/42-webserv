@@ -1,7 +1,8 @@
 #!/bin/bash
 
 PROJECT_DIR=$(cd ../..; pwd)
-LOG_DIR=$PROJECT_DIR/log
+TEST_DIR="$PROJECT_DIR/test"
+LOG_DIR=$TEST_DIR/log
 
 MULTIPLEXERS=(
     "select"
