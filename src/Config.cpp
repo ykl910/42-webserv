@@ -103,25 +103,6 @@ bool    rightIndentation(const std::string& line, uint32_t indentSize) {
         && line.substr(0, indentSize).find_first_not_of(" ");
 }
 
-bool    Config::contextFormatValid(std::string& line)
-{
-    if (line.empty()
-        || std::strlen(contextNameList[_contextIndex]) != line.length()
-        || contextNameList[_contextIndex] != line)
-        throw std::runtime_error("Error: context format not valid.");
-    return true;
-}
-
-bool    Config::contextDirectiveFormatValid(std::string& line, int indentSize)
-{
-    size_t directiveNameLength = _configFormat[_contextIndex][_directiveIndex].length();
-
-    if (line.empty() || line.length() - indentSize != directiveNameLength
-        || _configFormat[_contextIndex][_directiveIndex]
-            != line.substr(indentSize, directiveNameLength))
-        throw std::runtime_error("Error: directive format not valid.");
-    return true;
-}
 
 bool    Config::isEndOfConfigFile(std::ifstream& file, std::string& line)
 {
@@ -130,27 +111,53 @@ bool    Config::isEndOfConfigFile(std::ifstream& file, std::string& line)
 
 bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 {
-    if (!rightIndentation(line, indentSize))
-        throw std::runtime_error("Error: wrong indentation in config file.");
+    int lineLength = line.length();
+
+    if (lineLength == 0)
+        throw std::runtime_error(
+            "Error config: line empty while excepting a directive.");
+
+    else if (lineLength < indentSize
+          || lineLength < indentSize + static_cast<int>(DIRECTIVE_NAME_LENGTH))
+        throw std::runtime_error("Error config: line is .");
+
+    else if (!rightIndentation(line, indentSize))
+        throw std::runtime_error("Error config: wrong indentation.");
+
+    // is directive name format valid
+    else if (_configFormat[_contextIndex][_directiveIndex]
+            != line.substr(indentSize, DIRECTIVE_NAME_LENGTH))
+        throw std::runtime_error("Error config: directive name not valid.");
+
+    std::string tmp = line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1);
+    if (!std::isspace(tmp[0]))
+        throw std::runtime_error(
+            "Error config: no space between directive name and directive value.");
+    else if (!tmp[1] || std::isspace(tmp[1]))
+        throw std::runtime_error(
+            "Error config: directive value not well formatted.");
     return true;
 }
 
-void    Config::getContextDirective(std::string& line, directive& newDirective,
+void    Config::getDirective(std::string& line, directive& newDirective,
                                     int indentSize)
 {
-    std::cout << line;
     if (_serverMask & 1 << _directiveIndex)
-        throw std::runtime_error("Error: got doublon in config file.");
+        throw std::runtime_error("Error config: got already this directive in this context.");
 
-    if (directiveFormatValid(line, indentSize)
-        && _configFormat[_contextIndex][_directiveIndex]
-            == line.substr(indentSize, DIRECTIVE_NAME_LENGTH)) {
-        //     newDirective = line.substr(indentSize +
-        // );
-    }
-    else
-        newDirective = "";
+    newDirective = line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 2,
+        line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1);
+    std::cout << newDirective;
     _serverMask |= 1 << _directiveIndex;
+}
+
+bool    Config::contextFormatValid(std::string& line)
+{
+    if (line.empty()
+        || std::strlen(contextNameList[_contextIndex]) != line.length()
+        || contextNameList[_contextIndex] != line)
+        throw std::runtime_error("Error: context format not valid.");
+    return true;
 }
 
 void    Config::getContext(std::ifstream& file, std::string& line, server& server)
@@ -163,15 +170,13 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
     else
         indentSize = 8;
     while (_directiveIndex < directiveNbr[_contextIndex]) {
-        directive newDirective;
+        directive   newDirective;
+
         std::getline(file, line);
-        if (line.empty())
-            break;
-        if (contextDirectiveFormatValid(line, indentSize)) {
-            getContextDirective(line, newDirective, indentSize);
-        }
+        if (directiveFormatValid(line, indentSize))
+            getDirective(line, newDirective, indentSize);
         server[_contextIndex][_directiveIndex] = newDirective;
-        std::cout << server[_contextIndex][_directiveIndex] << std::endl;
+        std::cout << server[_contextIndex][_directiveIndex] << "\n";
         _directiveIndex++;
     }
 }
@@ -212,7 +217,6 @@ void    Config::parseConfigFile(void)
 
         getServer(file, line, server);
         _config.push_back(server);
-        printConfig();
         if (!gotAnotherServer(file, line))
             break;
     }
@@ -260,14 +264,15 @@ void    Config::initConfigParser(void)
     // _contextFormat[CGI][1].push_back(".perl");
     // _contextFormat[CGI][2].push_back(".py");
     // _contextFormat[CGI][3].push_back(".c");
-    // printConfigFormat();
 }
 
 Config::Config(const char* configFilePath)
     : _configFilePath(configFilePath)
 {
-    initConfigParser();
-    parseConfigFile();
+    // initConfigParser();
+    // printConfigFormat();
+    // parseConfigFile();
+    // printConfig();
     // exit(0);
 }
 

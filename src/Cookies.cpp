@@ -2,7 +2,7 @@
 
 void Cookies::loadUserInfo()
 {
-    std::string fullpath = "website/users/userinfo";
+    std::string fullpath = "data/website-1/users/userinfo";
     std::ifstream file(fullpath.c_str());
     if(!file.is_open())
         return;
@@ -29,7 +29,7 @@ void Cookies::loadUserInfo()
 // register
 int Cookies::parseUsernamePwd(std::string username, std::string password)
 {
-    std::string fullpath = "website/users/userinfo";
+    std::string fullpath = "data/website-1/users/userinfo";
     int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
     if(fd == -1)
         return -1;

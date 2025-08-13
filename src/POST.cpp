@@ -3,7 +3,7 @@
 #include "../include/WebServ.hpp"
 #include "../include/Cookies.hpp"
 
-# define DIRPATH "website/threads/"
+# define DIRPATH "www/website-1/threads/"
 
 std::string getBoundary(std::string &line)
 {
@@ -141,13 +141,13 @@ void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::
     response.setHeaders("Content-Type", "text/html");
     std::string path;
     if(code == 201)
-        path = "./website/html/uploadSucces.html";
+        path = "./www/website-1/html/uploadSucces.html";
     else if(code == 400)
-        path = "./website/html/400.html";
+        path = "./www/website-1/html/400.html";
     else if(code == 500)
-        path = "./website/html/500.html";
+        path = "./www/website-1/html/500.html";
     else
-        path = "./website/html/404.html";
+        path = "./www/website-1/html/404.html";
     std::ifstream file(path.c_str());
     std::stringstream buffer;
     buffer << file.rdbuf();
