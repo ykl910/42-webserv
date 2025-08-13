@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         if ((argc == 2 || argc == 3) && hadChoosenMultiplexer(argv[argc - 1]))
             runSpecificMultiplexer(argv[argc - 1], configFilePath.c_str());
         else
-            WebServ<Select> server(configFilePath.c_str(), "select");
+            WebServ<Epoll> server(configFilePath.c_str(), "epoll");
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
