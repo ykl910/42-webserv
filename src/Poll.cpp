@@ -26,8 +26,10 @@ void    Poll::run()
 {
     while (true) {
         _activity = poll(&_pollFd[0], _pollFd.size(), 10); // 10 ms timeout
-        if (_activity == -1)
+        if (_activity == -1) {
+            if ()
             printError();
+        }
 
         if (_pollFd[0].revents & POLLERR)
             std::cout << "Poll: error catched from socket fd.\n";

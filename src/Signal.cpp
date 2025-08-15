@@ -31,6 +31,8 @@ SIGUSR1
     Reopen log files.
 */
 
+int g_signal;
+
 void    signalHandler(int signum)
 {
     switch (signum) {
@@ -38,7 +40,8 @@ void    signalHandler(int signum)
         case SIGINT:
             std::cout << BOLD WHITE << "\nSIGINT catched" << DEFAULT
             << std::endl;
-            exit(EXIT_SUCCESS);
+            g_signal = SIGINT;
+            // exit(EXIT_SUCCESS);
             break;
 
         // Ctrl-
@@ -51,6 +54,7 @@ void    signalHandler(int signum)
 
 void    initSignalHandler(void)
 {
+    g_signal = 0;
     if (signal(SIGINT, signalHandler) == SIG_ERR
         || signal(SIGQUIT, signalHandler) == SIG_ERR)
         throw std::runtime_error("Error: signal init.");

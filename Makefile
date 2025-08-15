@@ -72,6 +72,9 @@ pp: $(PP)
 
 asm: $(ASM)
 
+test:
+	git submodule update --init --recursive
+
 $(NAME): $(OBJ)
 	$(CC) $(FLAGS) $^ $(LFLAGS) -o $@
 	@echo "$(BOLD)$(ITALIC)$(GREEN)> $(NAME) creation successful!$(DEFAULT)"
@@ -101,7 +104,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all pp asm clean fclean re
+.PHONY: all pp asm test clean fclean re
 
 ###########################     TEXT FORMATTING     ###########################
 
