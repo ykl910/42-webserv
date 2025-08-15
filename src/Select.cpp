@@ -43,6 +43,8 @@ void    Select::run()
             int clientFd = _socket.acceptClient();
             if (clientFd)
                 _selectFd.push_back(clientFd);
+            std::cout << BOLD WHITE << "Select: new client accepted with fd "
+            << BOLD BLUE << clientFd << DEFAULT << "\n";
         }
 
         for (selectIterator it = _selectFd.begin();

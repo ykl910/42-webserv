@@ -66,7 +66,8 @@ std::string HttpResponse::getResponse() const
 {
     std::string fullResponse;
     fullResponse += _statusLine;
-    for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); ++it) {
+    for (std::map<std::string, std::string>::const_iterator it = _headers.begin();
+                                                            it != _headers.end(); ++it) {
         fullResponse += it->first + ": " + it->second + "\r\n";
     }
     fullResponse += "\r\n";
