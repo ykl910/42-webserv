@@ -38,16 +38,15 @@ void    signalHandler(int signum)
     switch (signum) {
         // Ctrl-C
         case SIGINT:
-            std::cout << BOLD WHITE << "\nSIGINT catched" << DEFAULT
-            << std::endl;
+            std::cout << BOLD YELLOW << "\nSIGINT "
+            << BOLD WHITE << "catched.\n" << DEFAULT;
             g_signal = SIGINT;
-            // exit(EXIT_SUCCESS);
             break;
 
         // Ctrl-
         case SIGQUIT:
-            std::cout << BOLD WHITE << "\nSIGQUIT catched" << DEFAULT
-            << std::endl;
+            std::cout << BOLD YELLOW << "\nSIGQUIT "
+            << BOLD WHITE << "catched.\n" << DEFAULT;
             break;
     }
 }

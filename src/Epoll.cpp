@@ -161,7 +161,9 @@ void Epoll::run()
 {
     while (true) {
         _nbEvents = epoll_wait(_epollFd, _eventsQueue.data(), MAXEVENTS, 0);
-        if (_nbEvents == -1)
+        if (g_signal == SIGINT)
+            return;
+        else if (_nbEvents == -1)
             printErrorAndThrow("epoll_wait");
         for (int i = 0; i < _nbEvents; ++i)
             eventManager(_eventsQueue[i]);

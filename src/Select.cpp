@@ -26,7 +26,9 @@ void    Select::run()
         //* wait for event in a socket
         errno = 0;
         _activity = select(_maxFd + 1, &_readFds, NULL, NULL, &_tv);
-        if (_activity == -1) {
+        if (g_signal == SIGINT)
+            return;
+        else if (_activity == -1) {
             printError();
         } else if (_activity == 0) {
             continue;

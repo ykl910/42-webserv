@@ -3,20 +3,20 @@
 
 #define DEFAULT_PATH "config/webserv.conf"
 
-bool    hadChoosenMultiplexer(const std::string& input)
+static bool    hadChoosenMultiplexer(const std::string& input)
 {
     return !input.empty() && (input == "select" || input == "poll"
                                                 || input == "epoll");
 }
 
-bool    gotRightSuffix(const std::string& config_file)
+static bool    gotRightSuffix(const std::string& config_file)
 {
     std::string suffix(".conf");
     return !config_file.compare(config_file.length() - suffix.length(),
             suffix.length(), suffix);
 }
 
-bool    gotConfigFilePath(const int argc, const char* argv)
+static bool    gotConfigFilePath(const int argc, const char* argv)
 {
     if ((argc == 2 || argc == 3) && !hadChoosenMultiplexer(argv)) {
         try {
@@ -35,7 +35,7 @@ bool    gotConfigFilePath(const int argc, const char* argv)
     return false;
 }
 
-void    runSpecificMultiplexer(const std::string& multiplexer,
+static void    runSpecificMultiplexer(const std::string& multiplexer,
                                const char* configFilePath)
 {
     if (multiplexer == "select")
