@@ -53,7 +53,8 @@ typedef struct s_location {
 }t_location;
 
 typedef struct s_redirection {
-
+    std::string redir_300;
+    std::string redir_301;
 }t_redirection;
 
 typedef struct s_error_page {
