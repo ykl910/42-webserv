@@ -2,6 +2,7 @@
 
 #include "Socket.hpp"
 #include "utils.hpp"
+#include "Signal.hpp"
 #include <sys/select.h>
 #include <vector>
 
@@ -10,7 +11,6 @@ class WebServ;
 
 class Select {
 public:
-    // HttpRequest readCompleteRequest(std::string *requestData, int fd, bool &success);
     void run();
 
     Select();

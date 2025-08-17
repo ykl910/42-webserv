@@ -27,7 +27,8 @@ void    Poll::run()
     while (true) {
         _activity = poll(&_pollFd[0], _pollFd.size(), 10); // 10 ms timeout
         if (_activity == -1) {
-            if ()
+            if (g_signal == SIGINT)
+                return;
             printError();
         }
 

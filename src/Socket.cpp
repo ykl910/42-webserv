@@ -86,6 +86,7 @@ void Socket::createAndBind()
        list are linked by the ai_next field.
     */
     status = getaddrinfo("localhost", "8080", &_hints, &servInfosLst);
+    // std::cout << _hints.ai_canonname << std::endl;
     if (status != 0)
         printGaiErrorAndThrow("getaddrinfo", status);
 
