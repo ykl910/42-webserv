@@ -73,27 +73,29 @@ typedef struct s_server {
     std::vector<t_cgi>          cgi;
 }t_server;
 
+typedef std::string directive;
+
+typedef uint32_t contextName;
+typedef uint32_t directiveName;
+
+typedef std::map<directiveName, directive> context;
+typedef context::const_iterator directiveIterator;
+
+typedef std::map<contextName, context> server;
+typedef server::const_iterator contextIterator;
+
+typedef std::map<contextName, context> configFormat;
+typedef configFormat::const_iterator configFormatIterator;
+
+typedef std::vector<server> configParser;
+typedef configParser::const_iterator configParserIterator;
+
+typedef std::vector<t_server> config;
+typedef config::const_iterator configIterator;
+
 class Config {
 public:
-    typedef std::string directive;
-
-    typedef uint32_t contextName;
-    typedef uint32_t directiveName;
-
-    typedef std::map<directiveName, directive> context;
-    typedef context::const_iterator directiveIterator;
-
-    typedef std::map<contextName, context> server;
-    typedef server::const_iterator contextIterator;
-
-    typedef std::map<contextName, context> configFormat;
-    typedef configFormat::const_iterator configFormatIterator;
-
-    typedef std::vector<server> configParser;
-    typedef configParser::const_iterator configParserIterator;
-
-    typedef std::vector<t_server> config;
-    typedef config::const_iterator configIterator;
+    config getConfig(void) const;
 
     void printConfig(void) const;
     void printConfigFormat(void) const;
