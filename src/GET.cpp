@@ -30,8 +30,8 @@ void handleError(HttpRequest& request, HttpResponse& response, std::stringstream
             body = "Internal error";
         response.setStatusLine(request.getHttpVersion(), success, body);
         response.setHeaders("Content-Type", "text/plain");
-    response.setHeaders("Content-Length", itos(body.length()));
-    response.setBody(body);
+        response.setHeaders("Content-Length", itos(body.length()));
+        response.setBody(body);
     }
 }
 

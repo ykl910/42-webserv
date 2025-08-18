@@ -43,6 +43,9 @@ main
 └── include              (directive, includes external config)
 */
 
+config Config::getConfig(void) const {
+    return _config;
+}
 
 int getClientMaxBodySize(const std::string& input) {
     // for (size_t i = 0; input[i]; ++i) {
