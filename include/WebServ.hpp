@@ -2,6 +2,7 @@
 
 #include "textFormatting.hpp"
 #include "Select.hpp"
+#include "Config.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
 #include "Epoll.hpp"
