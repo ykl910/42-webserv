@@ -1,0 +1,17 @@
+body {
+
+}
+
+h1 {
+    text-align: center;
+    animation-duration: 1s;
+}
+
+h1:hover {
+    filter: blur(2px);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
