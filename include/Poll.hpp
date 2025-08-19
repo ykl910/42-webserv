@@ -21,6 +21,5 @@ public:
 
 private:
     int                         _activity;
-    Socket                      _socket;
     std::vector<struct pollfd>  _pollFd;
 };

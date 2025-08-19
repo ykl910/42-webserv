@@ -11,14 +11,13 @@ class Socket {
 public:
     int getSocketFd() const;
     int acceptClient();
-    void createSocket();
+    void createSocket(const char* port, const char* host);
     void setSocketOpt();
 
-    Socket(config& server);
+    Socket(const char* port, const char* host);
     ~Socket();
 
 private:
-    int                     _socketFd;
-    struct addrinfo         _hints;
-    std::vector<t_server>   _server;
+    int             _socketFd;
+    struct addrinfo _hints;
 };

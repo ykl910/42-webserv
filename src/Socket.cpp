@@ -64,7 +64,7 @@ void Socket::setSocketOpt()
         printErrorAndThrow("fcntl()");
 }
 
-void Socket::createSocket()
+void Socket::createSocket(const char* port, const char* host)
 {
     bzero(&_hints, sizeof(_hints));
     _hints.ai_flags = AI_PASSIVE;
@@ -85,7 +85,7 @@ void Socket::createSocket()
        pointer to the start of the list in res.   The  items  in  the linked
        list are linked by the ai_next field.
     */
-    status = getaddrinfo("localhost", "8080", &_hints, &servInfosLst);
+    status = getaddrinfo(host, port, &_hints, &servInfosLst);
     if (status != 0)
         printGaiErrorAndThrow("getaddrinfo", status);
 
@@ -128,11 +128,9 @@ void Socket::createSocket()
         printErrorAndThrow("listen");
 }
 
-Socket::Socket(config& server)
+Socket::Socket(const char* port, const char* host)
 {
-    for (configIterator it = server.begin(); it != server.end(); ++it) {
-        createSocket(server);
-    }
+    createSocket(port, host);
 }
 
 Socket::~Socket()

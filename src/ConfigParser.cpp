@@ -25,7 +25,7 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
     else if (lineLength < indentSize
           || lineLength < indentSize + static_cast<int>(DIRECTIVE_NAME_LENGTH))
-        throw std::runtime_error("Error config: line is .");
+        throw std::runtime_error("Error config: config not well formatted.");
 
     else if (!rightIndentation(line, indentSize))
         throw std::runtime_error("Error config: wrong indentation.");
