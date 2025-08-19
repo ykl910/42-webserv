@@ -132,8 +132,8 @@ void Epoll::eventManager(epoll_ev &event)
         close(event.data.fd);
 
     } else if ((event.events & EPOLLIN)
-        && event.data.fd == _socket.getSocketFd()) {
-        int clientFd = _socket.acceptClient();
+        && event.data.fd == _server[0].socket.getSocketFd()) {
+        int clientFd = _server[0].socket.acceptClient();
         if (clientFd)
             addClientToEpoll(clientFd);
 
@@ -170,17 +170,20 @@ void Epoll::run()
     }
 }
 
-Epoll::Epoll() : _eventsQueue(MAXEVENTS)
+Epoll::Epoll(config& server) : _eventsQueue(MAXEVENTS)
 {
+    _server = server;
     _epollFd = epoll_create(1);
     if (_epollFd == -1)
         printErrorAndThrow("epoll_create");
 
-    epoll_ev server_ev;
-    server_ev.events = EPOLLIN;
-    server_ev.data.fd = _socket.getSocketFd();
-    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)
-        printErrorAndThrow("epoll_ctl");
+    for (configIterator it = _server.begin(); it != _server.end(); ++it) {
+        epoll_ev server_ev;
+        server_ev.events = EPOLLIN;
+        server_ev.data.fd = it->socket.getSocketFd();
+        if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)
+            printErrorAndThrow("epoll_ctl");
+    }
 }
 
 Epoll::~Epoll()

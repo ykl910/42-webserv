@@ -63,6 +63,7 @@ typedef configParser::const_iterator configParserIterator;
 
 class Config {
 public:
+    configParser& getConfigParser(void);
     void printConfigFormat(void) const;
     void printConfigParser(void) const;
     void printServer(const server& srv) const;

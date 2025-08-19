@@ -8,6 +8,10 @@
 #include <sys/select.h>
 #include <vector>
 
+typedef struct s_server         t_server;
+typedef std::vector<t_server>   config;
+typedef config::iterator        configIterator;
+
 template <class Multiplexer>
 class WebServ;
 
@@ -15,7 +19,8 @@ class Select {
 public:
     void run();
 
-    Select();
+    Select() {}
+    Select(config& server);
     ~Select();
 
 private:
@@ -27,6 +32,7 @@ private:
     fd_set              _readFds;
     struct timeval      _tv;
     std::vector<int>    _selectFd;
+    config              _server;
 };
 
 /*

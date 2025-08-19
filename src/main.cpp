@@ -1,7 +1,7 @@
 #include "../include/WebServ.hpp"
 #include "../include/Signal.hpp"
 
-#define DEFAULT_PATH "config/webserv.conf"
+#define DEFAULT_PATH "config/test.conf"
 
 static bool    hadChoosenMultiplexer(const std::string& input)
 {
@@ -30,6 +30,7 @@ static bool    gotConfigFilePath(const int argc, const char* argv)
             return true;
         } catch (std::exception& e) {
             std::cerr << BOLD RED << e.what() << DEFAULT << std::endl;
+            exit(EXIT_FAILURE);
         }
     }
     return false;

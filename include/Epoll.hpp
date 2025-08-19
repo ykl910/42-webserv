@@ -13,6 +13,10 @@
 template <class Multiplexer>
 class WebServ;
 
+typedef struct s_server         t_server;
+typedef std::vector<t_server>   config;
+typedef config::iterator        configIterator;
+
 class Epoll {
 public:
     typedef struct epoll_event epoll_ev;
@@ -30,13 +34,15 @@ public:
     void sendResponse(int clientFd, HttpRequest request);
     bool receivedCompleteRequest(std::string &rawData) const;
 
-    Epoll();
+    Epoll() {}
+    Epoll(config& server);
     ~Epoll();
 
 private:
     int                         _epollFd;
     int                         _nbEvents;
     vector                      _eventsQueue;
+    config                      _server;
     std::map<int, std::string>  _buffers;
     std::map<int, bool>         _gotResponse;
     std::map<int, bool>         _gotFullRequest;

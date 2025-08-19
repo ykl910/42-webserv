@@ -35,7 +35,6 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 SRC_DIR             := src
 SRC                 := CGI.cpp \
                     Config.cpp \
-                    ConfigParser.cpp \
                     ConfigUtils.cpp \
                     Cookies.cpp \
                     DELETE.cpp \
