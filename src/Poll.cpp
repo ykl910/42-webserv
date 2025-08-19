@@ -61,7 +61,8 @@ void    Poll::run()
     }
 }
 
-Poll::Poll() : _socket() {
+Poll::Poll()
+{
     struct pollfd serverPoll;
 
     serverPoll.fd = _socket.getSocketFd();

@@ -22,12 +22,18 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
     }
 }
 
+template<class Multiplexer>
+WebServ<Multiplexer>::createServer(config& server)
+{
+    for (configIterator it = server.begin(); it != server.end(); ++it)
+}
 
 template <class Multiplexer>
 WebServ<Multiplexer>::WebServ(const char* configFilePath,
                               const char* multiplexer)
     : _config(configFilePath), _multiplexer()
 {
+    createServer()
     printServerStatus(multiplexer, configFilePath);
     _multiplexer.run();
 }
