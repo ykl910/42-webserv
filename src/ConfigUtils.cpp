@@ -1,16 +1,16 @@
 #include "../include/Config.hpp"
 
-void    Config::printConfig(void) const {
-    for (configIterator it = _config.begin(); it != _config.end(); ++it) {
-        t_server server = *it;
-        std::cout
-        << BOLD WHITE << "Server:\n" << DEFAULT
-        << "    " << server.port << "\n"
-        << "    " << server.host << "\n"
-        << "    " << server.server_name << "\n"
-        << "    " << server.client_max_body_size << "\n";
-    }
-}
+// void    Config::printConfig(void) const {
+//     for (configIterator it = _config.begin(); it != _config.end(); ++it) {
+//         t_server server = *it;
+//         std::cout
+//         << BOLD WHITE << "Server:\n" << DEFAULT
+//         << "    " << server.port << "\n"
+//         << "    " << server.host << "\n"
+//         << "    " << server.server_name << "\n"
+//         << "    " << server.client_max_body_size << "\n";
+//     }
+// }
 
 void    Config::printServer(const server& srv) const {
     std::cout << "server:\n";

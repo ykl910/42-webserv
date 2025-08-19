@@ -1,6 +1,4 @@
 #include "../include/Select.hpp"
-#include "../include/HttpManager.hpp"
-#include "../include/WebServ.hpp"
 
 void    Select::run()
 {
@@ -67,7 +65,6 @@ Select::Select()
     _activity = 0;
     _tv.tv_sec = 10;
     _tv.tv_usec = 0;
-    _socketFd = _socket.getSocketFd();
     _maxFd = _socketFd;
 }
 

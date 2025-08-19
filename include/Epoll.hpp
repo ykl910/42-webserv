@@ -36,7 +36,6 @@ public:
 private:
     int                         _epollFd;
     int                         _nbEvents;
-    Socket                      _socket;
     vector                      _eventsQueue;
     std::map<int, std::string>  _buffers;
     std::map<int, bool>         _gotResponse;

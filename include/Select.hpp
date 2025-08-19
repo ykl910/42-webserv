@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HttpManager.hpp"
+#include "WebServ.hpp"
 #include "Socket.hpp"
 #include "utils.hpp"
 #include "Signal.hpp"
@@ -23,7 +25,6 @@ private:
     int                 _activity;
     int                 _socketFd;
     fd_set              _readFds;
-    Socket              _socket;
     struct timeval      _tv;
     std::vector<int>    _selectFd;
 };

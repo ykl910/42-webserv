@@ -44,35 +44,6 @@ enum e_redirection_directive {
 
 enum e_location_directive {};
 
-typedef struct s_cgi {
-
-}t_cgi;
-
-typedef struct s_location {
-
-}t_location;
-
-typedef struct s_redirection {
-    std::string redir_300;
-    std::string redir_301;
-}t_redirection;
-
-typedef struct s_error_page {
-    std::string err_404;
-    std::string err_500;
-}t_error_page;
-
-typedef struct s_server {
-    int                         client_max_body_size;
-    std::string                 port;
-    std::string                 host;
-    std::string                 server_name;
-    t_error_page                error_page;
-    t_redirection               redirection;
-    std::vector<t_location>     location;
-    std::vector<t_cgi>          cgi;
-}t_server;
-
 typedef std::string directive;
 
 typedef uint32_t contextName;
@@ -90,14 +61,8 @@ typedef configFormat::const_iterator configFormatIterator;
 typedef std::vector<server> configParser;
 typedef configParser::const_iterator configParserIterator;
 
-typedef std::vector<t_server> config;
-typedef config::const_iterator configIterator;
-
 class Config {
 public:
-    config getConfig(void) const;
-
-    void printConfig(void) const;
     void printConfigFormat(void) const;
     void printConfigParser(void) const;
     void printServer(const server& srv) const;
@@ -111,7 +76,6 @@ public:
     void getContext(std::ifstream& file, std::string& line, server& server);
     void getDirective(std::string& line, directive& newDirective, int indentSize);
 
-    void storeConfig(void);
     void parseConfigFile(void);
     void initConfigParser(void);
 
@@ -124,6 +88,5 @@ private:
     int             _directiveIndex;
     configParser    _configParser;
     configFormat    _configFormat;
-    config          _config;
     std::string     _configFilePath;
 };
