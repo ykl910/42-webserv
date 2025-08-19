@@ -62,7 +62,7 @@ void    Select::run()
     }
 }
 
-Select::Select() : _socket()
+Select::Select()
 {
     _activity = 0;
     _tv.tv_sec = 10;

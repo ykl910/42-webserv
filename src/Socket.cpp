@@ -64,7 +64,7 @@ void Socket::setSocketOpt()
         printErrorAndThrow("fcntl()");
 }
 
-void Socket::createAndBind()
+void Socket::createSocket()
 {
     bzero(&_hints, sizeof(_hints));
     _hints.ai_flags = AI_PASSIVE;
@@ -86,7 +86,6 @@ void Socket::createAndBind()
        list are linked by the ai_next field.
     */
     status = getaddrinfo("localhost", "8080", &_hints, &servInfosLst);
-    // std::cout << _hints.ai_canonname << std::endl;
     if (status != 0)
         printGaiErrorAndThrow("getaddrinfo", status);
 
@@ -119,18 +118,21 @@ void Socket::createAndBind()
         printErrorAndThrow("bind");
 
     freeaddrinfo(servInfosLst);
-}
 
-Socket::Socket()
-{
-    createAndBind();
     /*
-       listen()  marks  the  socket referred to by sockfd as a passive socket,
-       that is, as a socket that will be used to accept incoming connection
-       requests using accept(2).
+    listen()  marks  the  socket referred to by sockfd as a passive socket,
+    that is, as a socket that will be used to accept incoming connection
+    requests using accept(2).
     */
     if (listen(_socketFd, SOMAXCONN) == -1)
         printErrorAndThrow("listen");
+}
+
+Socket::Socket(config& server)
+{
+    for (configIterator it = server.begin(); it != server.end(); ++it) {
+        createSocket(server);
+    }
 }
 
 Socket::~Socket()

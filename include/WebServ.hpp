@@ -14,13 +14,15 @@
 template <class Multiplexer>
 class WebServ {
 public:
+    void createServer();
     void printServerStatus(const char* multiplexer, const char* configFilePath) const;
 
     WebServ(const char* configFilePath, const char* multiplexer);
     ~WebServ();
 
 private:
-    Config      _config;
-    Multiplexer _multiplexer;
+    Config                  _config;
+    Multiplexer             _multiplexer;
+    std::vector<t_server>   _server;
 };
 #include "../src/WebServ.tpp"

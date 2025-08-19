@@ -170,7 +170,7 @@ void Epoll::run()
     }
 }
 
-Epoll::Epoll() : _socket(), _eventsQueue(MAXEVENTS)
+Epoll::Epoll() : _eventsQueue(MAXEVENTS)
 {
     _epollFd = epoll_create(1);
     if (_epollFd == -1)
