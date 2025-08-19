@@ -3,6 +3,7 @@
 #include "textFormatting.hpp"
 #include "Select.hpp"
 #include "Config.hpp"
+#include "Socket.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
 #include "Epoll.hpp"
@@ -53,14 +54,14 @@ template <class Multiplexer>
 class WebServ {
 public:
     void createServer(void);
-    void printServerStatus(const char* multiplexer, const char* configFilePath) const;
+    void printServerStatus(const char* multiplexer, const char* configFilePath);
 
     WebServ(const char* configFilePath, const char* multiplexer);
     ~WebServ();
 
 private:
     Config      _config;
-    Multiplexer _multiplexer;
     config      _server;
+    Multiplexer _multiplexer;
 };
 #include "../src/WebServ.tpp"

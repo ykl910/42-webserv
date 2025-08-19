@@ -9,7 +9,7 @@ void    Select::run()
             It should be employed as the first step in initializing a file
             descriptor set.
         */
-        FD_SET(_socketFd, &_readFds);
+        FD_SET(_server[0].socket.getSocketFd(), &_readFds);
         /*
             This macro adds the file descriptor fd to set. Adding a file
             descriptor that is already present in the set is a no-op, and does
@@ -40,7 +40,7 @@ void    Select::run()
             in set, and zero if it is not.
         */
             //* new connexion -> accept connexion and add client to the list
-            int clientFd = _socket.acceptClient();
+            int clientFd = _server[0].socket.acceptClient();
             if (clientFd)
                 _selectFd.push_back(clientFd);
             std::cout << BOLD WHITE << "Select: new client accepted with fd "
@@ -60,12 +60,12 @@ void    Select::run()
     }
 }
 
-Select::Select()
+Select::Select(config& server)
 {
     _activity = 0;
     _tv.tv_sec = 10;
     _tv.tv_usec = 0;
-    _maxFd = _socketFd;
+    _server = server;
 }
 
 Select::~Select()

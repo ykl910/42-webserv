@@ -41,6 +41,7 @@ void    signalHandler(int signum)
             std::cout << BOLD YELLOW << "\nSIGINT "
             << BOLD WHITE << "catched.\n" << DEFAULT;
             g_signal = SIGINT;
+            exit(0);
             break;
 
         // Ctrl-
