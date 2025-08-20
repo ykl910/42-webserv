@@ -14,7 +14,6 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
     for (configIterator it = _server.begin();
                         it != _server.end(); ++it) {
         t_server server = *it;
-
         std::cout
         << BOLD WHITE << "Listen: "
         << BOLD ITALIC BLUE  << server.port << "\n" << DEFAULT;
@@ -48,6 +47,7 @@ template <class Multiplexer>
 void    WebServ<Multiplexer>::createServer(void)
 {
     configParser parser = _config.getConfigParser();
+    int i = 0;
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
         server      configServer = *it;
@@ -64,6 +64,7 @@ void    WebServ<Multiplexer>::createServer(void)
         storeCgi();
         newServer.socket = Socket(newServer.port.c_str(), newServer.host.c_str());
         _server.push_back(newServer);
+        ++i;
     }
 }
 

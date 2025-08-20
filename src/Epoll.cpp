@@ -179,6 +179,7 @@ Epoll::Epoll(config& server) : _eventsQueue(MAXEVENTS)
 
     for (configIterator it = _server.begin(); it != _server.end(); ++it) {
         epoll_ev server_ev;
+        memset(&server_ev, 0, sizeof(server_ev));
         server_ev.events = EPOLLIN;
         server_ev.data.fd = it->socket.getSocketFd();
         if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)

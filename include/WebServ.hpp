@@ -10,8 +10,6 @@
 #include "Poll.hpp"
 #include "CGI.hpp"
 
-#define PORT 8080
-
 typedef struct s_cgi {
 
 }t_cgi;
@@ -61,7 +59,7 @@ public:
 
 private:
     Config      _config;
-    config      _server;
     Multiplexer _multiplexer;
+    config      _server;
 };
 #include "../src/WebServ.tpp"
