@@ -9,7 +9,8 @@ void    Select::run()
             It should be employed as the first step in initializing a file
             descriptor set.
         */
-        FD_SET(_server[0].socket.getSocketFd(), &_readFds);
+        // FD_SET(_server[0].socket.getSocketFd(), &_readFds);
+        FD_SET(_socketFd, &_readFds);
         /*
             This macro adds the file descriptor fd to set. Adding a file
             descriptor that is already present in the set is a no-op, and does
@@ -66,6 +67,8 @@ Select::Select(config& server)
     _tv.tv_sec = 10;
     _tv.tv_usec = 0;
     _server = server;
+    _socketFd = server[0].socket.getSocketFd();
+    _maxFd = _socketFd;
 }
 
 Select::~Select()

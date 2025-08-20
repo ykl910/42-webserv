@@ -38,7 +38,7 @@ void    Poll::run()
         else if (_pollFd[0].revents & POLLIN) {
             int clientFd = _server[0].socket.acceptClient();
             if (clientFd)
-                addClientToPoll(clientFd);
+            addClientToPoll(clientFd);
         }
 
         for (pollIterator it = _pollFd.begin() + 1; // skip socket fd
@@ -67,8 +67,10 @@ Poll::Poll(config& server)
 
     for (configIterator it = _server.begin(); it != _server.end(); ++it) {
         struct pollfd serverPoll;
+        // t_server serverIt = *it;
 
         serverPoll.fd = it->socket.getSocketFd();
+        // serverPoll.fd = serverIt.socket.getSocketFd();
         serverPoll.events = POLLIN;
         serverPoll.revents = 0;
         _pollFd.push_back(serverPoll);
