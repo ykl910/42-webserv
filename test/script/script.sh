@@ -17,6 +17,18 @@ setup_test() {
 }
 
 run_test() {
+
+    local multiplexers=(
+        "select"
+        "poll"
+        "epoll"
+    )
+
+    for multiplexer in "${multiplexers[@]}"; do
+        ./ubuntu_tester
+        ./ubuntu_cgi_tester
+    done
+
     # SELECT
     # POLL
     # EPOLL

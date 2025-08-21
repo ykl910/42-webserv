@@ -1,5 +1,18 @@
 #include "../include/Select.hpp"
 
+bool    Select::isSocketFd(int fd) const
+{
+    for (size_t i = 0; i < _listenFd.size(); ++i) {
+        if (fd == _listenFd[i])
+            return true;
+    }
+    return false;
+}
+
+std::vector<Server*> Select::getServer(void) const {
+    return _server;
+}
+
 void    Select::run()
 {
     while (true) {
@@ -9,15 +22,20 @@ void    Select::run()
             It should be employed as the first step in initializing a file
             descriptor set.
         */
-        // FD_SET(_server[0].socket.getSocketFd(), &_readFds);
-        FD_SET(_socketFd, &_readFds);
+       for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
+            int fd = (*it)->getSocketFd();
+            FD_SET(fd, &_readFds);
+            std::cout << fd << std::endl;
+            if (fd > _maxFd)
+                _maxFd = fd;
+       }
         /*
             This macro adds the file descriptor fd to set. Adding a file
             descriptor that is already present in the set is a no-op, and does
             not produce an error.
         */
-        for (selectIterator it = _selectFd.begin();
-                            it != _selectFd.end(); ++it) {
+        for (selectIterator it = _clientFd.begin();
+                            it != _clientFd.end(); ++it) {
             FD_SET(*it, &_readFds);
             if (*it > _maxFd)
                 _maxFd = *it;
@@ -32,7 +50,7 @@ void    Select::run()
         } else if (_activity == 0) {
             continue;
         }
-        if (FD_ISSET(_socketFd, &_readFds)) {
+        if (FD_ISSET(_listenFd[0], &_readFds)) {
         /*
             select() modifies the contents of the sets according to the rules
             described below. After  calling  select(),  the FD_ISSET() macro
@@ -41,40 +59,54 @@ void    Select::run()
             in set, and zero if it is not.
         */
             //* new connexion -> accept connexion and add client to the list
-            int clientFd = _server[0]._socket.acceptClient();
+            int clientFd = _server[0]->_socket.acceptClient();
             if (clientFd)
-                _selectFd.push_back(clientFd);
+                _clientFd.push_back(clientFd);
             std::cout << BOLD WHITE << "Select: new client accepted with fd "
             << BOLD BLUE << clientFd << DEFAULT << "\n";
         }
 
-        for (selectIterator it = _selectFd.begin();
-                            it != _selectFd.end();) {
+        for (selectIterator it = _clientFd.begin();
+                            it != _clientFd.end();) {
             //* read request and send response
             if (FD_ISSET(*it, &_readFds)) {
                 HttpManager(int(*it));
                 close(*it);
-                it = _selectFd.erase(it);
+                it = _clientFd.erase(it);
             } else
                 ++it;
         }
     }
 }
 
-Select::Select(std::vector<Server>& server) : _server(server)
+void    Select::createServer(Config& config)
+{
+    configParser parser = config.getConfigParser();
+    for (configParserIterator it = parser.begin();
+                              it != parser.end(); ++it) {
+        server serverConfig = *it;
+        _server.push_back(new Server(serverConfig));
+    }
+}
+
+Select::Select(Config& config)
 {
     _activity = 0;
     _tv.tv_sec = 10;
     _tv.tv_usec = 0;
-    _socketFd = _server[0].getSocketFd();
-    _maxFd = _socketFd;
+
+    createServer(config);
+    for (serverIterator it = _server.begin(); it != _server.end(); ++it)
+        _listenFd.push_back((*it)->getSocketFd());
+    _maxFd = _listenFd[0];
 }
 
 Select::~Select()
 {
-    if (_socketFd)
-        close(_socketFd);
-    for (selectIterator it = _selectFd.begin();
-         it != _selectFd.end(); ++it)
+    std::cout << "select destructor called\n";
+    // if (_socketFd)
+    //     close(_socketFd);
+    for (selectIterator it = _clientFd.begin();
+         it != _clientFd.end(); ++it)
         close(*it);
 }

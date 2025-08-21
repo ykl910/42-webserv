@@ -143,7 +143,6 @@ bool    Config::contextFormatValid(const std::string& line)
 void    Config::getServer(std::ifstream& file, std::string& line, server& server)
 {
     _contextIndex = SERVER;
-    // while (_contextIndex < CONTEXT_NUMBER) {
     while (1) {
         _serverMask = 0;
         std::getline(file, line);

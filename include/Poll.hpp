@@ -11,21 +11,25 @@
 template <class Multiplexer>
 class WebServ;
 
-typedef std::vector<Server>::iterator serverIterator;
+typedef std::vector<Server*>::iterator serverIterator;
 
 class Poll {
 public:
     typedef std::vector<struct pollfd>::iterator pollIterator;
 
     void run();
+    std::vector<Server*> getServer(void) const;
+    void createServer(Config& config);
+    void handleNewConnexion(struct pollfd& socket);
+    bool isSocketFd(int fd) const;
     void addClientToPoll(int clientFd);
 
-    Poll() {}
-    Poll(std::vector<Server>& server);
+    Poll(Config& config);
     ~Poll();
 
 private:
     int                         _activity;
     std::vector<struct pollfd>  _pollFd;
-    std::vector<Server>         _server;
+    std::vector<Server*>        _server;
+    std::vector<int>            _listenFd;
 };
