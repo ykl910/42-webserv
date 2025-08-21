@@ -18,6 +18,6 @@ public:
     ~Socket();
 
 private:
-    int             _socketFd;
-    struct addrinfo _hints;
+    int              _socketFd;
+    struct addrinfo  _hints;
 };

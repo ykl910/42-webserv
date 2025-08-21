@@ -38,4 +38,6 @@ Server::Server(server& config)
     storeCgi();
 }
 
-Server::~Server() {}
+Server::~Server() {
+    std::cout << "Server destructor called\n";
+}

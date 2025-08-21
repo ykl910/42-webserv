@@ -135,6 +135,7 @@ Socket::Socket(const char* host, const char* port)
 
 Socket::~Socket()
 {
+    std::cout << "Socket destructor called\n";
     // if (_socketFd)
     //     close(_socketFd);
 }

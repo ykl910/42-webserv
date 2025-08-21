@@ -2,6 +2,7 @@
 
 #include "HttpManager.hpp"
 #include "WebServ.hpp"
+#include "Config.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
 #include "utils.hpp"
@@ -9,7 +10,7 @@
 #include <sys/select.h>
 #include <vector>
 
-typedef std::vector<Server>::iterator serverIterator;
+typedef std::vector<Server*>::iterator serverIterator;
 
 template <class Multiplexer>
 class WebServ;
@@ -17,21 +18,23 @@ class WebServ;
 class Select {
 public:
     void run();
+    std::vector<Server*> getServer(void) const;
+    void createServer(Config& config);
+    bool isSocketFd(int fd) const;
 
-    Select() {}
-    Select(std::vector<Server>& server);
+    Select(Config& config);
     ~Select();
 
 private:
     typedef std::vector<int>::iterator selectIterator;
 
-    int                 _maxFd;
-    int                 _activity;
-    int                 _socketFd;
-    fd_set              _readFds;
-    struct timeval      _tv;
-    std::vector<int>    _selectFd;
-    std::vector<Server> _server;
+    int                     _maxFd;
+    int                     _activity;
+    fd_set                  _readFds;
+    struct timeval          _tv;
+    std::vector<int>        _listenFd;
+    std::vector<int>        _clientFd;
+    std::vector<Server*>    _server;
 };
 
 /*

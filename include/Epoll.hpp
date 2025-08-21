@@ -14,7 +14,7 @@
 template <class Multiplexer>
 class WebServ;
 
-typedef std::vector<Server>::iterator serverIterator;
+typedef std::vector<Server*>::iterator serverIterator;
 
 class Epoll {
 public:
@@ -23,9 +23,11 @@ public:
     typedef std::map<int, std::string>::iterator buffersIt;
     typedef std::map<int, HttpRequest>::iterator requestsIt;
 
+    std::vector<Server*> getServer(void) const;
     void run();
     void addClientToEpoll(int const &clientFd);
 
+    void createServer(Config& config);
     void enableWriteEvent(int clientFd);
     void disableWriteEvent(int clientFd);
     void eventManager(epoll_ev &event);
@@ -33,8 +35,7 @@ public:
     void sendResponse(int clientFd, HttpRequest request);
     bool receivedCompleteRequest(std::string &rawData) const;
 
-    Epoll() {}
-    Epoll(std::vector<Server>& server);
+    Epoll(Config& config);
     ~Epoll();
 
 private:
@@ -47,5 +48,5 @@ private:
     std::map<int, int>          _pendingResponse;
     std::map<int, HttpRequest>  _requests;
     std::map<int, HttpResponse> _responses;
-    std::vector<Server>         _server;
+    std::vector<Server*>        _server;
 };

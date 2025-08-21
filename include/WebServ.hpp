@@ -22,20 +22,22 @@ typedef struct s_server {
     Socket                      socket;
 }t_server;
 
+typedef std::vector<Server*>::iterator serverIterator;
+
 typedef std::vector<t_server> config;
 typedef config::iterator configIterator;
 
 template <class Multiplexer>
 class WebServ {
 public:
-    void createServer(Config& config);
+    // void createServer(Config& config);
     void printServerStatus(const char* multiplexer, const char* configFilePath);
 
     WebServ(Config& config, const char* multiplexer);
     ~WebServ();
 
 private:
-    std::vector<Server> _server;
+    // std::vector<Server*> _server;
     Multiplexer         _multiplexer;
 };
 #include "../src/WebServ.tpp"

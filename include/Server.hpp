@@ -22,17 +22,22 @@ typedef struct s_error_page {
     std::string err_500;
 }t_error_page;
 
-typedef struct s_socket {
-    int             fd;
-    struct addrinfo hints;
-}t_socket;
+typedef struct s_serv_attr {
+    int                         _client_max_body_size;
+    std::string                 _server_name;
+    t_error_page                _error_page;
+    t_redirection               _redirection;
+    std::vector<t_location>     _location;
+    std::vector<t_cgi>          _cgi;
+}t_serv_attr;
 
 class Server {
 public:
     int getSocketFd(void) const;
-    std::string                 _port;
-    std::string                 _host;
-    Socket _socket;
+    void setServerAttr(void);
+    std::string _port;
+    std::string _host;
+    Socket      _socket;
 
     Server(server& config);
     ~Server();
@@ -44,4 +49,5 @@ private:
     t_redirection               _redirection;
     std::vector<t_location>     _location;
     std::vector<t_cgi>          _cgi;
+    t_serv_attr                 _attribute;
 };
