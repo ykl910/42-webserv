@@ -11,11 +11,10 @@ class Socket {
 public:
     int getSocketFd() const;
     int acceptClient();
-    void createSocket(const char* port, const char* host);
+    void createSocket(const char* host, const char* port);
     void setSocketOpt();
 
-    Socket() {}
-    Socket(const char* port, const char* host);
+    Socket(const char* host, const char* port);
     ~Socket();
 
 private:

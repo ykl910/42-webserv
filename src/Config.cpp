@@ -48,6 +48,10 @@ const char* _contextNameList[5] = {
 
 const int   _directiveNbr[5] = {4, 4, 1, 2, 3};
 
+const char*& Config::getConfigFilePath(void) const {
+    return _configFilePath;
+}
+
 configParser&   Config::getConfigParser(void) {
     return _configParser;
 }
@@ -166,7 +170,7 @@ bool    gotAnotherServer(std::ifstream& file, std::string& line)
 void    Config::parseConfigFile(void)
 {
     std::string line;
-    std::ifstream file(_configFilePath.c_str());
+    std::ifstream file(_configFilePath);
 
     if (!file)
         throw std::runtime_error("Error: can't open config file");
@@ -227,7 +231,7 @@ void    Config::initConfigParser(void)
     // _contextFormat[CGI][3].push_back(".c");
 }
 
-Config::Config(const char* configFilePath)
+Config::Config(const char*& configFilePath)
     : _configFilePath(configFilePath)
 {
     initConfigParser();

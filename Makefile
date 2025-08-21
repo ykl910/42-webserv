@@ -23,6 +23,7 @@ INCLUDE             := CGI.hpp \
                     Poll.hpp \
                     POST.hpp \
                     Select.hpp \
+                    Server.hpp \
                     Signal.hpp \
                     Socket.hpp \
                     textFormatting.hpp \
@@ -48,6 +49,7 @@ SRC                 := CGI.cpp \
                     Poll.cpp \
                     POST.cpp \
                     Select.cpp \
+                    Server.cpp \
                     Signal.cpp \
                     Socket.cpp \
                     utils.cpp

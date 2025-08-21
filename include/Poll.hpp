@@ -2,6 +2,7 @@
 
 #include "WebServ.hpp"
 #include "Socket.hpp"
+#include "Server.hpp"
 #include "Error.hpp"
 #include <sys/poll.h>
 #include <sys/time.h>
@@ -10,9 +11,7 @@
 template <class Multiplexer>
 class WebServ;
 
-typedef struct s_server         t_server;
-typedef std::vector<t_server>   config;
-typedef config::iterator        configIterator;
+typedef std::vector<Server>::iterator serverIterator;
 
 class Poll {
 public:
@@ -22,11 +21,11 @@ public:
     void addClientToPoll(int clientFd);
 
     Poll() {}
-    Poll(config& server);
+    Poll(std::vector<Server>& server);
     ~Poll();
 
 private:
     int                         _activity;
     std::vector<struct pollfd>  _pollFd;
-    config                      _server;
+    std::vector<Server>         _server;
 };

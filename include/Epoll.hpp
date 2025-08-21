@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Socket.hpp"
+#include "Server.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
 #include "Signal.hpp"
@@ -13,9 +14,7 @@
 template <class Multiplexer>
 class WebServ;
 
-typedef struct s_server         t_server;
-typedef std::vector<t_server>   config;
-typedef config::iterator        configIterator;
+typedef std::vector<Server>::iterator serverIterator;
 
 class Epoll {
 public:
@@ -35,18 +34,18 @@ public:
     bool receivedCompleteRequest(std::string &rawData) const;
 
     Epoll() {}
-    Epoll(config& server);
+    Epoll(std::vector<Server>& server);
     ~Epoll();
 
 private:
     int                         _epollFd;
     int                         _nbEvents;
     vector                      _eventsQueue;
-    config                      _server;
     std::map<int, std::string>  _buffers;
     std::map<int, bool>         _gotResponse;
     std::map<int, bool>         _gotFullRequest;
     std::map<int, int>          _pendingResponse;
     std::map<int, HttpRequest>  _requests;
     std::map<int, HttpResponse> _responses;
+    std::vector<Server>         _server;
 };

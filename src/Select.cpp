@@ -41,7 +41,7 @@ void    Select::run()
             in set, and zero if it is not.
         */
             //* new connexion -> accept connexion and add client to the list
-            int clientFd = _server[0].socket.acceptClient();
+            int clientFd = _server[0]._socket.acceptClient();
             if (clientFd)
                 _selectFd.push_back(clientFd);
             std::cout << BOLD WHITE << "Select: new client accepted with fd "
@@ -61,18 +61,19 @@ void    Select::run()
     }
 }
 
-Select::Select(config& server)
+Select::Select(std::vector<Server>& server) : _server(server)
 {
     _activity = 0;
     _tv.tv_sec = 10;
     _tv.tv_usec = 0;
-    _server = server;
-    _socketFd = server[0].socket.getSocketFd();
+    _socketFd = _server[0].getSocketFd();
     _maxFd = _socketFd;
 }
 
 Select::~Select()
 {
+    if (_socketFd)
+        close(_socketFd);
     for (selectIterator it = _selectFd.begin();
          it != _selectFd.end(); ++it)
         close(*it);

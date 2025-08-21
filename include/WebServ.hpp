@@ -10,29 +10,6 @@
 #include "Poll.hpp"
 #include "CGI.hpp"
 
-typedef struct s_cgi {
-
-}t_cgi;
-
-typedef struct s_location {
-
-}t_location;
-
-typedef struct s_redirection {
-    std::string redir_300;
-    std::string redir_301;
-}t_redirection;
-
-typedef struct s_error_page {
-    std::string err_404;
-    std::string err_500;
-}t_error_page;
-
-typedef struct s_socket {
-    int             fd;
-    struct addrinfo hints;
-}t_socket;
-
 typedef struct s_server {
     int                         client_max_body_size;
     std::string                 port;
@@ -51,15 +28,14 @@ typedef config::iterator configIterator;
 template <class Multiplexer>
 class WebServ {
 public:
-    void createServer(void);
+    void createServer(Config& config);
     void printServerStatus(const char* multiplexer, const char* configFilePath);
 
-    WebServ(const char* configFilePath, const char* multiplexer);
+    WebServ(Config& config, const char* multiplexer);
     ~WebServ();
 
 private:
-    Config      _config;
-    Multiplexer _multiplexer;
-    config      _server;
+    std::vector<Server> _server;
+    Multiplexer         _multiplexer;
 };
 #include "../src/WebServ.tpp"
