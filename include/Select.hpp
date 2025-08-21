@@ -3,14 +3,13 @@
 #include "HttpManager.hpp"
 #include "WebServ.hpp"
 #include "Socket.hpp"
+#include "Server.hpp"
 #include "utils.hpp"
 #include "Signal.hpp"
 #include <sys/select.h>
 #include <vector>
 
-typedef struct s_server         t_server;
-typedef std::vector<t_server>   config;
-typedef config::iterator        configIterator;
+typedef std::vector<Server>::iterator serverIterator;
 
 template <class Multiplexer>
 class WebServ;
@@ -20,7 +19,7 @@ public:
     void run();
 
     Select() {}
-    Select(config& server);
+    Select(std::vector<Server>& server);
     ~Select();
 
 private:
@@ -32,7 +31,7 @@ private:
     fd_set              _readFds;
     struct timeval      _tv;
     std::vector<int>    _selectFd;
-    config              _server;
+    std::vector<Server> _server;
 };
 
 /*

@@ -36,7 +36,7 @@ void    Poll::run()
             std::cout << "Poll: error catched from socket fd.\n";
         // if socket got a new client
         else if (_pollFd[0].revents & POLLIN) {
-            int clientFd = _server[0].socket.acceptClient();
+            int clientFd = _server[0]._socket.acceptClient();
             if (clientFd)
             addClientToPoll(clientFd);
         }
@@ -61,20 +61,17 @@ void    Poll::run()
     }
 }
 
-Poll::Poll(config& server)
+Poll::Poll(std::vector<Server>& server) : _server(server)
 {
-    _server = server;
-
-    for (configIterator it = _server.begin(); it != _server.end(); ++it) {
+    // for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
         struct pollfd serverPoll;
-        // t_server serverIt = *it;
 
-        serverPoll.fd = it->socket.getSocketFd();
-        // serverPoll.fd = serverIt.socket.getSocketFd();
+        serverPoll.fd = _server[0].getSocketFd();
         serverPoll.events = POLLIN;
         serverPoll.revents = 0;
+        // std::cout << serverPoll.fd << std::endl;
         _pollFd.push_back(serverPoll);
-    }
+    // }
 }
 
 Poll::~Poll()

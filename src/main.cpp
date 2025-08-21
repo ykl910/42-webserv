@@ -36,29 +36,30 @@ static bool    gotConfigFilePath(const int argc, const char* argv)
     return false;
 }
 
-static void    runSpecificMultiplexer(const std::string& multiplexer,
-                               const char* configFilePath)
+static void    runSpecificMultiplexer(Config& config, std::string multiplexer)
 {
     if (multiplexer == "select")
-        WebServ<Select> server(configFilePath, "select");
+        WebServ<Select> server(config, "select");
     else if (multiplexer == "poll")
-        WebServ<Poll>   server(configFilePath, "poll");
+        WebServ<Poll>   server(config, "poll");
     else if (multiplexer == "epoll")
-        WebServ<Epoll>  server(configFilePath, "epoll");
+        WebServ<Epoll>  server(config, "epoll");
 }
 
 int main(int argc, char **argv)
 {
-    std::string configFilePath(DEFAULT_PATH);
+    const char* configFilePath(DEFAULT_PATH);
 
     if (gotConfigFilePath(argc, argv[1]))
-        configFilePath = std::string(argv[1]);
+        configFilePath = argv[1];
     try {
+        Config  config(configFilePath);
+
         initSignalHandler();
         if ((argc == 2 || argc == 3) && hadChoosenMultiplexer(argv[argc - 1]))
-            runSpecificMultiplexer(argv[argc - 1], configFilePath.c_str());
+            runSpecificMultiplexer(config, argv[argc - 1]);
         else
-            WebServ<Epoll> server(configFilePath.c_str(), "epoll");
+            WebServ<Poll> server(config, "poll");
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;

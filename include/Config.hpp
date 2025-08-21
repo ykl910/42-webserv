@@ -63,6 +63,7 @@ typedef configParser::const_iterator configParserIterator;
 
 class Config {
 public:
+    const char*& getConfigFilePath(void) const;
     configParser& getConfigParser(void);
     void printConfigFormat(void) const;
     void printConfigParser(void) const;
@@ -80,7 +81,7 @@ public:
     void parseConfigFile(void);
     void initConfigParser(void);
 
-    Config(const char* configFilePath);
+    Config(const char*& configFilePath);
     ~Config();
 
 private:
@@ -89,5 +90,5 @@ private:
     int             _directiveIndex;
     configParser    _configParser;
     configFormat    _configFormat;
-    std::string     _configFilePath;
+    const char*&    _configFilePath;
 };

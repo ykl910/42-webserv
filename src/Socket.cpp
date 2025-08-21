@@ -64,7 +64,7 @@ void Socket::setSocketOpt()
         printErrorAndThrow("fcntl()");
 }
 
-void Socket::createSocket(const char* port, const char* host)
+void Socket::createSocket(const char* host, const char* port)
 {
     bzero(&_hints, sizeof(_hints));
     _hints.ai_flags = AI_PASSIVE;
@@ -128,13 +128,13 @@ void Socket::createSocket(const char* port, const char* host)
         printErrorAndThrow("listen");
 }
 
-Socket::Socket(const char* port, const char* host)
+Socket::Socket(const char* host, const char* port)
 {
-    createSocket(port, host);
+    createSocket(host, port);
 }
 
 Socket::~Socket()
 {
-    if (_socketFd)
-        close(_socketFd);
+    // if (_socketFd)
+    //     close(_socketFd);
 }
