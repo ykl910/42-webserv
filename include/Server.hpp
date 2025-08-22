@@ -25,6 +25,7 @@ typedef struct s_error_page {
 typedef struct s_serv_attr {
     int                         client_max_body_size;
     std::string                 port;
+    std::string                 host;
     std::string                 listen;
     std::string                 server_name;
     t_error_page                error_page;
@@ -35,9 +36,9 @@ typedef struct s_serv_attr {
 
 class Server {
 public:
-    t_serv_attr getServerAttribute(void) const;
+    Socket& getSocket(void);
     int getSocketFd(void) const;
-    void setServerAttr(void);
+    t_serv_attr& getServerAttribute(void);
 
     Server(server& config);
     ~Server();

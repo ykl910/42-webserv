@@ -1,7 +1,15 @@
 #include "../include/Server.hpp"
 
+Socket& Server::getSocket(void) {
+    return _socket;
+}
+
 int Server::getSocketFd(void) const {
     return _socket.getSocketFd();
+}
+
+t_serv_attr& Server::getServerAttribute(void) {
+    return _attribute;
 }
 
 static int getClientMaxBodySize(const std::string& input) {
@@ -24,7 +32,7 @@ static void storeCgi(void) {
     return;
 }
 
-Server::Server(server& config)
+Server::Server(server& config) : _socket()
 {
     _attribute.port = config[SERVER][LISTEN];
     _attribute.host = config[SERVER][HOST];
@@ -35,6 +43,7 @@ Server::Server(server& config)
     storeRedirection();
     storeLocation();
     storeCgi();
+    _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
 }
 
 Server::~Server() {

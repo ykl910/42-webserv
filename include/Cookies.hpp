@@ -12,7 +12,6 @@
 #include <fstream>
 #include <ctime>
 
-
 class HttpResponse;
 class HttpRequest;
 

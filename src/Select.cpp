@@ -50,21 +50,24 @@ void    Select::run()
         } else if (_activity == 0) {
             continue;
         }
-        if (FD_ISSET(_listenFd[0], &_readFds)) {
-        /*
-            select() modifies the contents of the sets according to the rules
-            described below. After  calling  select(),  the FD_ISSET() macro
-            can be used to test if a file descriptor is still present in a set.
-            FD_ISSET() returns nonzero  if  the file descriptor fd is present
-            in set, and zero if it is not.
-        */
-            //* new connexion -> accept connexion and add client to the list
-            int clientFd = _server[0]->_socket.acceptClient();
-            if (clientFd)
-                _clientFd.push_back(clientFd);
-            std::cout << BOLD WHITE << "Select: new client accepted with fd "
-            << BOLD BLUE << clientFd << DEFAULT << "\n";
-        }
+
+       for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
+           if (FD_ISSET(_listenFd[0], &_readFds)) {
+           /*
+               select() modifies the contents of the sets according to the rules
+               described below. After  calling  select(),  the FD_ISSET() macro
+               can be used to test if a file descriptor is still present in a set.
+               FD_ISSET() returns nonzero  if  the file descriptor fd is present
+               in set, and zero if it is not.
+           */
+               //* new connexion -> accept connexion and add client to the list
+               int clientFd = (*it)->getSocket().acceptClient();
+               if (clientFd)
+                   _clientFd.push_back(clientFd);
+               std::cout << BOLD WHITE << "Select: new client accepted with fd "
+               << BOLD BLUE << clientFd << DEFAULT << "\n";
+           }
+       }
 
         for (selectIterator it = _clientFd.begin();
                             it != _clientFd.end();) {

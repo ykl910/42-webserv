@@ -14,7 +14,7 @@ public:
     void createSocket(const char* host, const char* port);
     void setSocketOpt();
 
-    Socket(const char* host, const char* port);
+    Socket();
     ~Socket();
 
 private:

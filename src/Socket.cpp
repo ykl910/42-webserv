@@ -128,10 +128,7 @@ void Socket::createSocket(const char* host, const char* port)
         printErrorAndThrow("listen");
 }
 
-Socket::Socket(const char* host, const char* port)
-{
-    createSocket(host, port);
-}
+Socket::Socket() {}
 
 Socket::~Socket()
 {
