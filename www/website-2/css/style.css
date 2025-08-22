@@ -1,6 +1,11 @@
 body {
-
+    justify-content: center;
+    align-content: center;
+    height: 60vh;
 }
+
+nav {}
+
 
 h1 {
     text-align: center;
@@ -14,4 +19,16 @@ h1:hover {
 a {
     color: inherit;
     text-decoration: none;
+}
+
+column {
+    display: flexbox;
+}
+
+left-column {
+    justify-content: left;
+}
+
+right-column {
+    justify-content: right;
 }

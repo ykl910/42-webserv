@@ -32,7 +32,7 @@ void    Poll::handleNewConnexion(struct pollfd& server)
         std::cout << "Poll: error catched from socket fd.\n";
     // if socket got a new client
     else if (server.revents & POLLIN) {
-        int clientFd = _server[0]->_socket.acceptClient();
+        int clientFd = _server[0]->getSocket().acceptClient();
         if (clientFd)
             addClientToPoll(clientFd);
     }
@@ -52,9 +52,8 @@ void    Poll::run()
         }
 
         size_t i = 0;
-        while (isSocketFd(_pollFd[i].fd)) {
+        while (i < _pollFd.size() && isSocketFd(_pollFd[i].fd)) {
             handleNewConnexion(_pollFd[i]);
-            std::cout << i << "\n";
             i++;
         }
 

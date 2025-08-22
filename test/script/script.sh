@@ -14,7 +14,6 @@ setup_test() {
     # TMUX
 
     # SIEGE
-
 }
 
 run_test() {
@@ -26,13 +25,17 @@ run_test() {
     )
 
     for multiplexer in "${multiplexers[@]}"; do
+
+        # Subject test
         ./ubuntu_tester
         ./ubuntu_cgi_tester
+
+        # Siege
+
+        # Perso
+
     done
 
-    # SELECT
-    # POLL
-    # EPOLL
     return;
 }
 

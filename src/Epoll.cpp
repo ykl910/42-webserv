@@ -137,7 +137,7 @@ void Epoll::eventManager(epoll_ev &event)
 
     } else if ((event.events & EPOLLIN)
         && event.data.fd == _server[0]->getSocketFd()) {
-        int clientFd = _server[0]->_socket.acceptClient();
+        int clientFd = _server[0]->getSocket().acceptClient();
         if (clientFd)
             addClientToEpoll(clientFd);
 

@@ -21,18 +21,6 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
     }
 }
 
-// template <class Multiplexer>
-// void    WebServ<Multiplexer>::createServer(Config& config)
-// {
-//     configParser parser = config.getConfigParser();
-//     for (configParserIterator it = parser.begin();
-//                               it != parser.end(); ++it) {
-//         server config = *it;
-//         Server newServer(config);
-//         _server.push_back(newServer);
-//     }
-// }
-
 template <class Multiplexer>
 WebServ<Multiplexer>::WebServ(Config& config, const char* multiplexer)
     : _multiplexer(config)
