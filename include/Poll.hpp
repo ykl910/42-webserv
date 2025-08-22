@@ -18,11 +18,12 @@ public:
     typedef std::vector<struct pollfd>::iterator pollIterator;
 
     void run();
-    std::vector<Server*> getServer(void) const;
-    void createServer(Config& config);
-    void handleNewConnexion(struct pollfd& socket);
     bool isSocketFd(int fd) const;
+    std::vector<Server*> getServer(void) const;
+
+    void createServer(Config& config);
     void addClientToPoll(int clientFd);
+    void handleNewConnexion(struct pollfd& socket);
 
     Poll(Config& config);
     ~Poll();

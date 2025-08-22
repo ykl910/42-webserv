@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 main() {
     if [ $# -gt 0 ]; then
         run_test
@@ -13,7 +15,6 @@ setup_test() {
 
     # SIEGE
 
-    return;
 }
 
 run_test() {
