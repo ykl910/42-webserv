@@ -25,12 +25,11 @@ static void storeCgi(void) {
 }
 
 Server::Server(server& config)
-    : _port(config[SERVER][LISTEN]),
-    _host(config[SERVER][HOST]),
-    _socket(_host.c_str(), _port.c_str())
 {
-    _server_name = config[SERVER][SERVER_NAME];
-    _client_max_body_size =
+    _attribute.port = config[SERVER][LISTEN];
+    _attribute.host = config[SERVER][HOST];
+    _attribute.server_name = config[SERVER][SERVER_NAME];
+    _attribute.client_max_body_size =
     getClientMaxBodySize(config[SERVER][CLIENT_MAX_BODY_SIZE]);
     storeErrorPage();
     storeRedirection();

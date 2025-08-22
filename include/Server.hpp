@@ -23,31 +23,26 @@ typedef struct s_error_page {
 }t_error_page;
 
 typedef struct s_serv_attr {
-    int                         _client_max_body_size;
-    std::string                 _server_name;
-    t_error_page                _error_page;
-    t_redirection               _redirection;
-    std::vector<t_location>     _location;
-    std::vector<t_cgi>          _cgi;
+    int                         client_max_body_size;
+    std::string                 port;
+    std::string                 listen;
+    std::string                 server_name;
+    t_error_page                error_page;
+    t_redirection               redirection;
+    std::vector<t_location>     location;
+    std::vector<t_cgi>          cgi;
 }t_serv_attr;
 
 class Server {
 public:
+    t_serv_attr getServerAttribute(void) const;
     int getSocketFd(void) const;
     void setServerAttr(void);
-    std::string _port;
-    std::string _host;
-    Socket      _socket;
 
     Server(server& config);
     ~Server();
 
 private:
-    int                         _client_max_body_size;
-    std::string                 _server_name;
-    t_error_page                _error_page;
-    t_redirection               _redirection;
-    std::vector<t_location>     _location;
-    std::vector<t_cgi>          _cgi;
-    t_serv_attr                 _attribute;
+    t_serv_attr _attribute;
+    Socket      _socket;
 };
