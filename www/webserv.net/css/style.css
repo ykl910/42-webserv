@@ -1,0 +1,47 @@
+body {
+    justify-content: center;
+    align-content: center;
+    height: 60vh;
+}
+
+nav {}
+
+
+h1 {
+    text-align: center;
+    animation-duration: 1s;
+}
+
+h1:hover {
+    filter: blur(2px);
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.back-link {
+    text-align: center;
+    animation-duration: 1s;
+}
+
+.back-link:hover {
+    filter: blur(2px);
+}
+
+.column {
+    /* column-count: 2; */
+    /* display: flexbox; */
+}
+
+.left-column {
+    flex: 1;
+    /* justify-content: left; */
+}
+
+.right-column {
+    flex: 1;
+    /* justify-content: right; */
+}

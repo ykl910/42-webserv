@@ -23,12 +23,12 @@ void    HttpManager::sendResponse(int clientFd)
 
 HttpManager::HttpManager(int clientFd)
 {
+    std::cout << BOLD ITALIC GREEN <<  "Request:\n" << DEFAULT;
+    // std::cout << MAGENTA << _request << DEFAULT << std::endl;
     _request = HttpRequest(clientFd);
     if (_request.getState() == FAILURE)
         return;
 
-    std::cout << BOLD ITALIC GREEN <<  "Received request:\n" << DEFAULT;
-    // std::cout << MAGENTA << _request << DEFAULT << std::endl;
 
     _response = HttpResponse(_request);
     sendResponse(clientFd);

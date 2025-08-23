@@ -4,9 +4,9 @@
 
 void handleDelete(HttpRequest& request, HttpResponse& response)
 {
-    std::string fullPath = "./website-1" + request.getPath();
-    if (fullPath == "./www/website-1/threads/")
-        fullPath = "./www/website-1/threads/nothingSelected";
+    std::string fullPath = POST42dotNET + request.getPath();
+    if (fullPath == POST42dotNET"threads/")
+        fullPath = POST42dotNET"threads/nothingSelected";
     std::string body;
     if (access(fullPath.c_str(), F_OK) != 0) {
         body = "Not Found";

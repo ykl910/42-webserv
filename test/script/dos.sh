@@ -9,7 +9,7 @@ fi
 
 if [ $RUN -lt 10 ]; then
     ((RUN++))
-    ./ddos.sh $RUN &
+    ./dos.sh $RUN &
 else
     exit 0
 fi

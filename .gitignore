@@ -1,7 +1,9 @@
 website/threads
+threads/
 webserv
 *.bkp
 *.dtmp
 obj/
+log/
 asm/
 pp/

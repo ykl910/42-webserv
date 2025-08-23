@@ -141,13 +141,13 @@ void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::
     response.setHeaders("Content-Type", "text/html");
     std::string path;
     if(code == 201)
-        path = "./www/website-1/html/uploadSucces.html";
+        path = POST42dotNET"html/uploadSucces.html";
     else if(code == 400)
-        path = "./www/website-1/html/400.html";
+        path = POST42dotNET"html/400.html";
     else if(code == 500)
-        path = "./www/website-1/html/500.html";
+        path = POST42dotNET"html/500.html";
     else
-        path = "./www/website-1/html/404.html";
+        path = POST42dotNET"html/404.html";
     std::ifstream file(path.c_str());
     std::stringstream buffer;
     buffer << file.rdbuf();
