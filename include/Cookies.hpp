@@ -1,19 +1,23 @@
 #pragma once
-#include "Error.hpp"
-#include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
+#include "HttpRequest.hpp"
 #include "utils.hpp"
-#include <string>
+#include "Error.hpp"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <vector>
-#include <fcntl.h>
 #include <fstream>
+#include <fcntl.h>
+#include <string>
+#include <vector>
 #include <ctime>
 
 class HttpResponse;
 class HttpRequest;
+
+#define POST42dotNET "./www/post42.net/"
+#define WEBSERVdotNET "./www/webserv.net/"
+// #define POST42dotNET WEBSERVdotNET
 
 class Cookies {
 public:
