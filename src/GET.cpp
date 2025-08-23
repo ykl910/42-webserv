@@ -8,13 +8,13 @@ void handleError(HttpRequest& request, HttpResponse& response, std::stringstream
     std::string body;
     if (type == "html") {
         if (success == 404) {
-            fullPath = "./www/website-1/html/404.html";
+            fullPath = POST42dotNET"/html/404.html";
             response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
         } else if (success == 403) {
-            fullPath = "./www/website-1/html/403.html";
+            fullPath = POST42dotNET"/html/403.html";
             response.setStatusLine(request.getHttpVersion(), 403, "Forbidden");
         } else {
-            fullPath = "./www/website-1/html/500.html";
+            fullPath = POST42dotNET"html/500.html";
             response.setStatusLine(request.getHttpVersion(), 500, "Internal error");
         }
         std::ifstream file(fullPath.c_str());
@@ -37,7 +37,7 @@ void handleError(HttpRequest& request, HttpResponse& response, std::stringstream
 
 int handleHtml(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer)
 {
-    std::string fullPath = "./www/website-1/html" + path;
+    std::string fullPath = POST42dotNET"html" + path;
     std::ifstream file(fullPath.c_str());
     if (access(fullPath.c_str(), F_OK) != 0) {
         return 404;
@@ -57,7 +57,7 @@ int handleHtml(HttpRequest& request, HttpResponse& response, std::string path, s
 
 int handleCss(HttpRequest& request, HttpResponse& response, std::string path, std::stringstream *buffer)
 {
-    std::string fullPath = "./www/website-1" + path;
+    std::string fullPath = POST42dotNET + path;
     std::ifstream file(fullPath.c_str());
     if (access(fullPath.c_str(), F_OK) != 0) {
         return 404;
@@ -77,7 +77,7 @@ int handleCss(HttpRequest& request, HttpResponse& response, std::string path, st
 
 int handleImg(HttpRequest& request, HttpResponse& response, std::string path, std::string extension)
 {
-    std::string fullPath = "./www/website-1" + path;
+    std::string fullPath = POST42dotNET + path;
     std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::binary);
     if (access(fullPath.c_str(), F_OK) != 0) {
         return 404;
@@ -109,7 +109,7 @@ int handleImg(HttpRequest& request, HttpResponse& response, std::string path, st
 
 void handleThread(HttpRequest& request, HttpResponse& response)
 {
-    std::string targetDir = "./www/website-1/threads";
+    std::string targetDir = POST42dotNET"threads";
     DIR* dir = opendir(targetDir.c_str());
     if (!dir) {
         response.setStatusLine(request.getHttpVersion(), 200, "OK");

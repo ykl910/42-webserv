@@ -2,6 +2,9 @@
 #include "../include/Signal.hpp"
 
 #define DEFAULT_PATH "config/test.conf"
+#ifndef TEST
+ #define TEST "no"
+#endif
 
 static bool    hadChoosenMultiplexer(const std::string& input)
 {

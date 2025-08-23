@@ -13,6 +13,11 @@
     };
 */
 
+int Socket::getSocketFd() const
+{
+    return _socketFd;
+}
+
 int Socket::acceptClient(void)
 {
     errno = 0;
@@ -29,18 +34,12 @@ int Socket::acceptClient(void)
     if (clientFd == -1)
         printErrorAndThrow("accept");
 
-    std::cout << "New pending connexion..." << std::endl;
-
     int flags = fcntl(clientFd, F_GETFL, 0);
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
         printErrorAndThrow("fcntl");
     return clientFd;
 }
 
-int Socket::getSocketFd() const
-{
-    return _socketFd;
-}
 
 void Socket::setSocketOpt()
 {

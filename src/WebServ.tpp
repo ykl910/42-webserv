@@ -17,7 +17,7 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
         t_serv_attr attribute = (*it)->getServerAttribute();
         std::cout
         << BOLD WHITE << "Listen: "
-        << BOLD ITALIC BLUE  << attribute.port << "\n" << DEFAULT;
+        << BOLD ITALIC BLUE  << attribute.port << "\n\n" << DEFAULT;
     }
 }
 

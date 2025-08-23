@@ -64,6 +64,7 @@ void    HttpRequest::readRequest(int clientFd)
         _content.append(_buffer, bytes);
     }
     _state = SUCCESS;
+    std::cout << _content;
 }
 
 void    HttpRequest::parseRequest(void)

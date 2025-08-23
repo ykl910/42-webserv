@@ -25,7 +25,6 @@ void    Select::run()
        for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
             int fd = (*it)->getSocketFd();
             FD_SET(fd, &_readFds);
-            std::cout << fd << std::endl;
             if (fd > _maxFd)
                 _maxFd = fd;
        }
