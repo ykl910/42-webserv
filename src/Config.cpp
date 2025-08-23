@@ -140,11 +140,16 @@ bool    Config::contextFormatValid(const std::string& line)
     return true;
 }
 
+bool    Config::gotAllServerContexts(void)
+{
+    return _serverMask & 0b00000000000000000000000000001111;
+}
+
 void    Config::getServer(std::ifstream& file, std::string& line, server& server)
 {
+    _serverMask = 0;
     _contextIndex = SERVER;
-    while (1) {
-        _serverMask = 0;
+    while (!gotAllServerContexts()) {
         std::getline(file, line);
         if (file.eof())
             break;
@@ -153,12 +158,14 @@ void    Config::getServer(std::ifstream& file, std::string& line, server& server
         }
         _contextIndex++;
     }
+    std::getline(file, line);
 }
 
 bool    gotAnotherServer(std::ifstream& file, std::string& line)
 {
-    std::getline(file, line);
-    if (!line.empty())
+    if (file.eof())
+        return false;
+    else if (!line.empty())
         throw std::runtime_error("Error: config file not well formated.");
     std::ifstream::pos_type streamPos = file.tellg();
     std::getline(file, line);

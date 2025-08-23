@@ -12,12 +12,20 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
     << BOLD ITALIC BLUE  << multiplexer << "\n" << DEFAULT;
 
     std::vector<Server*> server = _multiplexer.getServer();
+    int i = 0;
     for (serverIterator it = server.begin();
                         it != server.end(); ++it) {
         t_serv_attr attribute = (*it)->getServerAttribute();
         std::cout
-        << BOLD WHITE << "Listen: "
-        << BOLD ITALIC BLUE  << attribute.port << "\n\n" << DEFAULT;
+        << BOLD WHITE << "Server "
+        << BOLD CYAN << i << "\n"
+        << BOLD WHITE << "    host: "
+        << BOLD ITALIC BLUE  << attribute.host << "\n" << DEFAULT
+        << BOLD WHITE << "    port: "
+        << BOLD ITALIC BLUE  << attribute.port << "\n" << DEFAULT
+        << BOLD WHITE << "    server_name: "
+        << BOLD ITALIC BLUE  << attribute.server_name << "\n" << DEFAULT;
+        ++i;
     }
 }
 

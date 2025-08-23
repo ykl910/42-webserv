@@ -63,14 +63,14 @@ typedef configParser::const_iterator configParserIterator;
 
 class Config {
 public:
-    const char*& getConfigFilePath(void) const;
+    bool gotAllServerContexts(void);
     configParser& getConfigParser(void);
     void printConfigFormat(void) const;
     void printConfigParser(void) const;
     void printServer(const server& srv) const;
+    const char*& getConfigFilePath(void) const;
 
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
-
     bool contextFormatValid(const std::string& line);
     bool directiveFormatValid(const std::string& line, int indentSize);
 
