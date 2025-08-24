@@ -16,7 +16,7 @@
     };
 */
 
-std::vector<Server*> Epoll::getServer(void) const {
+std::vector<Server> Epoll::getServer(void) const {
     return _server;
 }
 
@@ -117,6 +117,15 @@ void Epoll::sendResponse(int clientFd, HttpRequest request)
     }
 }
 
+bool    Epoll::isSocketFd(int fd) const
+{
+    for (size_t i = 0; i < _listenFd.size(); ++i) {
+        if (fd == _listenFd[i])
+            return true;
+    }
+    return false;
+}
+
 void Epoll::eventManager(epoll_ev &event)
 {
     if (event.events & EPOLLERR) {
@@ -136,8 +145,8 @@ void Epoll::eventManager(epoll_ev &event)
         close(event.data.fd);
 
     } else if ((event.events & EPOLLIN)
-        && event.data.fd == _server[0]->getSocketFd()) {
-        int clientFd = _server[0]->getSocket().acceptClient();
+        && event.data.fd == _server[0].getSocketFd()) {
+        int clientFd = _server[0].getSocket().acceptClient();
         if (clientFd)
             addClientToEpoll(clientFd);
 
@@ -176,11 +185,14 @@ void Epoll::run()
 
 void    Epoll::createServer(Config& config)
 {
+    int i = 0;
     configParser parser = config.getConfigParser();
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
         server config = *it;
-        _server.push_back(new Server(config));
+        _server.push_back(Server(config));
+        _server[i].initSocket();
+        ++i;
     }
 }
 
@@ -194,7 +206,7 @@ Epoll::Epoll(Config& config) : _eventsQueue(MAXEVENTS)
     for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
         epoll_ev server_ev;
         server_ev.events = EPOLLIN;
-        server_ev.data.fd = (*it)->getSocketFd();
+        server_ev.data.fd = it->getSocketFd();
         if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)
             printErrorAndThrow("epoll_ctl");
     }

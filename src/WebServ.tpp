@@ -11,11 +11,11 @@ void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
     << BOLD WHITE << "Multiplexer: "
     << BOLD ITALIC BLUE  << multiplexer << "\n" << DEFAULT;
 
-    std::vector<Server*> server = _multiplexer.getServer();
+    std::vector<Server> server = _multiplexer.getServer();
     int i = 0;
     for (serverIterator it = server.begin();
                         it != server.end(); ++it) {
-        t_serv_attr attribute = (*it)->getServerAttribute();
+        t_serv_attr attribute = it->getServerAttribute();
         std::cout
         << BOLD WHITE << "Server "
         << BOLD CYAN << i << "\n"

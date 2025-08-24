@@ -14,7 +14,7 @@
 template <class Multiplexer>
 class WebServ;
 
-typedef std::vector<Server*>::iterator serverIterator;
+typedef std::vector<Server>::iterator serverIterator;
 
 class Epoll {
 public:
@@ -23,8 +23,9 @@ public:
     typedef std::map<int, std::string>::iterator buffersIt;
     typedef std::map<int, HttpRequest>::iterator requestsIt;
 
-    std::vector<Server*> getServer(void) const;
+    std::vector<Server> getServer(void) const;
     void run();
+    bool isSocketFd(int fd) const;
     void addClientToEpoll(int const &clientFd);
 
     void createServer(Config& config);
@@ -48,5 +49,6 @@ private:
     std::map<int, int>          _pendingResponse;
     std::map<int, HttpRequest>  _requests;
     std::map<int, HttpResponse> _responses;
-    std::vector<Server*>        _server;
+    std::vector<int>            _listenFd;
+    std::vector<Server>         _server;
 };

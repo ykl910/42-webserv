@@ -10,7 +10,7 @@
 #include <sys/select.h>
 #include <vector>
 
-typedef std::vector<Server*>::iterator serverIterator;
+typedef std::vector<Server>::iterator serverIterator;
 
 template <class Multiplexer>
 class WebServ;
@@ -18,7 +18,7 @@ class WebServ;
 class Select {
 public:
     void run();
-    std::vector<Server*> getServer(void) const;
+    std::vector<Server> getServer(void) const;
     void createServer(Config& config);
     bool isSocketFd(int fd) const;
 
@@ -34,7 +34,7 @@ private:
     struct timeval          _tv;
     std::vector<int>        _listenFd;
     std::vector<int>        _clientFd;
-    std::vector<Server*>    _server;
+    std::vector<Server>    _server;
 };
 
 /*

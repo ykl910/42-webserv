@@ -14,7 +14,7 @@
 #define WEBSERVdotNET "./www/webserv.net/"
 // #define POST42dotNET WEBSERVdotNET
 
-typedef std::vector<Server*>::iterator serverIterator;
+typedef std::vector<Server>::iterator serverIterator;
 
 template <class Multiplexer>
 class WebServ {

@@ -122,7 +122,6 @@ run_subject_test()
     # - any file with .bla as extension must answer to POST request by calling the cgi_test executable
     # - /post_body must answer anything to POST request with a maxBody of 100
     # - /directory/ must answer to GET request and the root of it would be the repository YoupiBanane and if no file are requested, it should search for youpi.bad_extension files
-    touch test.conf
     echo \
 "server:
     listen 8080
@@ -132,7 +131,7 @@ run_subject_test()
     error_page:
 
     location \\:
-"
+" > test.conf
     # press enter to continue
 
 
@@ -153,7 +152,7 @@ run_siege_test()
         for domain in "${domains[@]}"; do
             siege -g $domain:$port
 
-            siege -g 
+            siege -g
         done
         kill $webserv_pid
     done
