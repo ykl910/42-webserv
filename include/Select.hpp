@@ -35,7 +35,7 @@ private:
     std::vector<int>        _listenFd;
     std::vector<int>        _clientFd;
     std::vector<Server>    _server;
-    std::map<int, Server*>   _clientToServer;
+    std::map<int, Server>  _clientToServer;
 };
 
 /*

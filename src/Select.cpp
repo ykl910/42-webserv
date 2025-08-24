@@ -51,7 +51,7 @@ void    Select::run()
         }
 
        for (serverIterator serIt = _server.begin(); serIt != _server.end(); ++serIt) {
-            int serverFd = (*serIt)->getSocketFd();
+            int serverFd = serIt->getSocketFd();
             if (FD_ISSET(serverFd, &_readFds)) {
             /*
                 select() modifies the contents of the sets according to the rules
@@ -61,7 +61,7 @@ void    Select::run()
                 in set, and zero if it is not.
             */
                 //* new connexion -> accept connexion and add client to the list
-                int clientFd = (*serIt)->getSocket().acceptClient();
+                int clientFd = serIt->getSocket().acceptClient();
                 if (clientFd) {
                     _clientFd.push_back(clientFd);
                     _clientToServer[clientFd] = (*serIt);
@@ -74,8 +74,8 @@ void    Select::run()
        for (selectIterator it = _clientFd.begin(); it != _clientFd.end();) {
             //* read request and send response
             if (FD_ISSET(*it, &_readFds)) {
-                Server* serv = _clientToServer[*it];
-                HttpManager(int(*it), serv->getServerAttribute());
+                Server serv = _clientToServer[*it];
+                HttpManager(int(*it), serv.getServerAttribute());
                 _clientToServer.erase(*it);
                 close(*it);
                 it = _clientFd.erase(it);
@@ -105,8 +105,9 @@ Select::Select(Config& config)
     _tv.tv_usec = 0;
 
     createServer(config);
-    for (serverIterator it = _server.begin(); it != _server.end(); ++it)
+    for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
         _listenFd.push_back(it->getSocketFd());
+    }
     _maxFd = _listenFd[0];
 }
 

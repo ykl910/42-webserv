@@ -41,7 +41,9 @@ public:
     int getSocketFd(void) const;
     t_serv_attr& getServerAttribute(void);
 
+    Server() {}
     Server(server& config);
+    Server& operator=(Server& other);
     ~Server();
 
 private:

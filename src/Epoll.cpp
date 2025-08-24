@@ -138,8 +138,8 @@ void Epoll::eventManager(epoll_ev &event)
     } else if (event.events & EPOLLIN) {
         bool isServerSocket = false;
         for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
-            if (event.data.fd == (*it)->getSocketFd()) {
-                int clientFd = (*it)->getSocket().acceptClient();
+            if (event.data.fd == it->getSocketFd()) {
+                int clientFd = it->getSocket().acceptClient();
                 if (clientFd)
                     addClientToEpoll(clientFd, *it);
                 isServerSocket = true;
@@ -148,13 +148,13 @@ void Epoll::eventManager(epoll_ev &event)
         }
         
         if (!isServerSocket) {
-            Server* serv = _clientToServer[event.data.fd];
-            if (serv) {
-                HttpManager(event.data.fd, serv->getServerAttribute());
+            Server serv = _clientToServer[event.data.fd];
+            // if (serv) {
+                HttpManager(event.data.fd, serv.getServerAttribute());
                 _clientToServer.erase(event.data.fd);
                 epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
                 close(event.data.fd);
-            }
+            // }
         }
     }
         
@@ -163,7 +163,7 @@ void Epoll::eventManager(epoll_ev &event)
     //     sendResponse(event.data.fd, _requests[event.data.fd]);
 }
 
-void Epoll::addClientToEpoll(int const &clientFd, Server *serv)
+void Epoll::addClientToEpoll(int const &clientFd, Server serv)
 {
     epoll_ev newClient;
     newClient.events = EPOLLIN;
