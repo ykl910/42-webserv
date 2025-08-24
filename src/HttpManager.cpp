@@ -1,4 +1,6 @@
 #include "../include/HttpManager.hpp"
+#include "../include/Server.hpp"
+#include "../include/utils.hpp"
 
 void    HttpManager::sendResponse(int clientFd)
 {
@@ -10,18 +12,14 @@ void    HttpManager::sendResponse(int clientFd)
     while (totalSent < totalSize) {
         ssize_t sent = send(clientFd, data + totalSent, totalSize - totalSent, 0);
         if (sent < 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                continue;
-            } else {
-                printError();
-                break;
-            }
+            printError();
+            break;
         }
         totalSent += sent;
     }
 }
 
-HttpManager::HttpManager(int clientFd)
+HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr)
 {
     std::cout << BOLD ITALIC GREEN <<  "Request:\n" << DEFAULT;
     // std::cout << MAGENTA << _request << DEFAULT << std::endl;
@@ -30,8 +28,9 @@ HttpManager::HttpManager(int clientFd)
         return;
 
 
-    _response = HttpResponse(_request);
+    _response = HttpResponse(_request, serverAttr);
     sendResponse(clientFd);
+    writeUserInfo(_request, _response);
 }
 
 HttpManager::~HttpManager() {}

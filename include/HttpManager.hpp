@@ -9,7 +9,7 @@ class HttpManager {
 public:
     void sendResponse(int clientFd);
 
-    HttpManager(int clientFd);
+    HttpManager(int clientFd, t_serv_attr &serverAttr);
     ~HttpManager();
 
 private:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HttpRequest.hpp"
+#include "Server.hpp"
 #include "CGI.hpp"
 #include <netinet/in.h>
 #include <unistd.h>
@@ -23,7 +24,7 @@ public:
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
 
-    HttpResponse(HttpRequest &request);
+    HttpResponse(HttpRequest &request, t_serv_attr &serverAttr);
     HttpResponse() {};
     ~HttpResponse() {};
 

@@ -50,29 +50,33 @@ void    Select::run()
             continue;
         }
 
-       for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
-           if (FD_ISSET(it->getSocketFd(), &_readFds)) {
-           /*
-               select() modifies the contents of the sets according to the rules
-               described below. After  calling  select(),  the FD_ISSET() macro
-               can be used to test if a file descriptor is still present in a set.
-               FD_ISSET() returns nonzero  if  the file descriptor fd is present
-               in set, and zero if it is not.
-           */
-               //* new connexion -> accept connexion and add client to the list
-               int clientFd = it->getSocket().acceptClient();
-               if (clientFd)
-                   _clientFd.push_back(clientFd);
-               std::cout << BOLD WHITE << "Select: new client accepted with fd "
-               << BOLD BLUE << clientFd << DEFAULT << "\n";
-           }
+       for (serverIterator serIt = _server.begin(); serIt != _server.end(); ++serIt) {
+            int serverFd = (*serIt)->getSocketFd();
+            if (FD_ISSET(serverFd, &_readFds)) {
+            /*
+                select() modifies the contents of the sets according to the rules
+                described below. After  calling  select(),  the FD_ISSET() macro
+                can be used to test if a file descriptor is still present in a set.
+                FD_ISSET() returns nonzero  if  the file descriptor fd is present
+                in set, and zero if it is not.
+            */
+                //* new connexion -> accept connexion and add client to the list
+                int clientFd = (*serIt)->getSocket().acceptClient();
+                if (clientFd) {
+                    _clientFd.push_back(clientFd);
+                    _clientToServer[clientFd] = (*serIt);
+                    std::cout << BOLD WHITE << "Select: new client accepted with fd "
+                    << BOLD BLUE << clientFd << DEFAULT << "\n";
+                }
+            }
        }
-
-        for (selectIterator it = _clientFd.begin();
-                            it != _clientFd.end();) {
+       
+       for (selectIterator it = _clientFd.begin(); it != _clientFd.end();) {
             //* read request and send response
             if (FD_ISSET(*it, &_readFds)) {
-                HttpManager(int(*it));
+                Server* serv = _clientToServer[*it];
+                HttpManager(int(*it), serv->getServerAttribute());
+                _clientToServer.erase(*it);
                 close(*it);
                 it = _clientFd.erase(it);
             } else
@@ -109,8 +113,6 @@ Select::Select(Config& config)
 Select::~Select()
 {
     std::cout << "select destructor called\n";
-    // if (_socketFd)
-    //     close(_socketFd);
     for (selectIterator it = _clientFd.begin();
          it != _clientFd.end(); ++it)
         close(*it);

@@ -1,4 +1,5 @@
 #include "../include/HttpResponse.hpp"
+#include "../include/Server.hpp"
 #include "../include/GET.hpp"
 #include "../include/POST.hpp"
 #include "../include/DELETE.hpp"
@@ -75,8 +76,9 @@ std::string HttpResponse::getResponse() const
     return fullResponse;
 }
 
-HttpResponse::HttpResponse(HttpRequest &request)
+HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
 {
+    (void) serverAttr;
     if (request.getMethod() == "GET")
         handleGet(request, *this);
     else if (request.getMethod() == "POST")

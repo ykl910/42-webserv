@@ -22,7 +22,7 @@ public:
     std::vector<Server> getServer(void) const;
 
     void createServer(Config& config);
-    void addClientToPoll(int clientFd);
+    void addClientToPoll(int clientFd, Server *serv);
     void handleNewConnexion(struct pollfd& socket, int i);
 
     Poll(Config& config);
@@ -33,4 +33,5 @@ private:
     std::vector<struct pollfd>  _pollFd;
     std::vector<Server>         _server;
     std::vector<int>            _listenFd;
+    std::map<int, Server*>      _clientToServer;
 };

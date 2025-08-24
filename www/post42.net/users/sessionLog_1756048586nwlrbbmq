@@ -1,0 +1,108 @@
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 200 OK
+
+request:DELETE /threads/1_title.txt
+response:HTTP/1.1 200 File deleted successfully
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 200 OK
+
+request:DELETE /threads/1_body.txt
+response:HTTP/1.1 200 File deleted successfully
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 200 OK
+
+request:DELETE /threads/1_img.jpg
+response:HTTP/1.1 200 File deleted successfully
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+

@@ -3,7 +3,7 @@
 #include "../include/WebServ.hpp"
 #include "../include/Cookies.hpp"
 
-# define DIRPATH "www/website-1/threads/"
+# define DIRPATH "www/post42.net/threads/"
 
 std::string getBoundary(std::string &line)
 {

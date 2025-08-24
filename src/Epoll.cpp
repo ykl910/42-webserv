@@ -81,50 +81,41 @@ bool Epoll::receivedCompleteRequest(std::string &rawData) const
 //         _gotFullRequest[clientFd] = false;
 // }
 
-void Epoll::sendResponse(int clientFd, HttpRequest request)
-{
-    std::string response;
+// void Epoll::sendResponse(int clientFd, HttpRequest request)
+// {
+//     std::string response;
 
-    if (!_gotResponse[clientFd]) {
-        HttpResponse Response(request);
-        writeUserInfo(request, Response);
-        response = Response.getResponse();
-        _responses[clientFd] = Response;
-        _gotResponse[clientFd] = true;
-    } else
-        response = _responses[clientFd].getResponse();
+//     if (!_gotResponse[clientFd]) {
+//         HttpResponse Response(request);
+//         writeUserInfo(request, Response);
+//         response = Response.getResponse();
+//         _responses[clientFd] = Response;
+//         _gotResponse[clientFd] = true;
+//     } else
+//         response = _responses[clientFd].getResponse();
 
-    size_t totalBytesSent = _pendingResponse[clientFd];
-    size_t responseLen = response.length();
+//     size_t totalBytesSent = _pendingResponse[clientFd];
+//     size_t responseLen = response.length();
 
-    while (totalBytesSent < responseLen) {
-        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent,
-                                 responseLen - totalBytesSent, 0);
-        if (bytesSent <= 0)
-            break ;
-        totalBytesSent += bytesSent;
-    }
-    if (totalBytesSent != responseLen)
-        _pendingResponse[clientFd] = totalBytesSent;
-    else {
-        std::cout << BOLD ITALIC GREEN << "\nresponse:\n" << DEFAULT;
-        std::cout << YELLOW << response.c_str() << std::endl;
-        _pendingResponse.erase(clientFd);
-        disableWriteEvent(clientFd);
-        _gotFullRequest.erase(clientFd);
-        _gotResponse.erase(clientFd);
-        _responses.erase(clientFd);
-    }
-}
-
-bool    Epoll::isSocketFd(int fd) const
-{
-    for (size_t i = 0; i < _listenFd.size(); ++i) {
-        if (fd == _listenFd[i])
-            return true;
-    }
-    return false;
-}
+//     while (totalBytesSent < responseLen) {
+//         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent,
+//                                  responseLen - totalBytesSent, 0);
+//         if (bytesSent <= 0)
+//             break ;
+//         totalBytesSent += bytesSent;
+//     }
+//     if (totalBytesSent != responseLen)
+//         _pendingResponse[clientFd] = totalBytesSent;
+//     else {
+//         std::cout << BOLD ITALIC GREEN << "\nresponse:\n" << DEFAULT;
+//         std::cout << YELLOW << response.c_str() << std::endl;
+//         _pendingResponse.erase(clientFd);
+//         disableWriteEvent(clientFd);
+//         _gotFullRequest.erase(clientFd);
+//         _gotResponse.erase(clientFd);
+//         _responses.erase(clientFd);
+//     }
+// }
 
 void Epoll::eventManager(epoll_ev &event)
 {
@@ -144,25 +135,41 @@ void Epoll::eventManager(epoll_ev &event)
         epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
 
-    } else if ((event.events & EPOLLIN)
-        && event.data.fd == _server[0].getSocketFd()) {
-        int clientFd = _server[0].getSocket().acceptClient();
-        if (clientFd)
-            addClientToEpoll(clientFd);
-
-    } else if (event.events & EPOLLIN)
-        HttpManager(event.data.fd);
+    } else if (event.events & EPOLLIN) {
+        bool isServerSocket = false;
+        for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
+            if (event.data.fd == (*it)->getSocketFd()) {
+                int clientFd = (*it)->getSocket().acceptClient();
+                if (clientFd)
+                    addClientToEpoll(clientFd, *it);
+                isServerSocket = true;
+                break;
+            }
+        }
+        
+        if (!isServerSocket) {
+            Server* serv = _clientToServer[event.data.fd];
+            if (serv) {
+                HttpManager(event.data.fd, serv->getServerAttribute());
+                _clientToServer.erase(event.data.fd);
+                epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
+                close(event.data.fd);
+            }
+        }
+    }
+        
         // getRequest(event.data.fd);
     // else if ((event.events & EPOLLOUT) && _gotFullRequest[event.data.fd])
     //     sendResponse(event.data.fd, _requests[event.data.fd]);
 }
 
-void Epoll::addClientToEpoll(int const &clientFd)
+void Epoll::addClientToEpoll(int const &clientFd, Server *serv)
 {
     epoll_ev newClient;
-
     newClient.events = EPOLLIN;
     newClient.data.fd = clientFd;
+
+    _clientToServer[clientFd] = serv;
     std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
     BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
 
