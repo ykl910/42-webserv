@@ -26,7 +26,7 @@ public:
     std::vector<Server> getServer(void) const;
     void run();
     bool isSocketFd(int fd) const;
-    void addClientToEpoll(int const &clientFd, Server *serv);
+    void addClientToEpoll(int const &clientFd, Server serv);
 
     void createServer(Config& config);
     void enableWriteEvent(int clientFd);
@@ -51,5 +51,5 @@ private:
     std::map<int, HttpResponse> _responses;
     std::vector<int>            _listenFd;
     std::vector<Server>         _server;
-    std::map<int, Server*>      _clientToServer;
+    std::map<int, Server>       _clientToServer;
 };

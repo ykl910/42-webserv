@@ -19,7 +19,7 @@ bool    Poll::isSocketFd(int fd) const
     return false;
 }
 
-void    Poll::addClientToPoll(int clientFd, Server *serv)
+void    Poll::addClientToPoll(int clientFd, Server serv)
 {
     _pollFd.push_back((pollfd){clientFd, POLLIN, 0});
     _clientToServer[clientFd] = serv;
@@ -27,24 +27,24 @@ void    Poll::addClientToPoll(int clientFd, Server *serv)
     << BOLD BLUE << clientFd << DEFAULT << "\n";
 }
 
-void    Poll::handleNewConnexion(struct pollfd& server, int i)
+void    Poll::handleNewConnexion(struct pollfd& server)
 {
     if (server.revents & POLLERR)
         std::cout << "Poll: error catched from socket fd.\n";
     // if socket got a new client
     else if (server.revents & POLLIN) {
-        Server* serv = NULL;
+        Server serv;
         for(serverIterator it = _server.begin(); it != _server.end(); ++it) {
-            if ((*it)->getSocketFd() == server.fd) {
+            if (it->getSocketFd() == server.fd) {
                 serv = *it;
                 break;
             }
         }
-        if (serv) {
-            int clientFd = serv->getSocket().acceptClient();
+        // if (serv) {
+            int clientFd = serv.getSocket().acceptClient();
             if (clientFd) 
                 addClientToPoll(clientFd, serv);
-        }
+        // }
     }
 }
 std::vector<Server> Poll::getServer(void) const {
@@ -63,7 +63,7 @@ void    Poll::run()
 
         size_t i = 0;
         while (i < _pollFd.size() && isSocketFd(_pollFd[i].fd)) {
-            handleNewConnexion(_pollFd[i], i);
+            handleNewConnexion(_pollFd[i]);
             i++;
         }
 
@@ -76,10 +76,10 @@ void    Poll::run()
                 std::cout << "Poll: connexion closed for client "
                 << it->fd << "\n";
             else if (it->revents & POLLIN) {
-                Server *serv = _clientToServer[it->fd];
-                if (serv) {
-                    HttpManager(it->fd, serv->getServerAttribute());
-                }
+                Server serv = _clientToServer[it->fd];
+                // if (serv) {
+                    HttpManager(it->fd, serv.getServerAttribute());
+                // }
                 _clientToServer.erase(it->fd);
                 close(it->fd);
                 it = _pollFd.erase(it);

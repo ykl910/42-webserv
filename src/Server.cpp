@@ -34,7 +34,20 @@ static void storeCgi(void) {
 
 void    Server::initSocket(void)
 {
+    std::cout << _attribute.port.c_str() << std::endl;
     _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
+}
+Server& Server::operator=(Server& other)
+{
+    if (this != &other) {
+        t_serv_attr attr = other.getServerAttribute();
+        this->_attribute.client_max_body_size = attr.client_max_body_size;
+        this->_attribute.port = attr.port;
+        this->_attribute.host = attr.host;
+        this->_attribute.listen = attr.listen;
+        this->_attribute.server_name = attr.server_name;
+    }
+    return *this;
 }
 
 Server::Server(server& config) : _socket()
