@@ -9,8 +9,8 @@
 
 class Socket {
 public:
-    int getSocketFd() const;
     int acceptClient();
+    int getSocketFd() const;
     void createSocket(const char* host, const char* port);
     void setSocketOpt();
 

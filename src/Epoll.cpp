@@ -59,64 +59,6 @@ bool Epoll::receivedCompleteRequest(std::string &rawData) const
     return (bodyLengh >= static_cast<size_t>(contentLength));
 }
 
-// void Epoll::getRequest(int clientFd)
-// {
-//     char buffer[BUFFERSIZE];
-
-//     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-//     if (bytes > 0)
-//         _buffers[clientFd].append(buffer, bytes);
-
-//     if (receivedCompleteRequest(_buffers[clientFd])) {
-
-//         std::cout << BOLD ITALIC GREEN << "\nreceived:\n" << DEFAULT;
-//         std::cout << MAGENTA << _buffers[clientFd] << DEFAULT << std::endl;
-//         HttpRequest request(_buffers[clientFd]);
-//         _requests[clientFd] = request;
-//         _gotFullRequest[clientFd] = true;
-//         enableWriteEvent(clientFd);
-//         _buffers.erase(clientFd);
-//         _pendingResponse[clientFd] = 0;
-//     } else
-//         _gotFullRequest[clientFd] = false;
-// }
-
-// void Epoll::sendResponse(int clientFd, HttpRequest request)
-// {
-//     std::string response;
-
-//     if (!_gotResponse[clientFd]) {
-//         HttpResponse Response(request);
-//         writeUserInfo(request, Response);
-//         response = Response.getResponse();
-//         _responses[clientFd] = Response;
-//         _gotResponse[clientFd] = true;
-//     } else
-//         response = _responses[clientFd].getResponse();
-
-//     size_t totalBytesSent = _pendingResponse[clientFd];
-//     size_t responseLen = response.length();
-
-//     while (totalBytesSent < responseLen) {
-//         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent,
-//                                  responseLen - totalBytesSent, 0);
-//         if (bytesSent <= 0)
-//             break ;
-//         totalBytesSent += bytesSent;
-//     }
-//     if (totalBytesSent != responseLen)
-//         _pendingResponse[clientFd] = totalBytesSent;
-//     else {
-//         std::cout << BOLD ITALIC GREEN << "\nresponse:\n" << DEFAULT;
-//         std::cout << YELLOW << response.c_str() << std::endl;
-//         _pendingResponse.erase(clientFd);
-//         disableWriteEvent(clientFd);
-//         _gotFullRequest.erase(clientFd);
-//         _gotResponse.erase(clientFd);
-//         _responses.erase(clientFd);
-//     }
-// }
-
 void Epoll::eventManager(epoll_ev &event)
 {
     if (event.events & EPOLLERR) {
@@ -146,21 +88,16 @@ void Epoll::eventManager(epoll_ev &event)
                 break;
             }
         }
-        
+
         if (!isServerSocket) {
             Server serv = _clientToServer[event.data.fd];
-            // if (serv) {
-                HttpManager(event.data.fd, serv.getServerAttribute());
-                _clientToServer.erase(event.data.fd);
-                epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
-                close(event.data.fd);
-            // }
+
+            HttpManager(event.data.fd, serv.getServerAttribute());
+            _clientToServer.erase(event.data.fd);
+            epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
+            close(event.data.fd);
         }
     }
-        
-        // getRequest(event.data.fd);
-    // else if ((event.events & EPOLLOUT) && _gotFullRequest[event.data.fd])
-    //     sendResponse(event.data.fd, _requests[event.data.fd]);
 }
 
 void Epoll::addClientToEpoll(int const &clientFd, Server serv)

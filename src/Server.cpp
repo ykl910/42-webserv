@@ -34,9 +34,9 @@ static void storeCgi(void) {
 
 void    Server::initSocket(void)
 {
-    std::cout << _attribute.port.c_str() << std::endl;
     _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
 }
+
 Server& Server::operator=(Server& other)
 {
     if (this != &other) {

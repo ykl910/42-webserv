@@ -40,7 +40,6 @@ int Socket::acceptClient(void)
     return clientFd;
 }
 
-
 void Socket::setSocketOpt()
 {
     int opt = 1;
