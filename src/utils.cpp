@@ -38,7 +38,7 @@ void writeUserInfo(HttpRequest &request, HttpResponse &response)
     }
 
     if (!sessionId.empty()) {
-        std::string fullpath = "website/users/sessionLog_" + sessionId;
+        std::string fullpath = "www/post42.net/users/sessionLog_" + sessionId;
         int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
         if(fd == -1) {
             printError();
