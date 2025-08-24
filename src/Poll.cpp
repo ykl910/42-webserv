@@ -40,11 +40,9 @@ void    Poll::handleNewConnexion(struct pollfd& server)
                 break;
             }
         }
-        // if (serv) {
-            int clientFd = serv.getSocket().acceptClient();
-            if (clientFd) 
-                addClientToPoll(clientFd, serv);
-        // }
+        int clientFd = serv.getSocket().acceptClient();
+        if (clientFd)
+            addClientToPoll(clientFd, serv);
     }
 }
 std::vector<Server> Poll::getServer(void) const {
@@ -77,9 +75,8 @@ void    Poll::run()
                 << it->fd << "\n";
             else if (it->revents & POLLIN) {
                 Server serv = _clientToServer[it->fd];
-                // if (serv) {
-                    HttpManager(it->fd, serv.getServerAttribute());
-                // }
+
+                HttpManager(it->fd, serv.getServerAttribute());
                 _clientToServer.erase(it->fd);
                 close(it->fd);
                 it = _pollFd.erase(it);

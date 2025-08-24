@@ -144,6 +144,7 @@ run_siege_test()
 {
     local client_number=100
 
+    echo -e "${BOLD}${ITALIC}${YELLOW}Siege test${DEFAULT}"
     mkdir -p ../log
     pushd .. > /dev/null
     for multiplexer in "${multiplexers[@]}"; do
@@ -151,8 +152,6 @@ run_siege_test()
         webserv_pid=$!
         for domain in "${domains[@]}"; do
             siege -g $domain:$port
-
-            siege -g
         done
         kill $webserv_pid
     done
@@ -181,7 +180,6 @@ run_curl_test()
 
             # DELETE
             curl -X DELETE $host:$port
-
         done
         kill $webserv_pid
     done
