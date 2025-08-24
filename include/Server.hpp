@@ -36,6 +36,7 @@ typedef struct s_serv_attr {
 
 class Server {
 public:
+    void initSocket(void);
     Socket& getSocket(void);
     int getSocketFd(void) const;
     t_serv_attr& getServerAttribute(void);

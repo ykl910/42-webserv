@@ -9,7 +9,7 @@ bool    Select::isSocketFd(int fd) const
     return false;
 }
 
-std::vector<Server*> Select::getServer(void) const {
+std::vector<Server> Select::getServer(void) const {
     return _server;
 }
 
@@ -23,7 +23,7 @@ void    Select::run()
             descriptor set.
         */
        for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
-            int fd = (*it)->getSocketFd();
+            int fd = it->getSocketFd();
             FD_SET(fd, &_readFds);
             if (fd > _maxFd)
                 _maxFd = fd;
@@ -51,7 +51,7 @@ void    Select::run()
         }
 
        for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
-           if (FD_ISSET(_listenFd[0], &_readFds)) {
+           if (FD_ISSET(it->getSocketFd(), &_readFds)) {
            /*
                select() modifies the contents of the sets according to the rules
                described below. After  calling  select(),  the FD_ISSET() macro
@@ -60,7 +60,7 @@ void    Select::run()
                in set, and zero if it is not.
            */
                //* new connexion -> accept connexion and add client to the list
-               int clientFd = (*it)->getSocket().acceptClient();
+               int clientFd = it->getSocket().acceptClient();
                if (clientFd)
                    _clientFd.push_back(clientFd);
                std::cout << BOLD WHITE << "Select: new client accepted with fd "
@@ -83,11 +83,14 @@ void    Select::run()
 
 void    Select::createServer(Config& config)
 {
+    int i = 0;
     configParser parser = config.getConfigParser();
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
         server serverConfig = *it;
-        _server.push_back(new Server(serverConfig));
+        _server.push_back(Server(serverConfig));
+        _server[i].initSocket();
+        ++i;
     }
 }
 
@@ -99,7 +102,7 @@ Select::Select(Config& config)
 
     createServer(config);
     for (serverIterator it = _server.begin(); it != _server.end(); ++it)
-        _listenFd.push_back((*it)->getSocketFd());
+        _listenFd.push_back(it->getSocketFd());
     _maxFd = _listenFd[0];
 }
 

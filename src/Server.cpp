@@ -32,6 +32,11 @@ static void storeCgi(void) {
     return;
 }
 
+void    Server::initSocket(void)
+{
+    _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
+}
+
 Server::Server(server& config) : _socket()
 {
     _attribute.port = config[SERVER][LISTEN];
@@ -43,9 +48,6 @@ Server::Server(server& config) : _socket()
     storeRedirection();
     storeLocation();
     storeCgi();
-    _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
 }
 
-Server::~Server() {
-    std::cout << "Server destructor called\n";
-}
+Server::~Server() {}

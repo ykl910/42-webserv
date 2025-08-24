@@ -26,18 +26,18 @@ void    Poll::addClientToPoll(int clientFd)
     << BOLD BLUE << clientFd << DEFAULT << "\n";
 }
 
-void    Poll::handleNewConnexion(struct pollfd& server)
+void    Poll::handleNewConnexion(struct pollfd& server, int i)
 {
     if (server.revents & POLLERR)
         std::cout << "Poll: error catched from socket fd.\n";
     // if socket got a new client
     else if (server.revents & POLLIN) {
-        int clientFd = _server[0]->getSocket().acceptClient();
+        int clientFd = _server[i].getSocket().acceptClient();
         if (clientFd)
             addClientToPoll(clientFd);
     }
 }
-std::vector<Server*> Poll::getServer(void) const {
+std::vector<Server> Poll::getServer(void) const {
     return _server;
 }
 
@@ -53,7 +53,7 @@ void    Poll::run()
 
         size_t i = 0;
         while (i < _pollFd.size() && isSocketFd(_pollFd[i].fd)) {
-            handleNewConnexion(_pollFd[i]);
+            handleNewConnexion(_pollFd[i], i);
             i++;
         }
 
@@ -79,11 +79,14 @@ void    Poll::run()
 
 void    Poll::createServer(Config& config)
 {
+    int i = 0;
     configParser parser = config.getConfigParser();
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
         server config = *it;
-        _server.push_back(new Server(config));
+        _server.push_back(Server(config));
+        _server[i].initSocket();
+        ++i;
     }
 }
 
@@ -91,8 +94,8 @@ Poll::Poll(Config& config)
 {
     createServer(config);
     for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
-        _listenFd.push_back((*it)->getSocketFd());
-        _pollFd.push_back((pollfd){(*it)->getSocketFd(), POLLIN, 0});
+        _listenFd.push_back(it->getSocketFd());
+        _pollFd.push_back((pollfd){it->getSocketFd(), POLLIN, 0});
     }
 }
 
