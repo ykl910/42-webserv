@@ -34,15 +34,15 @@ enum e_location_directiv {
 
 enum e_error_directive {
     E_400,
-    E_401,
-    E_402,
+   // E_401,
+   // E_402,
     E_403,
     E_404,
     // ...
 
     E_500,
-    E_501,
-    E_502
+   // E_501,
+   // E_502
 };
 
 enum e_redirection_directive {
