@@ -23,7 +23,7 @@ public:
 
     void createServer(Config& config);
     void addClientToPoll(int clientFd, Server serv);
-    void handleNewConnexion(struct pollfd& socket);
+    void handleNewConnexion(struct pollfd& socket, int i);
 
     Poll(Config& config);
     ~Poll();

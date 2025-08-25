@@ -21,16 +21,18 @@ void    HttpManager::sendResponse(int clientFd)
 
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr)
 {
-    std::cout << BOLD ITALIC GREEN <<  "Request:\n" << DEFAULT;
-    // std::cout << MAGENTA << _request << DEFAULT << std::endl;
+    std::cout << BOLD ITALIC CYAN <<  "Request:\n" << DEFAULT;
     _request = HttpRequest(clientFd);
     if (_request.getState() == FAILURE)
         return;
+    std::cout << _request << "\n";
 
 
+    std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT;
     _response = HttpResponse(_request, serverAttr);
     sendResponse(clientFd);
     writeUserInfo(_request, _response);
+    // std::cout << _response << "\n";
 }
 
 HttpManager::~HttpManager() {}

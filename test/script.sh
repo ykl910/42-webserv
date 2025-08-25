@@ -173,13 +173,13 @@ run_curl_test()
             # curl -d http $host:$port
 
             # GET
-            curl -X GET $host:$port
+            curl -X GET http://$host:$port
 
             # POST
-            curl -X POST $host:$port
+            curl -X POST http://$host:$port
 
             # DELETE
-            curl -X DELETE $host:$port
+            curl -X DELETE http://$host:$port
         done
         kill $webserv_pid
     done

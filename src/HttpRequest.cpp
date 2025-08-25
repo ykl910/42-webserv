@@ -4,12 +4,20 @@ const bool &HttpRequest::getState() const {
     return _state;
 }
 
-const std::string &HttpRequest::getMethod() const {
-    return _method;
+const std::string &HttpRequest::getBody() const {
+    return _body;
 }
 
 const std::string &HttpRequest::getPath() const {
     return _path;
+}
+
+const std::string &HttpRequest::getMethod() const {
+    return _method;
+}
+
+const std::string &HttpRequest::getContent() const {
+    return _content;
 }
 
 const std::string &HttpRequest::getHttpVersion() const {
@@ -18,10 +26,6 @@ const std::string &HttpRequest::getHttpVersion() const {
 
 const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
     return _headers;
-}
-
-const std::string &HttpRequest::getBody() const {
-    return _body;
 }
 
 void    HttpRequest::readRequest(int clientFd)
@@ -63,7 +67,10 @@ void    HttpRequest::readRequest(int clientFd)
         }
         _content.append(_buffer, bytes);
     }
-    _state = SUCCESS;
+    if (_content.empty())
+        _state = FAILURE;
+    else
+        _state = SUCCESS;
     std::cout << _content;
 }
 
@@ -100,4 +107,10 @@ HttpRequest::HttpRequest(int clientFd)
 {
     readRequest(clientFd);
     parseRequest();
+}
+
+std::ostream& operator<<(std::ostream& os, const HttpRequest& request)
+{
+    os << request.getContent();
+    return os;
 }
