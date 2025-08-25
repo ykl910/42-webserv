@@ -12,15 +12,24 @@
 #define GETTING_ALL_SERVERS 1
 #define DIRECTIVE_NAME_LENGTH _configFormat[_contextIndex][_directiveIndex].length()
 
-enum e_context_list {SERVER, ERROR, REDIRECTION, LOCATION, CGI};
-
-enum e_directive {FORMAT};
+enum e_context_list {
+    SERVER,
+    LOCATION,
+    ERROR,
+    REDIRECTION,
+    CGI
+};
 
 enum e_server_directive {
     LISTEN,
     HOST,
     SERVER_NAME,
     CLIENT_MAX_BODY_SIZE
+};
+
+enum e_location_directiv {
+    ROOT,
+    INDEX
 };
 
 enum e_error_directive {
@@ -63,7 +72,7 @@ typedef configParser::const_iterator configParserIterator;
 
 class Config {
 public:
-    bool gotAllServerContexts(void);
+    bool gotAllContexts(void);
     configParser& getConfigParser(void);
     void printConfigFormat(void) const;
     void printConfigParser(void) const;
@@ -85,7 +94,8 @@ public:
     ~Config();
 
 private:
-    int             _serverMask;
+    uint8_t         _contextMask;
+    uint8_t         _directiveMask;
     int             _contextIndex;
     int             _directiveIndex;
     configParser    _configParser;
