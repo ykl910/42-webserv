@@ -9,7 +9,8 @@ typedef struct s_cgi {
 }t_cgi;
 
 typedef struct s_location {
-
+    std::string root;
+    std::string index;
 }t_location;
 
 typedef struct s_redirection {
@@ -32,16 +33,23 @@ typedef struct s_serv_attr {
     std::string                 server_name;
     t_error_page                error_page;
     t_redirection               redirection;
-    std::vector<t_location>     location;
+    t_location                  location;
     std::vector<t_cgi>          cgi;
 }t_serv_attr;
 
 class Server {
 public:
     void initSocket(void);
+
+    void storeCgi(server& config);
+    void storeLocation(server& config);
+    void storeErrorPage(server& config);
+    void storeRedirection(server& config);
+
     Socket& getSocket(void);
     int getSocketFd(void) const;
     t_serv_attr& getServerAttribute(void);
+    int getClientMaxBodySize(const std::string& input);
 
     Server() {}
     Server(server& config);

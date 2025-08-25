@@ -96,8 +96,8 @@ public:
 private:
     uint8_t         _contextMask;
     uint8_t         _directiveMask;
-    int             _contextIndex;
-    int             _directiveIndex;
+    unsigned int    _contextIndex;
+    unsigned int    _directiveIndex;
     configParser    _configParser;
     configFormat    _configFormat;
     const char*&    _configFilePath;
