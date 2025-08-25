@@ -77,7 +77,6 @@ void    Poll::run()
                 << it->fd << "\n";
             else if (it->revents & POLLIN) {
                 Server serv = _clientToServer[it->fd];
-
                 HttpManager(it->fd, serv.getServerAttribute());
                 _clientToServer.erase(it->fd);
                 close(it->fd);

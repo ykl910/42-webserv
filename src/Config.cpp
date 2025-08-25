@@ -98,13 +98,14 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
 void    Config::getDirective(std::string& line, directive& newDirective, int indentSize)
 {
-    if (_serverMask & 1 << _directiveIndex)
+    int _directiveMask = 0;
+    if (_directiveMask & 1 << _directiveIndex)
         throw std::runtime_error(
             "Error: config: got already this directive in this context.");
 
     newDirective = line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
         line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1);
-    _serverMask |= 1 << _directiveIndex;
+    _directiveMask |= 1 << _directiveIndex;
 }
 
 void    Config::getContext(std::ifstream& file, std::string& line, server& server)
@@ -149,14 +150,17 @@ void    Config::getServer(std::ifstream& file, std::string& line, server& server
 {
     _serverMask = 0;
     _contextIndex = SERVER;
-    while (!gotAllServerContexts()) {
+    //while (!gotAllServerContexts()) {
+    while (_contextIndex < 2) {
         std::getline(file, line);
         if (file.eof())
             break;
         else if (contextFormatValid(line)) {
             getContext(file, line, server);
+        
         }
         _contextIndex++;
+        
     }
     std::getline(file, line);
 }
@@ -213,14 +217,14 @@ void    Config::initConfigParser(void)
 
     // errorDirective
     _configFormat[ERROR][E_400] = "400";
-    _configFormat[ERROR][E_401] = "401";
-    _configFormat[ERROR][E_402] = "402";
+    //_configFormat[ERROR][E_401] = "401";
+    //_configFormat[ERROR][E_402] = "402";
     _configFormat[ERROR][E_403] = "403";
     _configFormat[ERROR][E_404] = "404";
 
-    // _configFormat[ERROR][E_500] = "500";
-    // _configFormat[ERROR][E_501] = "501";
-    // _configFormat[ERROR][E_502] = "502";
+    _configFormat[ERROR][E_500] = "500";
+    //_configFormat[ERROR][E_501] = "501";
+    //_configFormat[ERROR][E_502] = "502";
 
     // redirectionDirective
     // _configFormat[REDIRECTION][R_300] = "300";
