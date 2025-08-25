@@ -98,13 +98,13 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
 void    Config::getDirective(std::string& line, directive& newDirective, int indentSize)
 {
-    if (_serverMask & 1 << _directiveIndex)
+    if (_contextMask & 1 << _directiveIndex)
         throw std::runtime_error(
             "Error: config: got already this directive in this context.");
 
     newDirective = line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
         line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1);
-    _serverMask |= 1 << _directiveIndex;
+    _contextMask |= 1 << _directiveIndex;
 }
 
 void    Config::getContext(std::ifstream& file, std::string& line, server& server)
@@ -115,6 +115,7 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
         indentSize = 4;
     else
         indentSize = 8;
+    _directiveMask = 0;
     _directiveIndex = 0;
     while (_directiveIndex < _directiveNbr[_contextIndex]) {
         directive   newDirective;
@@ -140,22 +141,21 @@ bool    Config::contextFormatValid(const std::string& line)
     return true;
 }
 
-bool    Config::gotAllServerContexts(void)
+bool    Config::gotAllContexts(void)
 {
-    return _serverMask & 0b00000000000000000000000000001111;
+    return _contextMask & 0b00001111;
 }
 
 void    Config::getServer(std::ifstream& file, std::string& line, server& server)
 {
-    _serverMask = 0;
+    _contextMask = 0;
     _contextIndex = SERVER;
-    while (!gotAllServerContexts()) {
+    while (!gotAllContexts()) {
         std::getline(file, line);
         if (file.eof())
             break;
-        else if (contextFormatValid(line)) {
+        else if (contextFormatValid(line))
             getContext(file, line, server);
-        }
         _contextIndex++;
     }
     std::getline(file, line);
@@ -211,6 +211,10 @@ void    Config::initConfigParser(void)
     _configFormat[SERVER][SERVER_NAME] = "server_name";
     _configFormat[SERVER][CLIENT_MAX_BODY_SIZE] = "client_max_body_size";
 
+    // locationDirective
+    _configFormat[LOCATION][ROOT] = "root";
+    _configFormat[LOCATION][INDEX] = "index";
+
     // errorDirective
     _configFormat[ERROR][E_400] = "400";
     _configFormat[ERROR][E_401] = "401";
@@ -227,14 +231,11 @@ void    Config::initConfigParser(void)
     // _configFormat[REDIRECTION][R_301] = "301";
     // _configFormat[REDIRECTION][R_302] = "302";
 
-    // locationDirective
-    // _contextFormat[LOCATION][0].push_back("");
-
     // cgiDirective
-    // _contextFormat[CGI][0].push_back(".php");
-    // _contextFormat[CGI][1].push_back(".perl");
-    // _contextFormat[CGI][2].push_back(".py");
-    // _contextFormat[CGI][3].push_back(".c");
+    // _configFormat[CGI][0] = ".php";
+    // _configFormat[CGI][1] = ".perl";
+    // _configFormat[CGI][2] = ".py";
+    // _configFormat[CGI][3] = ".c";
 }
 
 Config::Config(const char*& configFilePath)
