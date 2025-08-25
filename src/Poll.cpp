@@ -27,10 +27,10 @@ void    Poll::addClientToPoll(int clientFd, Server serv)
     << BOLD BLUE << clientFd << DEFAULT << "\n";
 }
 
-void    Poll::handleNewConnexion(struct pollfd& server)
+void    Poll::handleNewConnexion(struct pollfd& server, int i)
 {
     if (server.revents & POLLERR)
-        std::cout << "Poll: error catched from socket fd.\n";
+        std::cout << "Poll: error catched from server fd.\n";
     // if socket got a new client
     else if (server.revents & POLLIN) {
         Server serv;
@@ -40,11 +40,13 @@ void    Poll::handleNewConnexion(struct pollfd& server)
                 break;
             }
         }
-        int clientFd = serv.getSocket().acceptClient();
+        int clientFd = _server[i].getSocket().acceptClient();
+        // int clientFd = serv.getSocket().acceptClient();
         if (clientFd)
             addClientToPoll(clientFd, serv);
     }
 }
+
 std::vector<Server> Poll::getServer(void) const {
     return _server;
 }
@@ -61,7 +63,7 @@ void    Poll::run()
 
         size_t i = 0;
         while (i < _pollFd.size() && isSocketFd(_pollFd[i].fd)) {
-            handleNewConnexion(_pollFd[i]);
+            handleNewConnexion(_pollFd[i], i);
             i++;
         }
 
@@ -80,9 +82,7 @@ void    Poll::run()
                 _clientToServer.erase(it->fd);
                 close(it->fd);
                 it = _pollFd.erase(it);
-            } else if (it->revents & POLLOUT)
-                continue;
-            else
+            } else
                 ++it;
         }
     }

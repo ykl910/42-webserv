@@ -31,5 +31,8 @@ public:
 private:
     std::string                         _body;
     std::string                         _statusLine;
+    std::string                         _response;
     std::map<std::string, std::string>  _headers;
 };
+
+std::ostream& operator<<(std::ostream& os, const HttpResponse& response);

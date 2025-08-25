@@ -4,43 +4,6 @@
 #include "../include/POST.hpp"
 #include "../include/DELETE.hpp"
 
-/*
-void Epoll::sendResponse(int clientFd, HttpRequest request) {
-
-    std::string response;
-
-    if (!_gotResponse[clientFd]) {
-        HttpResponse Response(request);
-        writeUserInfo(request, Response);
-        response = Response.getResponse();
-        _responses[clientFd] = Response;
-        _gotResponse[clientFd] = true;
-    } else
-        response = _responses[clientFd].getResponse();
-
-    size_t totalBytesSent = _pendingResponse[clientFd];
-    size_t responseLen = response.length();
-
-    while (totalBytesSent < responseLen) {
-        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
-        if (bytesSent <= 0)
-            break ;
-        totalBytesSent += bytesSent;
-    }
-    if (totalBytesSent != responseLen)
-        _pendingResponse[clientFd] = totalBytesSent;
-    else {
-        std::cout << BOLD ITALIC GREEN << "\nresponse:\n" << DEFAULT;
-        std::cout << YELLOW << response.c_str() << std::endl;
-        _pendingResponse.erase(clientFd);
-        disableWriteEvent(clientFd);
-        _gotFullRequest.erase(clientFd);
-        _gotResponse.erase(clientFd);
-        _responses.erase(clientFd);
-    }
-}
-*/
-
 void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason)
 {
     std::ostringstream oss;
@@ -87,4 +50,10 @@ HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
         handleDelete(request, *this);
     else
         setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
+}
+
+std::ostream& operator<<(std::ostream& os, const HttpResponse& response)
+{
+    os << response.getResponse();
+    return os;
 }

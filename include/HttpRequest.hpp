@@ -21,6 +21,7 @@ public:
     const std::string &getPath() const;
     const std::string &getBody() const;
     const std::string &getMethod() const;
+    const std::string &getContent() const;
     const std::string &getHttpVersion() const;
     const std::map<std::string, std::string> &getHeaders() const;
 
@@ -41,3 +42,5 @@ private:
     std::string                         _http_version;
     std::map<std::string, std::string>  _headers;
 };
+
+std::ostream& operator<<(std::ostream& os, const HttpRequest& request);
