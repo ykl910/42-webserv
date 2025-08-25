@@ -18,6 +18,7 @@ int Server::getClientMaxBodySize(const std::string& input) {
 
 void Server::storeErrorPage(server& config) {
     std::string root(_attribute.location.root);
+    
     _attribute.error_page.err_400 = root + "/" + config[ERROR][E_400];
     _attribute.error_page.err_403 = root + "/" + config[ERROR][E_403];
     _attribute.error_page.err_404 = root + "/" + config[ERROR][E_404];
@@ -52,6 +53,9 @@ Server& Server::operator=(Server& other)
         this->_attribute.host = attr.host;
         this->_attribute.listen = attr.listen;
         this->_attribute.server_name = attr.server_name;
+        this->_attribute.error_page = attr.error_page;
+        this->_attribute.location = attr.location;
+        this->_attribute.cgi = attr.cgi;
     }
     return *this;
 }
@@ -63,9 +67,9 @@ Server::Server(server& config) : _socket()
     _attribute.server_name = config[SERVER][SERVER_NAME];
     _attribute.client_max_body_size =
     getClientMaxBodySize(config[SERVER][CLIENT_MAX_BODY_SIZE]);
+    storeLocation(config);
     storeErrorPage(config);
     storeRedirection(config);
-    storeLocation(config);
     storeCgi(config);
 }
 
