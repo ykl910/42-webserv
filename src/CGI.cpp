@@ -152,7 +152,7 @@ int Cgi::execFromPost(HttpRequest &request)
         close(outputPipe[0]);
         close(outputPipe[1]);
 
-        execve("./cgi/bin/magicBall.cgi", argvStr.data(), envpStr.data());
+        execve("./www/post42.net/cgi/bin/magicBall.cgi", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     } else {
