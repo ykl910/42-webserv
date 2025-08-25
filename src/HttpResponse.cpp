@@ -39,9 +39,15 @@ std::string HttpResponse::getResponse() const
     return fullResponse;
 }
 
+t_serv_attr HttpResponse::getServerAttr() const
+{
+    return _servAttr;
+}
+
+
 HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
 {
-    (void) serverAttr;
+    _servAttr = serverAttr;
     if (request.getMethod() == "GET")
         handleGet(request, *this);
     else if (request.getMethod() == "POST")
