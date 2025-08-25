@@ -12,28 +12,30 @@ t_serv_attr& Server::getServerAttribute(void) {
     return _attribute;
 }
 
-static int getClientMaxBodySize(const std::string& input) {
+int Server::getClientMaxBodySize(const std::string& input) {
     return std::atoi(input.substr(0, input.length() - 1).c_str());
 }
 
-static void storeErrorPage(Server &serv, server &config) {
-    serv.getServerAttribute().error_page.err_400 = config[ERROR][E_400];
-    serv.getServerAttribute().error_page.err_403 = config[ERROR][E_403];
-    serv.getServerAttribute().error_page.err_404 = config[ERROR][E_404];
-    serv.getServerAttribute().error_page.err_500 = config[ERROR][E_500];
-    return;
+void Server::storeErrorPage(server& config) {
+    std::string root(_attribute.location.root);
+    _attribute.error_page.err_400 = root + "/" + config[ERROR][E_400];
+    _attribute.error_page.err_403 = root + "/" + config[ERROR][E_403];
+    _attribute.error_page.err_404 = root + "/" + config[ERROR][E_404];
+    _attribute.error_page.err_500 = root + "/" + config[ERROR][E_500];
 }
 
-static void storeRedirection(void) {
-    return;
+void Server::storeRedirection(server& config) {
+    (void)config;
 }
 
-static void storeLocation(void) {
-    return;
+void Server::storeLocation(server& config) {
+    _attribute.location.root = config[LOCATION][ROOT];
+    _attribute.location.index = config[LOCATION][INDEX];
 }
 
-static void storeCgi(void) {
-    return;
+void Server::storeCgi(server& config) {
+    (void)config;
+
 }
 
 void    Server::initSocket(void)
@@ -50,10 +52,6 @@ Server& Server::operator=(Server& other)
         this->_attribute.host = attr.host;
         this->_attribute.listen = attr.listen;
         this->_attribute.server_name = attr.server_name;
-        this->_attribute.error_page = attr.error_page;
-        this->_attribute.redirection = attr.redirection;
-        this->_attribute.location = attr.location;
-        this->_attribute.cgi = attr.cgi;
     }
     return *this;
 }
@@ -65,10 +63,10 @@ Server::Server(server& config) : _socket()
     _attribute.server_name = config[SERVER][SERVER_NAME];
     _attribute.client_max_body_size =
     getClientMaxBodySize(config[SERVER][CLIENT_MAX_BODY_SIZE]);
-    storeErrorPage(*this, config);
-    storeRedirection();
-    storeLocation();
-    storeCgi();
+    storeErrorPage(config);
+    storeRedirection(config);
+    storeLocation(config);
+    storeCgi(config);
 }
 
 Server::~Server() {}

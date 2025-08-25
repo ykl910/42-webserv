@@ -44,9 +44,7 @@ main
 */
 
 const char* _contextNameList[5] = {
-    "server:", "error_page:", "redirection:", "location:", "cgi:"};
-
-const int   _directiveNbr[5] = {4, 4, 1, 2, 3};
+    "server:", "location:", "error_page:", "redirection:", "cgi:"};
 
 const char*& Config::getConfigFilePath(void) const {
     return _configFilePath;
@@ -98,13 +96,13 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
 void    Config::getDirective(std::string& line, directive& newDirective, int indentSize)
 {
-    if (_serverMask & 1 << _directiveIndex)
+    if (_directiveMask & 1 << _directiveIndex)
         throw std::runtime_error(
             "Error: config: got already this directive in this context.");
 
     newDirective = line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
         line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1);
-    _serverMask |= 1 << _directiveIndex;
+    _directiveMask |= 1 << _directiveIndex;
 }
 
 void    Config::getContext(std::ifstream& file, std::string& line, server& server)
@@ -117,7 +115,7 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
         indentSize = 8;
     _directiveMask = 0;
     _directiveIndex = 0;
-    while (_directiveIndex < _directiveNbr[_contextIndex]) {
+    while (_directiveIndex < _configFormat[_contextIndex].size()) {
         directive   newDirective;
 
         std::getline(file, line);
@@ -150,14 +148,12 @@ void    Config::getServer(std::ifstream& file, std::string& line, server& server
 {
     _contextMask = 0;
     _contextIndex = SERVER;
-    //while (!gotAllContexts()) {
-    while (_contextIndex < 2) {
+    while (_contextIndex < _configFormat.size()) {
         std::getline(file, line);
         if (file.eof())
             break;
         else if (contextFormatValid(line))
             getContext(file, line, server);
-        }
         _contextIndex++;
 
     }
@@ -197,16 +193,16 @@ void    Config::parseConfigFile(void)
 void    Config::initConfigParser(void)
 {
     context server;
-    context error;
-    context redirection;
     context location;
-    context cgi;
+    context error;
+    // context redirection;
+    // context cgi;
 
     _configFormat[SERVER] = server;
-    _configFormat[ERROR] = error;
-    _configFormat[REDIRECTION] = redirection;
     _configFormat[LOCATION] = location;
-    _configFormat[CGI] = cgi;
+    _configFormat[ERROR] = error;
+    // _configFormat[REDIRECTION] = redirection;
+    // _configFormat[CGI] = cgi;
 
     // serverDirective
     _configFormat[SERVER][LISTEN] = "listen";
