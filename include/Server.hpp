@@ -18,6 +18,8 @@ typedef struct s_redirection {
 }t_redirection;
 
 typedef struct s_error_page {
+    std::string err_400;
+    std::string err_403;
     std::string err_404;
     std::string err_500;
 }t_error_page;

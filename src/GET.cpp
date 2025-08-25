@@ -8,19 +8,20 @@ void handleError(HttpRequest& request, HttpResponse& response, std::stringstream
     std::string body;
     if (type == "html") {
         if (success == 404) {
-            fullPath = POST42dotNET"/html/404.html";
+            fullPath = response.getServerAttr().error_page.err_404;
             response.setStatusLine(request.getHttpVersion(), 404, "Not Found");
         } else if (success == 403) {
-            fullPath = POST42dotNET"/html/403.html";
+            fullPath = response.getServerAttr().error_page.err_403;
             response.setStatusLine(request.getHttpVersion(), 403, "Forbidden");
         } else {
-            fullPath = POST42dotNET"html/500.html";
+            fullPath = response.getServerAttr().error_page.err_500;
             response.setStatusLine(request.getHttpVersion(), 500, "Internal error");
         }
         std::ifstream file(fullPath.c_str());
         *buffer << file.rdbuf();
         body = buffer->str();
         response.setHeaders("Content-Type", "text/html");
+        response.setBody(body);
     } else if (type == "img") {
         if (success == 404)
             body = "Not Found";

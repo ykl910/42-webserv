@@ -113,7 +113,6 @@ Select::Select(Config& config)
 
 Select::~Select()
 {
-    std::cout << "select destructor called\n";
     for (selectIterator it = _clientFd.begin();
          it != _clientFd.end(); ++it)
         close(*it);
