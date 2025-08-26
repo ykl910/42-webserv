@@ -28,9 +28,9 @@ public:
     void parseRequest(void);
     void readRequest(int clientFd);
 
-    HttpRequest() {};
+    HttpRequest() {}
     HttpRequest(int clientFd);
-    ~HttpRequest() {};
+    ~HttpRequest() {}
 
 private:
     bool                                _state;

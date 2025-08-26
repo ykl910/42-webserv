@@ -44,7 +44,6 @@ t_serv_attr HttpResponse::getServerAttr() const
     return _servAttr;
 }
 
-
 HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
 {
     _servAttr = serverAttr;

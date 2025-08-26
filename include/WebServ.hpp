@@ -3,12 +3,9 @@
 #include "textFormatting.hpp"
 #include "Select.hpp"
 #include "Config.hpp"
-#include "Socket.hpp"
 #include "Error.hpp"
-#include "utils.hpp"
 #include "Epoll.hpp"
 #include "Poll.hpp"
-#include "CGI.hpp"
 
 #define POST42dotNET "./www/post42.net/"
 #define WEBSERVdotNET "./www/webserv.net/"

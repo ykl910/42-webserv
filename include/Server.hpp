@@ -1,5 +1,6 @@
 #pragma once
 
+// #include "HttpManager.hpp"
 #include "Config.hpp"
 #include "Socket.hpp"
 #include <iostream>
@@ -26,16 +27,18 @@ typedef struct s_error_page {
 }t_error_page;
 
 typedef struct s_serv_attr {
-    int                         client_max_body_size;
-    std::string                 port;
-    std::string                 host;
-    std::string                 listen;
-    std::string                 server_name;
-    t_error_page                error_page;
-    t_redirection               redirection;
-    t_location                  location;
-    std::vector<t_cgi>          cgi;
+    std::string         host;
+    std::string         port;
+    std::string         server_name;
+    int                 client_max_body_size;
+    bool                autoindex;
+    t_location          location;
+    t_error_page        error_page;
+    t_redirection       redirection;
+    std::vector<t_cgi>  cgi;
 }t_serv_attr;
+
+class HttpManager;
 
 class Server {
 public:
@@ -59,4 +62,5 @@ public:
 private:
     t_serv_attr _attribute;
     Socket      _socket;
+    // HttpManager _httpManager;
 };

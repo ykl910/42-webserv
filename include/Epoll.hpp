@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HttpResponse.hpp"
+#include "HttpRequest.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
 #include "Error.hpp"

@@ -209,6 +209,7 @@ void    Config::initConfigParser(void)
     _configFormat[SERVER][HOST] = "host";
     _configFormat[SERVER][SERVER_NAME] = "server_name";
     _configFormat[SERVER][CLIENT_MAX_BODY_SIZE] = "client_max_body_size";
+    _configFormat[SERVER][AUTOINDEX] = "autoindex";
 
     // locationDirective
     _configFormat[LOCATION][ROOT] = "root";

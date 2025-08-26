@@ -162,29 +162,31 @@ void handleGet(HttpRequest& request, HttpResponse& response)
     else {
         if (path == "" || path == "/")
             path = "/index.html";
+
         std::string extension;
         size_t dot_pos = path.find_last_of(".");
-        if (dot_pos != std::string::npos) {
+        if (dot_pos != std::string::npos)
             extension = path.substr(dot_pos + 1);
-        }
+
         if (path == "/login.html" && isLogged(request))
             path = "/isLogged.html";
-        int success = 0;
+
+        int state = 0;
         std::stringstream buffer;
         if (request.getPath() == "/list-files") {
             handleThread(request, response);
         } else if (extension == "html" || extension == "htm" || extension == "") {
-            success = handleHtml(request, response, path, &buffer);
-            if (success != 200)
-                handleError(request, response, &buffer, success, "html");
+            state = handleHtml(request, response, path, &buffer);
+            if (state != 200)
+                handleError(request, response, &buffer, state, "html");
         } else if (extension == "css") {
-            success = handleCss(request, response, path, &buffer);
-            if (success != 200)
-                handleError(request, response, &buffer, success, "img");
+            state = handleCss(request, response, path, &buffer);
+            if (state != 200)
+                handleError(request, response, &buffer, state, "img");
         } else if (extension == "png" || extension == "gif" || extension == "webp") {
-            success = handleImg(request, response, path, extension);
-            if (success != 200)
-                handleError(request, response, &buffer, success, "img");
+            state = handleImg(request, response, path, extension);
+            if (state != 200)
+                handleError(request, response, &buffer, state, "img");
         } else {
             handleError(request, response, &buffer, 500, "html");
         }

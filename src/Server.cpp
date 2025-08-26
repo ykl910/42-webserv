@@ -18,7 +18,7 @@ int Server::getClientMaxBodySize(const std::string& input) {
 
 void Server::storeErrorPage(server& config) {
     std::string root(_attribute.location.root);
-    
+
     _attribute.error_page.err_400 = root + "/" + config[ERROR][E_400];
     _attribute.error_page.err_403 = root + "/" + config[ERROR][E_403];
     _attribute.error_page.err_404 = root + "/" + config[ERROR][E_404];
@@ -36,7 +36,6 @@ void Server::storeLocation(server& config) {
 
 void Server::storeCgi(server& config) {
     (void)config;
-
 }
 
 void    Server::initSocket(void)
@@ -48,14 +47,15 @@ Server& Server::operator=(Server& other)
 {
     if (this != &other) {
         t_serv_attr attr = other.getServerAttribute();
-        this->_attribute.client_max_body_size = attr.client_max_body_size;
-        this->_attribute.port = attr.port;
-        this->_attribute.host = attr.host;
-        this->_attribute.listen = attr.listen;
-        this->_attribute.server_name = attr.server_name;
-        this->_attribute.error_page = attr.error_page;
-        this->_attribute.location = attr.location;
-        this->_attribute.cgi = attr.cgi;
+        _attribute.port = attr.port;
+        _attribute.host = attr.host;
+        _attribute.server_name = attr.server_name;
+        _attribute.client_max_body_size = attr.client_max_body_size;
+        _attribute.location.root = attr.location.root;
+        _attribute.location.index = attr.location.index;
+        _attribute.location = attr.location;
+        _attribute.error_page = attr.error_page;
+        _attribute.cgi = attr.cgi;
     }
     return *this;
 }
