@@ -24,7 +24,8 @@ enum e_server_directive {
     LISTEN,
     HOST,
     SERVER_NAME,
-    CLIENT_MAX_BODY_SIZE
+    CLIENT_MAX_BODY_SIZE,
+    AUTOINDEX
 };
 
 enum e_location_directiv {
