@@ -15,6 +15,12 @@
 #define FAILURE 0
 #define SUCCESS 1
 
+// struct s_http_header
+// {
+//     // std::string
+//     std::string body;
+// }t_http_header;
+
 class HttpRequest {
 public:
     const bool &getState() const;
@@ -24,6 +30,8 @@ public:
     const std::string &getContent() const;
     const std::string &getHttpVersion() const;
     const std::map<std::string, std::string> &getHeaders() const;
+
+    void setHost(void);
 
     void parseRequest(void);
     void readRequest(int clientFd);

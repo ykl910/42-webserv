@@ -1,5 +1,38 @@
 #include "../include/HttpRequest.hpp"
 
+/* REQUEST HEADERS
+Accept
+Accept-Charset
+Accept-Encoding
+Accept-Language
+Authorization
+Cache-Control
+Connection
+Content-Length
+Content-Type
+Cookie
+Date
+Expect
+From
+Host
+If-Match
+If-Modified-Since
+If-None-Match
+If-Range
+If-Unmodified-Since
+Max-Forwards
+Origin
+Pragma
+Proxy-Authorization
+Range
+Referer
+TE
+Upgrade
+User-Agent
+Via
+Warning
+*/
+
 const bool &HttpRequest::getState() const {
     return _state;
 }
@@ -33,9 +66,10 @@ void    HttpRequest::readRequest(int clientFd)
     size_t totalBytes = 0;
     size_t headerEnd = 0;
     size_t contentLength = 0;
-    bool headersComplete = false;
+    bool requestExtracted = false;
 
-    while (!headersComplete) {
+    int i = 0;
+    while (!requestExtracted) {
         ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
         if (bytes < 0)
             continue;
@@ -47,16 +81,19 @@ void    HttpRequest::readRequest(int clientFd)
         totalBytes += bytes;
         headerEnd = _content.find("\r\n\r\n");
         if (headerEnd != std::string::npos) {
-            headersComplete = true;
-            size_t clPos = _content.find("Content-Length:");
-            if (clPos != std::string::npos) {
-                size_t valueStart = _content.find_first_not_of(" ", clPos + 15);
+            requestExtracted = true;
+            size_t contentLengthPos = _content.find("Content-Length:");
+            if (contentLengthPos != std::string::npos) {
+                size_t valueStart = _content.find_first_not_of(" ", contentLengthPos + 15);
                 size_t valueEnd = _content.find("\r\n", valueStart);
                 std::string len = _content.substr(valueStart, valueEnd - valueStart);
                 contentLength = atoi(len.c_str());
             }
         }
+        i++;
     }
+    std::cout << i << std::endl;
+
     while (_content.size() < headerEnd + 4 + contentLength) {
         ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
         if (bytes < 0)
@@ -71,7 +108,7 @@ void    HttpRequest::readRequest(int clientFd)
         _state = FAILURE;
     else
         _state = SUCCESS;
-    std::cout << _content;
+    std::cout << _content << std::endl;
 }
 
 void    HttpRequest::parseRequest(void)

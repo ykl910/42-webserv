@@ -17,7 +17,7 @@ void    HttpManager::sendResponse(int clientFd)
     }
 }
 
-void HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
+void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
 {
     std::map<std::string, std::string>::const_iterator mapit;
     std::string sessionId;
@@ -41,7 +41,7 @@ void HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
         }
 
         for (mapit = request.getHeaders().begin();
-             mapit != request.getHeaders().end(); ++mapit) {
+            mapit != request.getHeaders().end(); ++mapit) {
             if (mapit->first == "Cookie") {
                 std::string req = request.getMethod() + " " + request.getPath() + "\n";
                 std::string res = response.getStatusLine() + "\n";
@@ -60,8 +60,7 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr)
     _request = HttpRequest(clientFd);
     if (_request.getState() == FAILURE)
         return;
-    std::cout << _request << "\n";
-
+    // std::cout << _request << "\n";
 
     std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT;
     _response = HttpResponse(_request, serverAttr);
