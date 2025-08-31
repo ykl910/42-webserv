@@ -60,7 +60,7 @@ public:
     ~Server();
 
 private:
-    t_serv_attr _attribute;
-    Socket      _socket;
+    t_serv_attr         _attribute;
+    Socket              _socket;
     // HttpManager _httpManager;
 };

@@ -30,7 +30,7 @@ public:
     bool isSocketFd(int fd) const;
     void addClientToEpoll(int const &clientFd, Server serv);
 
-    void createServer(Config& config);
+    void initServer(Config& config);
     void enableWriteEvent(int clientFd);
     void disableWriteEvent(int clientFd);
     void eventManager(epoll_ev &event);

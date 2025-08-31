@@ -4,6 +4,38 @@
 #include "../include/POST.hpp"
 #include "../include/DELETE.hpp"
 
+/* RESPONSE HEADERS
+Accept-Ranges
+Age
+Allow
+Cache-Control
+Connection
+Content-Disposition
+Content-Encoding
+Content-Language
+Content-Length
+Content-Location
+Content-Range
+Content-Type
+Date
+ETag
+Expires
+Last-Modified
+Link
+Location
+Pragma
+Proxy-Authenticate
+Retry-After
+Server
+Set-Cookie
+Trailer
+Transfer-Encoding
+Vary
+Via
+Warning
+WWW-Authenticate
+*/
+
 void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason)
 {
     std::ostringstream oss;
@@ -47,11 +79,13 @@ t_serv_attr HttpResponse::getServerAttr() const
 HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
 {
     _servAttr = serverAttr;
-    if (request.getMethod() == "GET")
+    std::string method = request.getMethod();
+
+    if (method == "GET")
         handleGet(request, *this);
-    else if (request.getMethod() == "POST")
+    else if (method == "POST")
         handlePost(request, *this);
-    else if (request.getMethod() == "DELETE")
+    else if (method == "DELETE")
         handleDelete(request, *this);
     else
         setStatusLine(request.getHttpVersion(), 405, "Method not allowed");

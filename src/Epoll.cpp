@@ -127,7 +127,7 @@ void Epoll::run()
     }
 }
 
-void    Epoll::createServer(Config& config)
+void    Epoll::initServer(Config& config)
 {
     int i = 0;
     configParser parser = config.getConfigParser();
@@ -146,7 +146,7 @@ Epoll::Epoll(Config& config) : _eventsQueue(MAXEVENTS)
     if (_epollFd == -1)
         printErrorAndThrow("epoll_create");
 
-    createServer(config);
+    initServer(config);
     for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
         epoll_ev server_ev;
         server_ev.events = EPOLLIN;

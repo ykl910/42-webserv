@@ -21,7 +21,7 @@ public:
     bool isSocketFd(int fd) const;
     std::vector<Server> getServer(void) const;
 
-    void createServer(Config& config);
+    void initServer(Config& config);
     void addClientToPoll(int clientFd, Server serv);
     void handleNewConnexion(struct pollfd& socket, int i);
 
@@ -33,5 +33,5 @@ private:
     std::vector<struct pollfd>  _pollFd;
     std::vector<Server>         _server;
     std::vector<int>            _listenFd;
-    std::map<int, Server>       _clientToServer;
+    std::map<int, Server>       _serverFinder;
 };
