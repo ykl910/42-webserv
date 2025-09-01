@@ -27,6 +27,7 @@ public:
 
     void parseRequest(void);
     void readRequest(int clientFd);
+    bool receivedCompleteRequest(std::string &rawData) const;
 
     HttpRequest() {}
     HttpRequest(int clientFd);

@@ -31,12 +31,7 @@ public:
     void addClientToEpoll(int const &clientFd, Server serv);
 
     void initServer(Config& config);
-    void enableWriteEvent(int clientFd);
-    void disableWriteEvent(int clientFd);
     void eventManager(epoll_ev &event);
-    void getRequest(int clientfd);
-    void sendResponse(int clientFd, HttpRequest request);
-    bool receivedCompleteRequest(std::string &rawData) const;
 
     Epoll(Config& config);
     ~Epoll();
