@@ -1,4 +1,5 @@
 #include "../include/HttpRequest.hpp"
+#include "../include/textFormatting.hpp"
 
 /* REQUEST HEADERS
 Accept
@@ -61,26 +62,15 @@ const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
     return _headers;
 }
 
-
-// bool Epoll::receivedCompleteRequest(std::string &rawData) const
+// void    HttpRequest::getRequest(int clientFd)
 // {
-//     size_t headerEnd = rawData.find("\r\n\r\n");
-//     if (headerEnd == std::string::npos)
-//         return false;
+//     std::string line;
+//     while (true) {
+//         ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
+//         if (bytes == -1)
+//             std::cout << BOLD RED << "Error: recv\n" << DEFAULT;
 
-//     size_t bodyStart = headerEnd + 4;
-
-//     size_t contentLengthPos = rawData.find("Content-Length: ");
-//     if (contentLengthPos == std::string::npos)
-//         return true;
-
-//     size_t valueStart = contentLengthPos + strlen("Content-Length: ");
-//     size_t valueEnd = rawData.find("\r\n", valueStart);
-//     std::string valueStr = rawData.substr(valueStart, valueEnd - valueStart);
-//     int contentLength = std::atoi(valueStr.c_str());
-
-//     size_t bodyLengh = rawData.size() - bodyStart;
-//     return (bodyLengh >= static_cast<size_t>(contentLength));
+//     }
 // }
 
 void    HttpRequest::readRequest(int clientFd)
@@ -129,7 +119,6 @@ void    HttpRequest::readRequest(int clientFd)
         _state = FAILURE;
     else
         _state = SUCCESS;
-    std::cout << _content << std::endl;
 }
 
 void    HttpRequest::parseRequest(void)

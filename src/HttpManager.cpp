@@ -60,7 +60,7 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr)
     _request = HttpRequest(clientFd);
     if (_request.getState() == FAILURE)
         return;
-    // std::cout << _request << "\n";
+    std::cout << _request << "\n";
 
     std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT;
     _response = HttpResponse(_request, serverAttr);
