@@ -1,21 +1,11 @@
 #include "../include/HttpManager.hpp"
 
-void    HttpManager::sendResponse(int clientFd)
-{
-    std::string response = _response.getResponse();
-    ssize_t totalSent = 0;
-
-    const char* data = response.c_str();
-    ssize_t totalSize = response.size();
-    while (totalSent < totalSize) {
-        ssize_t sent = send(clientFd, data + totalSent, totalSize - totalSent, 0);
-        if (sent < 0) {
-            printError();
-            break;
-        }
-        totalSent += sent;
-    }
-}
+std::map<int, std::string>   HttpManager::_buffers;
+std::map<int, HttpRequest>   HttpManager::_request;
+std::map<int, bool>          HttpManager::_gotResponse;
+std::map<int, bool>          HttpManager::_gotFullRequest;
+std::map<int, int>           HttpManager::_pendingResponse;
+std::map<int, HttpResponse>  HttpManager::_responses;
 
 void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
 {
@@ -54,18 +44,91 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
     }
 }
 
+void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
+                                  t_serv_attr& servAttr) {
+    std::string response;
+
+    if (!_gotResponse[clientFd]) {
+        HttpResponse Response(request, servAttr);
+        writeUserInfo(request, Response);
+        response = Response.getResponse();
+        _responses[clientFd] = Response;
+        _gotResponse[clientFd] = true;
+    } else
+        response = _responses[clientFd].getResponse();
+
+    size_t totalBytesSent = _pendingResponse[clientFd];
+    size_t responseLen = response.length();
+
+    while (totalBytesSent < responseLen) {
+        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
+        if (bytesSent <= 0)
+            break ;
+        totalBytesSent += bytesSent;
+    }
+    if (totalBytesSent != responseLen)
+        _pendingResponse[clientFd] = totalBytesSent;
+    else {
+        _pendingResponse.erase(clientFd);
+        // disableWriteEvent(clientFd);
+        _gotFullRequest.erase(clientFd);
+        _gotResponse.erase(clientFd);
+        _responses.erase(clientFd);
+    }
+}
+
+#define CONTENT_LENGTH_SIZE 16
+
+bool    HttpManager::receivedCompleteRequest(std::string &rawData) const {
+
+    size_t headerEnd = rawData.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return false;
+
+    size_t bodyStart = headerEnd + 4;
+
+    size_t contentLengthPos = rawData.find("Content-Length: ");
+    if (contentLengthPos == std::string::npos)
+        return true;
+
+    size_t valueStart = contentLengthPos + CONTENT_LENGTH_SIZE;
+    size_t valueEnd = rawData.find("\r\n", valueStart);
+    std::string valueStr = rawData.substr(valueStart, valueEnd - valueStart);
+    int contentLength = std::atoi(valueStr.c_str());
+
+    size_t bodyLengh = rawData.size() - bodyStart;
+    return (bodyLengh >= static_cast<size_t>(contentLength));
+}
+
+void    HttpManager::getRequest(int clientFd) {
+
+    char buffer[BUFFERSIZE];
+
+    int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
+    if (bytes > 0)
+        _buffers[clientFd].append(buffer, bytes);
+
+    if (receivedCompleteRequest(_buffers[clientFd])) {
+
+        HttpRequest request(_buffers[clientFd]);
+        _request[clientFd] = request;
+        _gotFullRequest[clientFd] = true;
+        // enableWriteEvent(clientFd);
+        _buffers.erase(clientFd);
+        _pendingResponse[clientFd] = 0;
+    }
+    else
+        _gotFullRequest[clientFd] = false;
+}
+
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr)
 {
-    std::cout << BOLD ITALIC CYAN <<  "Request:\n" << DEFAULT;
-    _request = HttpRequest(clientFd);
-    if (_request.getState() == FAILURE)
-        return;
-    std::cout << _request << "\n";
+    // std::cout << BOLD ITALIC CYAN <<  "Request:\n" << DEFAULT;
+    getRequest(clientFd);
+    std::cout << _request[clientFd] << "\n";
 
-    std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT;
-    _response = HttpResponse(_request, serverAttr);
-    sendResponse(clientFd);
-    writeUserInfo(_request, _response);
+    // std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT;
+    sendResponse(clientFd, _request[clientFd], serverAttr);
     // std::cout << _response << "\n";
 }
 

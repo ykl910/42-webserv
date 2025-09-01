@@ -14,6 +14,7 @@
 
 #define FAILURE 0
 #define SUCCESS 1
+#define BUFFERSIZE 512
 
 class HttpRequest {
 public:
@@ -25,12 +26,12 @@ public:
     const std::string &getHttpVersion() const;
     const std::map<std::string, std::string> &getHeaders() const;
 
-    void getRequest(int clientFd);
     void parseRequest(void);
     void readRequest(int clientFd);
-    bool receivedCompleteRequest(std::string &rawData) const;
+    void extractRequest(const std::string &request);
 
     HttpRequest() {}
+    HttpRequest(const std::string& request);
     HttpRequest(int clientFd);
     ~HttpRequest() {}
 
@@ -43,6 +44,7 @@ private:
     std::string                         _content;
     std::string                         _http_version;
     std::map<std::string, std::string>  _headers;
+
 };
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);

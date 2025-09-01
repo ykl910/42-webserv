@@ -33,6 +33,8 @@ private:
     std::string                         _response;
     std::map<std::string, std::string>  _headers;
     t_serv_attr                         _servAttr;
+
+
 };
 
 std::ostream& operator<<(std::ostream& os, const HttpResponse& response);
