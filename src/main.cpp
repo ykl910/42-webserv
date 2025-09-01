@@ -61,7 +61,7 @@ int main(int argc, char **argv)
         else
             WebServ<Epoll> server(config, "epoll");
     } catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << BOLD RED << e.what() << DEFAULT << "\n";
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
