@@ -92,7 +92,6 @@ void    HttpRequest::readRequest(int clientFd)
         }
         i++;
     }
-    std::cout << i << std::endl;
 
     while (_content.size() < headerEnd + 4 + contentLength) {
         ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
