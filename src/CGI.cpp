@@ -13,8 +13,8 @@ void Cgi::generateResponse(HttpRequest &request, HttpResponse &response)
 {
     response.setStatusLine(request.getHttpVersion(), 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
-    response.setHeaders("Content-Length", itos(this->_stdout.size()));
-    response.setBody(this->_stdout);
+    response.setHeaders("Content-Length", itos(_stdout.size()));
+    response.setBody(_stdout);
 }
 
 std::string Cgi::extractQuery(HttpRequest &request)
@@ -32,16 +32,16 @@ void Cgi::createEnvp(HttpRequest &request)
 {
     std::string method = request.getMethod();
 
-    this->_envp.push_back("REQUEST_METHOD=" + method);
-    this->_envp.push_back("SCRIPT_NAME=" + request.getPath());
+    _envp.push_back("REQUEST_METHOD=" + method);
+    _envp.push_back("SCRIPT_NAME=" + request.getPath());
     if(method == "GET")
-        this->_envp.push_back("QUERY_STRING=" + extractQuery(request));
+        _envp.push_back("QUERY_STRING=" + extractQuery(request));
     else
     {
         std::map<std::string, std::string> header = request.getHeaders();
 
-        this->_envp.push_back("CONTENT_LENGTH=" + header["Content-Length"]);
-        this->_envp.push_back("CONTENT_TYPE=" + header["Content-Type"]);
+        _envp.push_back("CONTENT_LENGTH=" + header["Content-Length"]);
+        _envp.push_back("CONTENT_TYPE=" + header["Content-Type"]);
     }
 }
 
@@ -51,22 +51,22 @@ void Cgi::createArgv(HttpRequest &request)
     (void)request;
 
     if(request.getMethod() == "GET")
-        this->_argv.push_back("./www/post42.net/cgi/bin/roulette.cgi");
+        _argv.push_back("./www/post42.net/cgi/bin/roulette.cgi");
     else
-        this->_argv.push_back("./www/post42.net/cgi/bin/magicBall.cgi");
+        _argv.push_back("./www/post42.net/cgi/bin/magicBall.cgi");
 }
 
 void Cgi::createEnvpStr(std::vector<char*> &envp)
 {
-    for(size_t i = 0; i < this->_envp.size(); ++i)
-        envp.push_back(const_cast<char*>(this->_envp[i].c_str()));
+    for(size_t i = 0; i < _envp.size(); ++i)
+        envp.push_back(const_cast<char*>(_envp[i].c_str()));
     envp.push_back(NULL);
 }
 
 void Cgi::createArgvStr(std::vector<char*> &argv)
 {
-    for(size_t i = 0; i < this->_argv.size(); ++i)
-        argv.push_back(const_cast<char*>(this->_argv[i].c_str()));
+    for(size_t i = 0; i < _argv.size(); ++i)
+        argv.push_back(const_cast<char*>(_argv[i].c_str()));
     argv.push_back(NULL);
 }
 
@@ -77,7 +77,7 @@ void Cgi::extractOutput(int *fd)
 
     close(fd[1]);
     while((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0)
-        this->_stdout.append(buffer, bytesRead);
+        _stdout.append(buffer, bytesRead);
     close(fd[0]);
 }
 

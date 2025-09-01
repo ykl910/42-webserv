@@ -25,6 +25,7 @@ public:
     const std::string &getHttpVersion() const;
     const std::map<std::string, std::string> &getHeaders() const;
 
+    void getRequest(int clientFd);
     void parseRequest(void);
     void readRequest(int clientFd);
     bool receivedCompleteRequest(std::string &rawData) const;
