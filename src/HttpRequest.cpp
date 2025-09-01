@@ -61,6 +61,28 @@ const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
     return _headers;
 }
 
+
+// bool Epoll::receivedCompleteRequest(std::string &rawData) const
+// {
+//     size_t headerEnd = rawData.find("\r\n\r\n");
+//     if (headerEnd == std::string::npos)
+//         return false;
+
+//     size_t bodyStart = headerEnd + 4;
+
+//     size_t contentLengthPos = rawData.find("Content-Length: ");
+//     if (contentLengthPos == std::string::npos)
+//         return true;
+
+//     size_t valueStart = contentLengthPos + strlen("Content-Length: ");
+//     size_t valueEnd = rawData.find("\r\n", valueStart);
+//     std::string valueStr = rawData.substr(valueStart, valueEnd - valueStart);
+//     int contentLength = std::atoi(valueStr.c_str());
+
+//     size_t bodyLengh = rawData.size() - bodyStart;
+//     return (bodyLengh >= static_cast<size_t>(contentLength));
+// }
+
 void    HttpRequest::readRequest(int clientFd)
 {
     size_t totalBytes = 0;

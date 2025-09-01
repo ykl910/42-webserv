@@ -20,43 +20,18 @@ std::vector<Server> Epoll::getServer(void) const {
     return _server;
 }
 
-void Epoll::enableWriteEvent(int clientFd)
+void Epoll::addClientToEpoll(int const &clientFd, Server serv)
 {
-    epoll_ev ev;
-    ev.events = EPOLLIN | EPOLLOUT;
-    ev.data.fd = clientFd;
-    if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
-        printErrorAndThrow("epoll_ctl(enableWriteEvent)");
-}
+    epoll_ev newClient;
+    newClient.events = EPOLLIN;
+    newClient.data.fd = clientFd;
 
-void Epoll::disableWriteEvent(int clientFd)
-{
-    epoll_ev ev;
-    ev.events = EPOLLIN;
-    ev.data.fd = clientFd;
-    if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
-        printErrorAndThrow("epoll_ctl(enableWriteEvent)");
-}
+    _clientToServer[clientFd] = serv;
+    std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
+    BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
 
-bool Epoll::receivedCompleteRequest(std::string &rawData) const
-{
-    size_t headerEnd = rawData.find("\r\n\r\n");
-    if (headerEnd == std::string::npos)
-        return false;
-
-    size_t bodyStart = headerEnd + 4;
-
-    size_t contentLengthPos = rawData.find("Content-Length: ");
-    if (contentLengthPos == std::string::npos)
-        return true;
-
-    size_t valueStart = contentLengthPos + strlen("Content-Length: ");
-    size_t valueEnd = rawData.find("\r\n", valueStart);
-    std::string valueStr = rawData.substr(valueStart, valueEnd - valueStart);
-    int contentLength = std::atoi(valueStr.c_str());
-
-    size_t bodyLengh = rawData.size() - bodyStart;
-    return (bodyLengh >= static_cast<size_t>(contentLength));
+    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1)
+        printErrorAndThrow("epoll_ctl");
 }
 
 void Epoll::eventManager(epoll_ev &event)
@@ -98,20 +73,6 @@ void Epoll::eventManager(epoll_ev &event)
             close(event.data.fd);
         }
     }
-}
-
-void Epoll::addClientToEpoll(int const &clientFd, Server serv)
-{
-    epoll_ev newClient;
-    newClient.events = EPOLLIN;
-    newClient.data.fd = clientFd;
-
-    _clientToServer[clientFd] = serv;
-    std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
-    BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
-
-    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1)
-        printErrorAndThrow("epoll_ctl");
 }
 
 void Epoll::run()
