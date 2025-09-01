@@ -73,6 +73,37 @@ const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
 //     }
 // }
 
+void    HttpRequest::extractRequest(const std::string &request)
+{
+    std::stringstream ss(request);
+    std::string line;
+    std::getline(ss, line);
+
+    // parse request line
+    std::stringstream requestLine(line);
+    requestLine >> _method >> _path >> _http_version;
+
+    // parse headers
+    while (std::getline(ss, line) && line != "\r")
+    {
+        if (!line.empty() && line[line.length() - 1] == '\r')
+            line = line.substr(0, line.length() - 1);
+        size_t pos = line.find(": ");
+        if (pos != std::string::npos)
+        {
+            std::string key = line.substr(0, pos);
+            std::string value = line.substr(pos + 2);
+            _headers[key] = value;
+        }
+    }
+
+    // parse body
+    std::string bodyLine;
+    while (std::getline(ss, bodyLine)) {
+        _body += bodyLine + "\n";
+    }
+}
+
 void    HttpRequest::readRequest(int clientFd)
 {
     size_t totalBytes = 0;
@@ -80,7 +111,6 @@ void    HttpRequest::readRequest(int clientFd)
     size_t contentLength = 0;
     bool requestExtracted = false;
 
-    int i = 0;
     while (!requestExtracted) {
         ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
         if (bytes < 0)
@@ -102,7 +132,6 @@ void    HttpRequest::readRequest(int clientFd)
                 contentLength = atoi(len.c_str());
             }
         }
-        i++;
     }
 
     while (_content.size() < headerEnd + 4 + contentLength) {
@@ -149,6 +178,12 @@ void    HttpRequest::parseRequest(void)
         _body += bodyLine + "\n";
     }
 }
+
+HttpRequest::HttpRequest(const std::string& request)
+{
+    extractRequest(request);
+}
+
 
 HttpRequest::HttpRequest(int clientFd)
 {

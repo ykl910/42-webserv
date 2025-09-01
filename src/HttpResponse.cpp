@@ -36,6 +36,7 @@ Warning
 WWW-Authenticate
 */
 
+
 void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason)
 {
     std::ostringstream oss;
