@@ -62,17 +62,6 @@ const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
     return _headers;
 }
 
-// void    HttpRequest::getRequest(int clientFd)
-// {
-//     std::string line;
-//     while (true) {
-//         ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
-//         if (bytes == -1)
-//             std::cout << BOLD RED << "Error: recv\n" << DEFAULT;
-
-//     }
-// }
-
 void    HttpRequest::extractRequest(const std::string &request)
 {
     std::stringstream ss(request);
@@ -82,93 +71,23 @@ void    HttpRequest::extractRequest(const std::string &request)
     // parse request line
     std::stringstream requestLine(line);
     requestLine >> _method >> _path >> _http_version;
-
-    // parse headers
-    while (std::getline(ss, line) && line != "\r")
-    {
-        if (!line.empty() && line[line.length() - 1] == '\r')
-            line = line.substr(0, line.length() - 1);
-        size_t pos = line.find(": ");
-        if (pos != std::string::npos)
-        {
-            std::string key = line.substr(0, pos);
-            std::string value = line.substr(pos + 2);
-            _headers[key] = value;
-        }
-    }
-
-    // parse body
-    std::string bodyLine;
-    while (std::getline(ss, bodyLine)) {
-        _body += bodyLine + "\n";
-    }
-}
-
-void    HttpRequest::readRequest(int clientFd)
-{
-    size_t totalBytes = 0;
-    size_t headerEnd = 0;
-    size_t contentLength = 0;
-    bool requestExtracted = false;
-
-    while (!requestExtracted) {
-        ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
-        if (bytes < 0)
-            continue;
-        else if (bytes == 0) {
-            _state = FAILURE;
-            return;
-        }
-        _content.append(_buffer, bytes);
-        totalBytes += bytes;
-        headerEnd = _content.find("\r\n\r\n");
-        if (headerEnd != std::string::npos) {
-            requestExtracted = true;
-            size_t contentLengthPos = _content.find("Content-Length:");
-            if (contentLengthPos != std::string::npos) {
-                size_t valueStart = _content.find_first_not_of(" ", contentLengthPos + 15);
-                size_t valueEnd = _content.find("\r\n", valueStart);
-                std::string len = _content.substr(valueStart, valueEnd - valueStart);
-                contentLength = atoi(len.c_str());
-            }
-        }
-    }
-
-    while (_content.size() < headerEnd + 4 + contentLength) {
-        ssize_t bytes = recv(clientFd, _buffer, sizeof(_buffer), 0);
-        if (bytes < 0)
-            continue;
-        else if (bytes == 0) {
-            _state = FAILURE;
-            return;
-        }
-        _content.append(_buffer, bytes);
-    }
-    if (_content.empty())
-        _state = FAILURE;
-    else
-        _state = SUCCESS;
-}
-
-void    HttpRequest::parseRequest(void)
-{
-    std::stringstream ss(_content);
-    std::string line;
-    std::getline(ss, line);
-
-    // parse request line
-    std::stringstream requestLine(line);
-    requestLine >> _method >> _path >> _http_version;
+    _content = std::string(_method + " ");
+    _content += _path + " ";
+    _content += _http_version + "\n";
 
     // parse headers
     while (std::getline(ss, line) && line != "\r") {
+
         if (!line.empty() && line[line.length() - 1] == '\r')
             line = line.substr(0, line.length() - 1);
+
         size_t pos = line.find(": ");
         if (pos != std::string::npos) {
             std::string key = line.substr(0, pos);
             std::string value = line.substr(pos + 2);
             _headers[key] = value;
+            _content += key + ": ";
+            _content += value + "\n";
         }
     }
 
@@ -177,18 +96,12 @@ void    HttpRequest::parseRequest(void)
     while (std::getline(ss, bodyLine)) {
         _body += bodyLine + "\n";
     }
+    _content += _body + "\n";
 }
 
 HttpRequest::HttpRequest(const std::string& request)
 {
     extractRequest(request);
-}
-
-
-HttpRequest::HttpRequest(int clientFd)
-{
-    readRequest(clientFd);
-    parseRequest();
 }
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request)

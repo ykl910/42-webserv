@@ -13,15 +13,12 @@ INCLUDE_DIR         := include
 INCLUDE             := CGI.hpp \
                     Config.hpp \
                     Cookies.hpp \
-                    DELETE.hpp \
                     Epoll.hpp \
                     Error.hpp \
-                    GET.hpp \
                     HttpManager.hpp \
                     HttpRequest.hpp \
                     HttpResponse.hpp \
                     Poll.hpp \
-                    POST.hpp \
                     Select.hpp \
                     Server.hpp \
                     Signal.hpp \

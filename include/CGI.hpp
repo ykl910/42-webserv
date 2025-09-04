@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 
+class HttpResponse;
+
 class Cgi {
 public:
     Cgi(HttpRequest &request, HttpResponse &response);

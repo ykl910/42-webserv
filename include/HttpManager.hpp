@@ -7,7 +7,15 @@
 #include "utils.hpp"
 #include <iostream>
 
+#define OUT 0
+#define IN 1
+
 typedef struct s_serv_attr t_serv_attr;
+
+enum e_state {
+    SENT,
+    RECEIVED
+};
 
 class HttpManager {
 public:
@@ -17,10 +25,11 @@ public:
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
 
     HttpManager() {}
-    HttpManager(int clientFd, t_serv_attr &serverAttr);
+    HttpManager(int clientFd, t_serv_attr &serverAttr, int &state);
     ~HttpManager();
 
 private:
+    int                                 _state;
     static std::map<int, HttpRequest>   _request;
     static std::map<int, HttpResponse>  _responses;
 

@@ -1,8 +1,5 @@
 #include "../include/HttpResponse.hpp"
 #include "../include/Server.hpp"
-#include "../include/GET.hpp"
-#include "../include/POST.hpp"
-#include "../include/DELETE.hpp"
 
 /* RESPONSE HEADERS
 Accept-Ranges
@@ -82,12 +79,18 @@ HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
     _servAttr = serverAttr;
     std::string method = request.getMethod();
 
-    if (method == "GET")
-        handleGet(request, *this);
-    else if (method == "POST")
-        handlePost(request, *this);
-    else if (method == "DELETE")
-        handleDelete(request, *this);
+    if (method == "GET") {
+        std::cout << "GET\n";
+        handleGet(request);
+    }
+    else if (method == "POST") {
+        std::cout << "Post\n";
+        handlePost(request);
+    }
+    else if (method == "DELETE") {
+        std::cout << "Delete\n";
+        handleDelete(request);
+    }
     else
         setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
 }

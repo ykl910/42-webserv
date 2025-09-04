@@ -1,7 +1,6 @@
 #pragma once
 
-#include "HttpResponse.hpp"
-#include "HttpRequest.hpp"
+#include "HttpManager.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
 #include "Error.hpp"
@@ -12,6 +11,7 @@
 
 #define MAXEVENTS 4096
 #define BUFFERSIZE 512
+#define GOT_FULL_REQUEST 1
 
 template <class Multiplexer>
 class WebServ;
@@ -29,6 +29,8 @@ public:
     void run();
     bool isSocketFd(int fd) const;
     void addClientToEpoll(int const &clientFd, Server serv);
+    void enableWriteEvent(int clientFd);
+    void disableWriteEvent(int clientFd);
 
     void initServer(Config& config);
     void eventManager(epoll_ev &event);
@@ -37,6 +39,7 @@ public:
     ~Epoll();
 
 private:
+    int                         _state;
     int                         _epollFd;
     int                         _nbEvents;
     vector                      _eventsQueue;
@@ -48,7 +51,7 @@ private:
     std::map<int, HttpResponse> _responses;
     std::vector<int>            _listenFd;
     std::vector<Server>         _server;
-    std::map<int, Server>       _clientToServer;
+    std::map<int, Server>       _serverMap;
 };
 
 

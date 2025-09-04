@@ -29,6 +29,7 @@ public:
 private:
     typedef std::vector<int>::iterator selectIterator;
 
+    int                     _state;
     int                     _maxFd;
     int                     _activity;
     fd_set                  _readFds;
