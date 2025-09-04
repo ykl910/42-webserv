@@ -75,7 +75,6 @@ void Epoll::eventManager(epoll_ev &event)
         for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
             if (event.data.fd == it->getSocketFd()) {
                 int clientFd = it->getSocket().acceptClient();
-                std::cout << "clientFd : " << clientFd << std::endl;
                 if (clientFd)
                     addClientToEpoll(clientFd, *it);
                 isServerSocket = true;
@@ -86,18 +85,14 @@ void Epoll::eventManager(epoll_ev &event)
         if (!isServerSocket) {
             Server serv = _serverMap[event.data.fd];
 
-            enableWriteEvent(event.data.fd);
             HttpManager(event.data.fd, serv.getServerAttribute(), _state);
+            // if (!_state != GOT_FULL_REQUEST)
+            //     enableWriteEvent(event.data.fd);
 
             _serverMap.erase(event.data.fd);
             epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
             close(event.data.fd);
         }
-    } else if (event.events & EPOLLOUT && _state == GOT_FULL_REQUEST) {
-        Server serv = _serverMap[event.data.fd];
-
-        HttpManager(event.data.fd, serv.getServerAttribute(), _state);
-        disableWriteEvent(event.data.fd);
     }
 }
 

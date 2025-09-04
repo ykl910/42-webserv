@@ -40,11 +40,10 @@ int HttpResponse::handleHtml(HttpRequest& request, std::string path, std::string
 {
     std::string fullPath = POST42dotNET"html" + path;
     std::ifstream file(fullPath.c_str());
-    if (access(fullPath.c_str(), F_OK) != 0) {
+    if (access(fullPath.c_str(), F_OK) != 0)
         return 404;
-    } else if (access(fullPath.c_str(), R_OK) != 0) {
+    else if (access(fullPath.c_str(), R_OK) != 0)
         return 403;
-    }
     if (!file.is_open())
         return 500;
     *buffer << file.rdbuf();
@@ -60,11 +59,10 @@ int HttpResponse::handleCss(HttpRequest& request, std::string path, std::strings
 {
     std::string fullPath = POST42dotNET + path;
     std::ifstream file(fullPath.c_str());
-    if (access(fullPath.c_str(), F_OK) != 0) {
+    if (access(fullPath.c_str(), F_OK) != 0)
         return 404;
-    } else if (access(fullPath.c_str(), R_OK) != 0) {
+    else if (access(fullPath.c_str(), R_OK) != 0)
         return 403;
-    }
     if (!file.is_open())
         return 500;
     *buffer << file.rdbuf();
@@ -80,11 +78,10 @@ int HttpResponse::handleImg(HttpRequest& request, std::string path, std::string 
 {
     std::string fullPath = POST42dotNET + path;
     std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::binary);
-    if (access(fullPath.c_str(), F_OK) != 0) {
+    if (access(fullPath.c_str(), F_OK) != 0)
         return 404;
-    } else if (access(fullPath.c_str(), R_OK) != 0) {
+    else if (access(fullPath.c_str(), R_OK) != 0)
         return 403;
-    }
     if (!file.is_open())
         return 500;
     std::vector<char> data;
@@ -92,9 +89,8 @@ int HttpResponse::handleImg(HttpRequest& request, std::string path, std::string 
     while (file.read(temp, sizeof(temp))) {
         data.insert(data.end(), temp, temp + file.gcount());
     }
-    if (file.gcount() > 0) {
+    if (file.gcount() > 0)
         data.insert(data.end(), temp, temp + file.gcount());
-    }
     setStatusLine(request.getHttpVersion(), 200, "OK");
     if (extension == "png")
         setHeaders("Content-Type", "image/png");
@@ -147,7 +143,8 @@ static int isLogged(HttpRequest& request)
 {
     std::map<std::string, std::string>::const_iterator mapit;
     std::string sessionId;
-    for (mapit = request.getHeaders().begin(); mapit != request.getHeaders().end(); ++mapit) {
+    for (mapit = request.getHeaders().begin();
+         mapit != request.getHeaders().end(); ++mapit) {
         if (mapit->first == "Cookie")
             return 1;
     }
@@ -157,7 +154,7 @@ static int isLogged(HttpRequest& request)
 void HttpResponse::handleGet(HttpRequest& request)
 {
     std::string path = request.getPath();
-    if(path.find(".cgi") != std::string::npos)
+    if (path.find(".cgi") != std::string::npos)
         Cgi cgi(request, *this);
     else {
         if (path == "" || path == "/")
@@ -167,6 +164,8 @@ void HttpResponse::handleGet(HttpRequest& request)
         size_t dot_pos = path.find_last_of(".");
         if (dot_pos != std::string::npos)
             extension = path.substr(dot_pos + 1);
+
+        std::cout << BOLD YELLOW << extension << "\n" << DEFAULT;
 
         if (path == "/login.html" && isLogged(request))
             path = "/isLogged.html";
