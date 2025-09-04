@@ -29,6 +29,7 @@ public:
     ~Poll();
 
 private:
+    int                         _state;
     int                         _activity;
     std::vector<struct pollfd>  _pollFd;
     std::vector<Server>         _server;

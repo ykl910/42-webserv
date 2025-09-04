@@ -31,7 +31,6 @@ void    Poll::handleNewConnexion(struct pollfd& server, int i)
 {
     if (server.revents & POLLERR)
         std::cout << "Poll: error catched from server fd.\n";
-    // if socket got a new client
     else if (server.revents & POLLIN) {
         Server serv;
         for(serverIterator it = _server.begin(); it != _server.end(); ++it) {
@@ -71,12 +70,24 @@ void    Poll::run()
             if (it->revents & POLLERR)
                 std::cout << "Poll: error catched for client "
                 << it->fd << "\n";
-            else if (it->revents & POLLHUP)
+            else if (it->revents & POLLHUP) {
                 std::cout << "Poll: connexion closed for client "
                 << it->fd << "\n";
-            else if (it->revents & POLLIN) {
+                _serverFinder.erase(it->fd);
+                close(it->fd);
+                it = _pollFd.erase(it);
+            } else if (it->revents & POLLIN) {
                 Server serv = _serverFinder[it->fd];
-                HttpManager(it->fd, serv.getServerAttribute());
+
+                HttpManager(it->fd, serv.getServerAttribute(), _state);
+                _serverFinder.erase(it->fd);
+                close(it->fd);
+                it = _pollFd.erase(it);
+            } else if (it->revents & POLLOUT) {
+                Server serv = _serverFinder[it->fd];
+
+                _state = OUT;
+                HttpManager(it->fd, serv.getServerAttribute(), _state);
                 _serverFinder.erase(it->fd);
                 close(it->fd);
                 it = _pollFd.erase(it);

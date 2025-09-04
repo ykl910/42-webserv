@@ -14,7 +14,6 @@
 
 #define FAILURE 0
 #define SUCCESS 1
-#define BUFFERSIZE 512
 
 class HttpRequest {
 public:
@@ -26,18 +25,14 @@ public:
     const std::string &getHttpVersion() const;
     const std::map<std::string, std::string> &getHeaders() const;
 
-    void parseRequest(void);
-    void readRequest(int clientFd);
     void extractRequest(const std::string &request);
 
     HttpRequest() {}
     HttpRequest(const std::string& request);
-    HttpRequest(int clientFd);
     ~HttpRequest() {}
 
 private:
     bool                                _state;
-    char                                _buffer[4096];
     std::string                         _path;
     std::string                         _body;
     std::string                         _method;

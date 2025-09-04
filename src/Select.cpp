@@ -65,7 +65,7 @@ void    Select::run()
                     ++it;
                 } else { //* read request and send response
                     int serverFd = _clientMap[*it];
-                    HttpManager(int(*it), _serverMap[serverFd].getServerAttribute());
+                    HttpManager(int(*it), _serverMap[serverFd].getServerAttribute(), _state);
                     close(*it);
                     _clientMap.erase(*it);
                     it = _selectFd.erase(it);
@@ -102,6 +102,7 @@ void    Select::initServer(Config& config)
 
 Select::Select(Config& config)
 {
+    _state = -1;
     _activity = 0;
     _tv.tv_sec = 10;
     _tv.tv_usec = 0;

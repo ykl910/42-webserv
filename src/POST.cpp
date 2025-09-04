@@ -1,7 +1,7 @@
-#include "../include/POST.hpp"
 #include "../include/textFormatting.hpp"
-#include "../include/WebServ.hpp"
+#include "../include/HttpResponse.hpp"
 #include "../include/Cookies.hpp"
+#include "../include/WebServ.hpp"
 
 # define DIRPATH "www/post42.net/threads/"
 
@@ -135,10 +135,10 @@ int storeThread(HttpRequest &request, std::string boundary)
     return 0;
 }
 
-void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::string msg)
+void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg)
 {
-    response.setStatusLine(request.getHttpVersion(), code, msg);
-    response.setHeaders("Content-Type", "text/html");
+    setStatusLine(request.getHttpVersion(), code, msg);
+    setHeaders("Content-Type", "text/html");
     std::string path;
     if(code == 201)
         path = POST42dotNET"html/uploadSucces.html";
@@ -152,14 +152,14 @@ void buildResponse(HttpRequest& request, HttpResponse& response, int code, std::
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string body = buffer.str();
-    response.setHeaders("Content-Length", itos(body.size()));
-    response.setBody(body);
+    setHeaders("Content-Length", itos(body.size()));
+    setBody(body);
 }
 
-void handlePost(HttpRequest& request, HttpResponse& response)
+void HttpResponse::handlePost(HttpRequest& request)
 {
     if(request.getPath().find(".cgi") != std::string::npos)
-        Cgi cgi(request, response);
+        Cgi cgi(request, *this);
     else {
         std::map<std::string, std::string> headers = request.getHeaders();
         std::string contentType = getContentType(headers["Content-Type"]);
@@ -167,14 +167,14 @@ void handlePost(HttpRequest& request, HttpResponse& response)
 
         if (request.getPath() == "/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             if (storeThread(request, boundary) == -1)
-                buildResponse(request, response, 500, "Internal error");
+                buildResponse(request, 500, "Internal error");
             else
-                buildResponse(request, response, 201, "Created");
+                buildResponse(request, 201, "Created");
         } else if (request.getPath() == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
-            Cookies cookie(request, response, boundary);
+            Cookies cookie(request, *this, boundary);
         } else if (request.getPath() == "/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
-            Cookies cookie(request, response, boundary);
+            Cookies cookie(request, *this, boundary);
         } else
-            buildResponse(request, response, 400, "Bad Request");
+            buildResponse(request, 400, "Bad Request");
     }
 }

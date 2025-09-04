@@ -26,12 +26,30 @@ void Epoll::addClientToEpoll(int const &clientFd, Server serv)
     newClient.events = EPOLLIN;
     newClient.data.fd = clientFd;
 
-    _clientToServer[clientFd] = serv;
+    _serverMap[clientFd] = serv;
     std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
     BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
 
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1)
         printErrorAndThrow("epoll_ctl");
+}
+
+void Epoll::enableWriteEvent(int clientFd)
+{
+    epoll_ev ev;
+    ev.events = EPOLLIN | EPOLLOUT;
+    ev.data.fd = clientFd;
+    if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
+        printErrorAndThrow("epoll_ctl(enableWriteEvent)");
+}
+
+void Epoll::disableWriteEvent(int clientFd)
+{
+    epoll_ev ev;
+    ev.events = EPOLLIN;
+    ev.data.fd = clientFd;
+    if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
+        printErrorAndThrow("epoll_ctl(enableWriteEvent)");
 }
 
 void Epoll::eventManager(epoll_ev &event)
@@ -57,6 +75,7 @@ void Epoll::eventManager(epoll_ev &event)
         for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
             if (event.data.fd == it->getSocketFd()) {
                 int clientFd = it->getSocket().acceptClient();
+                std::cout << "clientFd : " << clientFd << std::endl;
                 if (clientFd)
                     addClientToEpoll(clientFd, *it);
                 isServerSocket = true;
@@ -65,13 +84,20 @@ void Epoll::eventManager(epoll_ev &event)
         }
 
         if (!isServerSocket) {
-            Server serv = _clientToServer[event.data.fd];
+            Server serv = _serverMap[event.data.fd];
 
-            HttpManager(event.data.fd, serv.getServerAttribute());
-            _clientToServer.erase(event.data.fd);
+            enableWriteEvent(event.data.fd);
+            HttpManager(event.data.fd, serv.getServerAttribute(), _state);
+
+            _serverMap.erase(event.data.fd);
             epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
             close(event.data.fd);
         }
+    } else if (event.events & EPOLLOUT && _state == GOT_FULL_REQUEST) {
+        Server serv = _serverMap[event.data.fd];
+
+        HttpManager(event.data.fd, serv.getServerAttribute(), _state);
+        disableWriteEvent(event.data.fd);
     }
 }
 
@@ -126,8 +152,6 @@ Epoll::~Epoll()
             close(it->first);
     }
 }
-
-
 
 // #include "../include/Epoll.hpp"
 // #include "../include/WebServ.hpp"
