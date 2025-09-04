@@ -52,7 +52,7 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
 
     if (!_gotResponse[clientFd]) {
         HttpResponse Response(request, servAttr);
-        // writeUserInfo(request, Response);
+        writeUserInfo(request, Response);
         response = Response.getResponse();
         _responses[clientFd] = Response;
         _gotResponse[clientFd] = true;
@@ -108,22 +108,21 @@ void    HttpManager::getRequest(int clientFd) {
     char buffer[4096];
 
     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-    std::cout << BOLD MAGENTA << clientFd << " bytes " << bytes << "\n" << DEFAULT;
     if (bytes >= 0)
         _buffers[clientFd].append(buffer, bytes);
 
     if (receivedCompleteRequest(_buffers[clientFd])) {
-
         HttpRequest request(_buffers[clientFd]);
+
         std::cout
         << BOLD ITALIC CYAN <<  "Request:\n" << DEFAULT
         << _request[clientFd].getContent();
+
         _request[clientFd] = request;
         _gotFullRequest[clientFd] = true;
         _buffers.erase(clientFd);
         _pendingResponse[clientFd] = 0;
         _state = RECEIVED;
-        std::cout << BOLD RED << clientFd << DEFAULT << "\n";
     }
     else
         _gotFullRequest[clientFd] = false;
@@ -134,10 +133,8 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
     state = _state;
     getRequest(clientFd);
 
-    if (state == RECEIVED && !_request[clientFd].getContent().empty()) {
-        std::cout << "here\n";
+    if (state == RECEIVED && !_request[clientFd].getContent().empty())
         sendResponse(clientFd, _request[clientFd], serverAttr);
-    }
 }
 
 HttpManager::~HttpManager() {}

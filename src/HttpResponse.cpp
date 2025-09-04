@@ -33,7 +33,6 @@ Warning
 WWW-Authenticate
 */
 
-
 void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason)
 {
     std::ostringstream oss;
@@ -65,6 +64,7 @@ std::string HttpResponse::getResponse() const
         fullResponse += it->first + ": " + it->second + "\r\n";
     }
     fullResponse += "\r\n";
+    // _response.clear();
     fullResponse += _body;
     return fullResponse;
 }
@@ -79,18 +79,12 @@ HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
     _servAttr = serverAttr;
     std::string method = request.getMethod();
 
-    if (method == "GET") {
-        std::cout << "GET\n";
+    if (method == "GET")
         handleGet(request);
-    }
-    else if (method == "POST") {
-        std::cout << "Post\n";
+    else if (method == "POST")
         handlePost(request);
-    }
-    else if (method == "DELETE") {
-        std::cout << "Delete\n";
+    else if (method == "DELETE")
         handleDelete(request);
-    }
     else
         setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
 }
