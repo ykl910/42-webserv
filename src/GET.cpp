@@ -151,7 +151,7 @@ static int isLogged(HttpRequest& request)
     return 0;
 }
 
-void HttpResponse::handleGet(HttpRequest& request)
+void HttpResponse::handleGET(HttpRequest& request)
 {
     std::string path = request.getPath();
     if (path.find(".cgi") != std::string::npos)
@@ -186,8 +186,7 @@ void HttpResponse::handleGet(HttpRequest& request)
             state = handleImg(request, path, extension);
             if (state != 200)
                 handleError(request, &buffer, state, "img");
-        } else {
+        } else
             handleError(request, &buffer, 500, "html");
-        }
     }
 }

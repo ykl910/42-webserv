@@ -10,7 +10,7 @@
     };
 */
 
-bool    Poll::isSocketFd(int fd) const
+inline bool Poll::isSocketFd(int fd) const
 {
     for (size_t i = 0; i < _listenFd.size(); ++i) {
         if (fd == _listenFd[i])
@@ -19,30 +19,14 @@ bool    Poll::isSocketFd(int fd) const
     return false;
 }
 
-void    Poll::addClientToPoll(int clientFd, Server serv)
+void    Poll::addClientToPoll(int clientFd, int serverFd)
 {
     _pollFd.push_back((pollfd){clientFd, POLLIN, 0});
-    _serverFinder[clientFd] = serv;
+    _clientMap.insert(
+        std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
+
     std::cout << BOLD WHITE << "Poll: new client accepted with fd "
     << BOLD BLUE << clientFd << DEFAULT << "\n";
-}
-
-void    Poll::handleNewConnexion(struct pollfd& server, int i)
-{
-    if (server.revents & POLLERR)
-        std::cout << "Poll: error catched from server fd.\n";
-    else if (server.revents & POLLIN) {
-        Server serv;
-        for(serverIterator it = _server.begin(); it != _server.end(); ++it) {
-            if (it->getSocketFd() == server.fd) {
-                serv = *it;
-                break;
-            }
-        }
-        int clientFd = _server[i].getSocket().acceptClient();
-        if (clientFd)
-            addClientToPoll(clientFd, serv);
-    }
 }
 
 std::vector<Server> Poll::getServer(void) const {
@@ -59,10 +43,16 @@ void    Poll::run()
             printError();
         }
 
-        size_t i = 0;
-        while (i < _pollFd.size() && isSocketFd(_pollFd[i].fd)) {
-            handleNewConnexion(_pollFd[i], i);
-            i++;
+        for (size_t i = 0; i < _listenFd.size(); ++i) {
+
+            if (_pollFd[i].revents & POLLERR) {
+                std::cout << "Poll: error catched from server fd.\n";
+            } else if (_pollFd[i].revents & POLLIN) {
+                int clientFd = _server[i].getSocket().acceptClient();
+
+                if (clientFd)
+                    addClientToPoll(clientFd, _listenFd[i]);
+            }
         }
 
         for (pollIterator it = _pollFd.begin() + _listenFd.size(); // skip socket fd
@@ -73,22 +63,14 @@ void    Poll::run()
             else if (it->revents & POLLHUP) {
                 std::cout << "Poll: connexion closed for client "
                 << it->fd << "\n";
-                _serverFinder.erase(it->fd);
+                _clientMap.erase(it->fd);
                 close(it->fd);
                 it = _pollFd.erase(it);
             } else if (it->revents & POLLIN) {
-                Server serv = _serverFinder[it->fd];
+                Server serv = _serverMap[it->fd];
 
                 HttpManager(it->fd, serv.getServerAttribute(), _state);
-                _serverFinder.erase(it->fd);
-                close(it->fd);
-                it = _pollFd.erase(it);
-            } else if (it->revents & POLLOUT) {
-                Server serv = _serverFinder[it->fd];
-
-                _state = OUT;
-                HttpManager(it->fd, serv.getServerAttribute(), _state);
-                _serverFinder.erase(it->fd);
+                _clientMap.erase(it->fd);
                 close(it->fd);
                 it = _pollFd.erase(it);
             } else
@@ -99,13 +81,20 @@ void    Poll::run()
 
 void    Poll::initServer(Config& config)
 {
+    int fd;
     int i = 0;
+
     configParser parser = config.getConfigParser();
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
         server config = *it;
         _server.push_back(Server(config));
         _server[i].initSocket();
+        _serverMap.insert(
+            std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
+        fd = _server[i].getSocketFd();
+        _listenFd.push_back(fd);
+        _pollFd.push_back((pollfd){fd, POLLIN, 0});
         ++i;
     }
 }
@@ -113,11 +102,6 @@ void    Poll::initServer(Config& config)
 Poll::Poll(Config& config)
 {
     initServer(config);
-    for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
-        int fd = it->getSocketFd();
-        _listenFd.push_back(fd);
-        _pollFd.push_back((pollfd){fd, POLLIN, 0});
-    }
 }
 
 Poll::~Poll()

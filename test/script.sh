@@ -16,14 +16,20 @@ WHITE="\033[0;37m"
 
 project_dir=$(cd .. && pwd)
 test_dir="$project_dir/test"
+log_dir="$test_dir/log"
 
 # host:port
 domains=(
     "post42.net"
     "webserv.net"
 )
+
 host="localhost"
-port="8080"
+
+ports=(
+    "8080"
+    "4040"
+)
 
 multiplexers=(
     "select"
@@ -145,17 +151,17 @@ run_siege_test()
     local client_number=100
 
     echo -e "${BOLD}${ITALIC}${YELLOW}Siege test${DEFAULT}"
-    mkdir -p ../log
+    mkdir -p $log_dir/siege
     pushd .. > /dev/null
     for multiplexer in "${multiplexers[@]}"; do
-        ./webserv $multiplexer &
-        webserv_pid=$!
-        for domain in "${domains[@]}"; do
-            siege -g $domain:$port
+        for port in "${ports[@]}"; do
+            ./webserv $multiplexer &> /dev/null &
+            webserv_pid=$!
+            siege -c 255 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
+            kill $webserv_pid
         done
-        kill $webserv_pid
     done
-    popd > dev/null
+    popd > /dev/null
 }
 
 run_curl_test()

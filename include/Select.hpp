@@ -21,7 +21,7 @@ public:
     void run();
     std::vector<Server> getServer(void) const;
     void initServer(Config& config);
-    bool isSocketFd(int fd) const;
+    inline bool isSocketFd(int fd) const;
 
     Select(Config& config);
     ~Select();
@@ -34,9 +34,11 @@ private:
     int                     _activity;
     fd_set                  _readFds;
     struct timeval          _tv;
+
     std::vector<int>        _listenFd;
     std::vector<int>        _clientFd;
     std::vector<int>        _selectFd;
+
     std::vector<Server>     _server;
     std::map<int, int>      _clientMap;
     std::map<int, Server>   _serverMap;

@@ -18,6 +18,13 @@
 #include <vector>
 #include <map>
 
+typedef struct s_response_attr
+{
+    std::string method;
+    std::string path;
+    std::string host;
+}t_response_attr;
+
 class HttpResponse {
 public:
     std::string getResponse();
@@ -29,6 +36,7 @@ public:
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
 
+    void resolveRequestHeaders(HttpRequest& request);
     void buildResponse(HttpRequest& request, int code, std::string msg);
 
     void handleThread(HttpRequest& request);
@@ -37,9 +45,9 @@ public:
     int handleHtml(HttpRequest& request, std::string path, std::stringstream *buffer);
     void handleError(HttpRequest& request, std::stringstream *buffer, int success, std::string type);
 
-    void handleGet(HttpRequest& request);
-    void handlePost(HttpRequest& request);
-    void handleDelete(HttpRequest& request);
+    void handleGET(HttpRequest& request);
+    void handlePOST(HttpRequest& request);
+    void handleDELETE(HttpRequest& request);
 
     HttpResponse() {}
     HttpResponse(HttpRequest &request, t_serv_attr &serverAttr);

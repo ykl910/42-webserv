@@ -20,18 +20,22 @@ std::vector<Server> Epoll::getServer(void) const {
     return _server;
 }
 
-void Epoll::addClientToEpoll(int const &clientFd, Server serv)
+void Epoll::addClientToEpoll(int clientFd, int serverFd)
 {
     epoll_ev newClient;
-    newClient.events = EPOLLIN | EPOLLOUT;
+    newClient.events = EPOLLIN;
     newClient.data.fd = clientFd;
 
-    _serverMap[clientFd] = serv;
-    std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
-    BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
-
-    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1)
+    if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1) {
         printErrorAndThrow("epoll_ctl");
+        close(clientFd);
+    } else {
+        _clientMap.insert(
+            std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
+
+        std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
+        BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
+    }
 }
 
 void Epoll::enableWriteEvent(int clientFd)
@@ -52,6 +56,15 @@ void Epoll::disableWriteEvent(int clientFd)
         printErrorAndThrow("epoll_ctl(enableWriteEvent)");
 }
 
+inline bool Epoll::isSocketFd(int fd) const
+{
+    for (size_t i = 0; i < _listenFd.size(); ++i) {
+        if (fd == _listenFd[i])
+            return true;
+    }
+    return false;
+}
+
 void Epoll::eventManager(epoll_ev &event)
 {
     if (event.events & EPOLLERR) {
@@ -70,25 +83,14 @@ void Epoll::eventManager(epoll_ev &event)
         epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
 
-    }
-    else if (event.events & EPOLLIN)
-    {
-        bool isServerSocket = false;
-        for (serverIterator it = _server.begin(); it != _server.end(); ++it)
-        {
-            if (event.data.fd == it->getSocketFd())
-            {
-                int clientFd = it->getSocket().acceptClient();
-                if (clientFd)
-                    addClientToEpoll(clientFd, *it);
-                isServerSocket = true;
-                break;
-            }
-        }
+    } else if (event.events & EPOLLIN) {
 
-        if (!isServerSocket)
-        {
-            Server serv = _serverMap[event.data.fd];
+        if (isSocketFd(event.data.fd)) {
+            int clientFd = _serverMap[event.data.fd].getSocket().acceptClient();
+            if (clientFd)
+                addClientToEpoll(clientFd, event.data.fd);
+        } else {
+            Server serv = _serverMap[_clientMap[event.data.fd]];
 
             HttpManager(event.data.fd, serv.getServerAttribute(), _state);
             //if (_state == RECEIVED)
@@ -96,8 +98,9 @@ void Epoll::eventManager(epoll_ev &event)
             //if(_state == SENT)
             //    disableWriteEvent(event.data.fd);
             //_serverMap.erase(event.data.fd);
-            //epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
-            //close(event.data.fd);
+            epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
+            _clientMap.erase(event.data.fd);
+            close(event.data.fd);
         }
     }
 }
@@ -117,13 +120,19 @@ void Epoll::run()
 
 void    Epoll::initServer(Config& config)
 {
+    int fd;
     int i = 0;
+
     configParser parser = config.getConfigParser();
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
         server config = *it;
         _server.push_back(Server(config));
         _server[i].initSocket();
+        _serverMap.insert(
+            std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
+        fd = _server[i].getSocketFd();
+        _listenFd.push_back(fd);
         ++i;
     }
 }
