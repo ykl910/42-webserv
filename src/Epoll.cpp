@@ -23,7 +23,7 @@ std::vector<Server> Epoll::getServer(void) const {
 void Epoll::addClientToEpoll(int const &clientFd, Server serv)
 {
     epoll_ev newClient;
-    newClient.events = EPOLLIN;
+    newClient.events = EPOLLIN | EPOLLOUT;
     newClient.data.fd = clientFd;
 
     _serverMap[clientFd] = serv;
