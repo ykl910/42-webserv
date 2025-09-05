@@ -2,7 +2,7 @@
 #include "../include/HttpResponse.hpp"
 #include "../include/WebServ.hpp"
 
-void HttpResponse::handleDelete(HttpRequest& request)
+void HttpResponse::handleDELETE(HttpRequest& request)
 {
     std::string fullPath = POST42dotNET + request.getPath();
     if (fullPath == POST42dotNET"threads/")

@@ -26,10 +26,10 @@ public:
 
     std::vector<Server> getServer(void) const;
     void run();
-    bool isSocketFd(int fd) const;
-    void addClientToEpoll(int const &clientFd, Server serv);
     void enableWriteEvent(int clientFd);
     void disableWriteEvent(int clientFd);
+    inline bool isSocketFd(int fd) const;
+    void addClientToEpoll(int clientFd, int serverFd);
 
     void initServer(Config& config);
     void eventManager(epoll_ev &event);
@@ -42,13 +42,16 @@ private:
     int                         _epollFd;
     int                         _nbEvents;
     vector                      _eventsQueue;
+
     std::map<int, std::string>  _buffers;
     std::map<int, bool>         _gotResponse;
     std::map<int, bool>         _gotFullRequest;
     std::map<int, int>          _pendingResponse;
     std::map<int, HttpRequest>  _requests;
     std::map<int, HttpResponse> _responses;
+
     std::vector<int>            _listenFd;
     std::vector<Server>         _server;
+    std::map<int, int>          _clientMap;
     std::map<int, Server>       _serverMap;
 };

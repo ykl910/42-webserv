@@ -71,7 +71,11 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     if (totalBytesSent != responseLen)
         _pendingResponse[clientFd] = totalBytesSent;
     else {
-        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << response.substr(0, 200) << DEFAULT << std::endl;
+        // std::cout << BOLD ITALIC MAGENTA <<  "Response:\n"
+        //           << response.substr(0, 200) << DEFAULT << std::endl;
+        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT
+                  << _responses[clientFd].getResponseHeader() << "\n";
+
         _pendingResponse.erase(clientFd);
         _gotFullRequest.erase(clientFd);
         _gotResponse.erase(clientFd);
@@ -101,7 +105,6 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData) const {
     return bodyLengh >= static_cast<size_t>(contentLength);
 }
 
-
 void    HttpManager::getRequest(int clientFd) {
 
     char buffer[4096];
@@ -113,7 +116,8 @@ void    HttpManager::getRequest(int clientFd) {
     if (receivedCompleteRequest(_buffers[clientFd])) {
         HttpRequest request(_buffers[clientFd]);
 
-        std::cout << BOLD ITALIC CYAN <<  "Request:\n" << request <<  DEFAULT << std::endl;
+        std::cout << BOLD ITALIC CYAN << "Request:\n" << DEFAULT
+                  << request << "\n";
 
         _request[clientFd] = request;
         _gotFullRequest[clientFd] = true;

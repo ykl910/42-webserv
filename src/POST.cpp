@@ -115,20 +115,20 @@ int storeThread(HttpRequest &request, std::string boundary)
 
     for(tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt) {
         std::string line = *tokenIt;
-        if(line.find("Content-Disposition: form-data; name=\"title\"") != std::string::npos) {
+        if (line.find("Content-Disposition: form-data; name=\"title\"") != std::string::npos) {
             if(storeTitle(line, threadNb) == -1)
                 return -1;
         }
-        if(line.find("Content-Disposition: form-data; name=\"body\"") != std::string::npos) {
+        if (line.find("Content-Disposition: form-data; name=\"body\"") != std::string::npos) {
             if(storeText(line, threadNb) == -1)
                 return -1;
         }
-        if(line.find("Content-Disposition: form-data; name=\"uploadFile\"") != std::string::npos) {
+        if (line.find("Content-Disposition: form-data; name=\"uploadFile\"") != std::string::npos) {
             if(storeImg(line, threadNb) == -1)
                 return -1;
         }
     }
-    if(threadNb + 1 == 2147483647)
+    if (threadNb + 1 == 2147483647)
         threadNb = 0;
     else
         threadNb++;
@@ -140,11 +140,11 @@ void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg
     setStatusLine(request.getHttpVersion(), code, msg);
     setHeaders("Content-Type", "text/html");
     std::string path;
-    if(code == 201)
+    if (code == 201)
         path = POST42dotNET"html/uploadSucces.html";
-    else if(code == 400)
+    else if (code == 400)
         path = POST42dotNET"html/400.html";
-    else if(code == 500)
+    else if (code == 500)
         path = POST42dotNET"html/500.html";
     else
         path = POST42dotNET"html/404.html";
@@ -156,9 +156,9 @@ void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg
     setBody(body);
 }
 
-void HttpResponse::handlePost(HttpRequest& request)
+void HttpResponse::handlePOST(HttpRequest& request)
 {
-    if(request.getPath().find(".cgi") != std::string::npos)
+    if (request.getPath().find(".cgi") != std::string::npos)
         Cgi cgi(request, *this);
     else {
         std::map<std::string, std::string> headers = request.getHeaders();

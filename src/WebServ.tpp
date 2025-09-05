@@ -4,7 +4,8 @@ template <class Multiplexer>
 void WebServ<Multiplexer>::printServerStatus(const char* multiplexer,
                                              const char* configFilePath)
 {
-    std::cout << BOLD WHITE << "Program status: "
+    std::cout
+    << BOLD WHITE << "Program status: "
     << BOLD ITALIC GREEN << "running\n" << DEFAULT
     << BOLD WHITE << "Config: "
     << BOLD ITALIC BLUE << configFilePath << "\n" << DEFAULT

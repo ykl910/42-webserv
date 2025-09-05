@@ -79,17 +79,22 @@ t_serv_attr HttpResponse::getServerAttr() const
     return _servAttr;
 }
 
-HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
+void    HttpResponse::resolveRequestHeaders(HttpRequest& request)
 {
-    _servAttr = serverAttr;
-    std::string method = request.getMethod();
+    (void)request;
+}
 
+HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
+    : _servAttr(serverAttr)
+{
+    std::string method = request.getMethod();
+    resolveRequestHeaders(request);
     if (method == "GET")
-        handleGet(request);
+        handleGET(request);
     else if (method == "POST")
-        handlePost(request);
+        handlePOST(request);
     else if (method == "DELETE")
-        handleDelete(request);
+        handleDELETE(request);
     else
         setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
 }
