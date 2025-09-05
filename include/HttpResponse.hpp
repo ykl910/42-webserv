@@ -20,7 +20,8 @@
 
 class HttpResponse {
 public:
-    std::string getResponse() const;
+    std::string getResponse();
+    std::string& getResponseHeader();
     std::string getStatusLine() const;
     t_serv_attr getServerAttr() const;
 
@@ -28,8 +29,9 @@ public:
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
 
-    void handleThread(HttpRequest& request);
     void buildResponse(HttpRequest& request, int code, std::string msg);
+
+    void handleThread(HttpRequest& request);
     int handleImg(HttpRequest& request, std::string path, std::string extension);
     int handleCss(HttpRequest& request, std::string path, std::stringstream *buffer);
     int handleHtml(HttpRequest& request, std::string path, std::stringstream *buffer);
@@ -51,4 +53,4 @@ private:
     t_serv_attr                         _servAttr;
 };
 
-std::ostream& operator<<(std::ostream& os, const HttpResponse& response);
+std::ostream& operator<<(std::ostream& os, HttpResponse& response);
