@@ -71,8 +71,7 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     if (totalBytesSent != responseLen)
         _pendingResponse[clientFd] = totalBytesSent;
     else {
-        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT
-                  << _responses[clientFd] << "\n";
+        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << response.substr(0, 200) << DEFAULT << std::endl;
         _pendingResponse.erase(clientFd);
         _gotFullRequest.erase(clientFd);
         _gotResponse.erase(clientFd);
@@ -114,7 +113,7 @@ void    HttpManager::getRequest(int clientFd) {
     if (receivedCompleteRequest(_buffers[clientFd])) {
         HttpRequest request(_buffers[clientFd]);
 
-        std::cout << BOLD ITALIC CYAN <<  "Request:\n" << _request[clientFd].getContent() <<  DEFAULT << std::endl;
+        std::cout << BOLD ITALIC CYAN <<  "Request:\n" << request <<  DEFAULT << std::endl;
 
         _request[clientFd] = request;
         _gotFullRequest[clientFd] = true;
@@ -124,7 +123,6 @@ void    HttpManager::getRequest(int clientFd) {
     } else
         _gotFullRequest[clientFd] = false;
 
-    std::cout << "Out of hetRequest" << std::endl;
 }
 
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
@@ -132,9 +130,7 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
     state = _state;
     getRequest(clientFd);
 
-    std::cout << "HERE" << std::endl;
-
-    //if (state == RECEIVED /*&& !_request[clientFd].getContent().empty()*/)
+    if(_gotFullRequest[clientFd])
         sendResponse(clientFd, _request[clientFd], serverAttr);
 }
 

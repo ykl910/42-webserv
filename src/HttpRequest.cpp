@@ -97,7 +97,6 @@ void    HttpRequest::extractRequest(const std::string &request)
         _body += bodyLine + "\n";
     }
     _content += _body + "\n";
-    std::cout << "out of extractBody" << std::endl;
 }
 
 HttpRequest::HttpRequest(const std::string& request)
