@@ -10,7 +10,6 @@
 #include <vector>
 
 #define MAXEVENTS 4096
-#define BUFFERSIZE 512
 #define GOT_FULL_REQUEST 1
 
 template <class Multiplexer>

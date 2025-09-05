@@ -62,5 +62,4 @@ public:
 private:
     t_serv_attr         _attribute;
     Socket              _socket;
-    // HttpManager _httpManager;
 };
