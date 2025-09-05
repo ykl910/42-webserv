@@ -5,6 +5,7 @@
 #include "HttpRequest.hpp"
 #include "Server.hpp"
 #include "utils.hpp"
+#include <sys/epoll.h>
 #include <iostream>
 
 #define OUT 0

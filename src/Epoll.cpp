@@ -70,10 +70,14 @@ void Epoll::eventManager(epoll_ev &event)
         epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
         close(event.data.fd);
 
-    } else if (event.events & EPOLLIN) {
+    }
+    else if (event.events & EPOLLIN)
+    {
         bool isServerSocket = false;
-        for (serverIterator it = _server.begin(); it != _server.end(); ++it) {
-            if (event.data.fd == it->getSocketFd()) {
+        for (serverIterator it = _server.begin(); it != _server.end(); ++it)
+        {
+            if (event.data.fd == it->getSocketFd())
+            {
                 int clientFd = it->getSocket().acceptClient();
                 if (clientFd)
                     addClientToEpoll(clientFd, *it);
@@ -82,16 +86,18 @@ void Epoll::eventManager(epoll_ev &event)
             }
         }
 
-        if (!isServerSocket) {
+        if (!isServerSocket)
+        {
             Server serv = _serverMap[event.data.fd];
 
             HttpManager(event.data.fd, serv.getServerAttribute(), _state);
-            // if (!_state != GOT_FULL_REQUEST)
-            //     enableWriteEvent(event.data.fd);
-
-            _serverMap.erase(event.data.fd);
-            epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
-            close(event.data.fd);
+            //if (_state == RECEIVED)
+            //    enableWriteEvent(event.data.fd);
+            //if(_state == SENT)
+            //    disableWriteEvent(event.data.fd);
+            //_serverMap.erase(event.data.fd);
+            //epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
+            //close(event.data.fd);
         }
     }
 }

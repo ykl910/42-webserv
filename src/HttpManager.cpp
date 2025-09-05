@@ -71,8 +71,7 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     if (totalBytesSent != responseLen)
         _pendingResponse[clientFd] = totalBytesSent;
     else {
-        // std::cout << BOLD ITALIC MAGENTA <<  "Response:\n"
-        //           << _responses[clientFd].getResponse() << "\n";
+        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << response.substr(0, 200) << DEFAULT << std::endl;
         _pendingResponse.erase(clientFd);
         _gotFullRequest.erase(clientFd);
         _gotResponse.erase(clientFd);
@@ -93,7 +92,6 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData) const {
     if (contentLengthPos == std::string::npos)
         return true;
 
-    // size_t valueStart = contentLengthPos + "Content-Length: ";
     size_t valueStart = contentLengthPos + CONTENT_LENGTH_SIZE;
     size_t valueEnd = rawData.find("\r\n", valueStart);
     std::string valueStr = rawData.substr(valueStart, valueEnd - valueStart);
@@ -103,20 +101,19 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData) const {
     return bodyLengh >= static_cast<size_t>(contentLength);
 }
 
+
 void    HttpManager::getRequest(int clientFd) {
 
     char buffer[4096];
 
     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-    if (bytes >= 0)
+    if (bytes > 0)
         _buffers[clientFd].append(buffer, bytes);
 
     if (receivedCompleteRequest(_buffers[clientFd])) {
         HttpRequest request(_buffers[clientFd]);
 
-        std::cout
-        << BOLD ITALIC CYAN <<  "Request:\n" << DEFAULT
-        << _request[clientFd].getContent();
+        std::cout << BOLD ITALIC CYAN <<  "Request:\n" << _request[clientFd].getContent() <<  DEFAULT << std::endl;
 
         _request[clientFd] = request;
         _gotFullRequest[clientFd] = true;
@@ -126,6 +123,8 @@ void    HttpManager::getRequest(int clientFd) {
     }
     else
         _gotFullRequest[clientFd] = false;
+
+    std::cout << "Out of hetRequest" << std::endl;
 }
 
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
@@ -133,7 +132,9 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
     state = _state;
     getRequest(clientFd);
 
-    if (state == RECEIVED && !_request[clientFd].getContent().empty())
+    std::cout << "HERE" << std::endl;
+
+    //if (state == RECEIVED /*&& !_request[clientFd].getContent().empty()*/)
         sendResponse(clientFd, _request[clientFd], serverAttr);
 }
 
