@@ -55,7 +55,7 @@ std::string HttpResponse::getStatusLine() const
     return _statusLine;
 }
 
-std::string HttpResponse::getResponse() const
+std::string HttpResponse::getResponse()
 {
     std::string fullResponse;
     fullResponse += _statusLine;
@@ -64,9 +64,14 @@ std::string HttpResponse::getResponse() const
         fullResponse += it->first + ": " + it->second + "\r\n";
     }
     fullResponse += "\r\n";
-    // _response.clear();
+    _response = fullResponse;
     fullResponse += _body;
     return fullResponse;
+}
+
+std::string& HttpResponse::getResponseHeader()
+{
+    return _response;
 }
 
 t_serv_attr HttpResponse::getServerAttr() const
@@ -89,8 +94,8 @@ HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
         setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
 }
 
-std::ostream& operator<<(std::ostream& os, const HttpResponse& response)
+std::ostream& operator<<(std::ostream& os, HttpResponse& response)
 {
-    os << response.getResponse();
+    os << response.getResponseHeader();
     return os;
 }

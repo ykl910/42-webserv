@@ -71,7 +71,8 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     if (totalBytesSent != responseLen)
         _pendingResponse[clientFd] = totalBytesSent;
     else {
-        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << response.substr(0, 200) << DEFAULT << std::endl;
+        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT
+                  << _responses[clientFd] << "\n";
         _pendingResponse.erase(clientFd);
         _gotFullRequest.erase(clientFd);
         _gotResponse.erase(clientFd);
@@ -120,8 +121,7 @@ void    HttpManager::getRequest(int clientFd) {
         _buffers.erase(clientFd);
         _pendingResponse[clientFd] = 0;
         _state = RECEIVED;
-    }
-    else
+    } else
         _gotFullRequest[clientFd] = false;
 
     std::cout << "Out of hetRequest" << std::endl;
