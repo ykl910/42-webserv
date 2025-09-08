@@ -1,4 +1,4 @@
-#include "../include/Server.hpp"
+#include "../../include/Server.hpp"
 
 Socket& Server::getSocket(void) {
     return _socket;

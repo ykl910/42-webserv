@@ -1,4 +1,4 @@
-#include "../include/Select.hpp"
+#include "../../include/Select.hpp"
 
 inline bool    Select::isSocketFd(int fd) const
 {
@@ -69,7 +69,7 @@ void    Select::run()
                     if (HttpManager::hasCompletedResponse(*it)) {
                         close(*it);
                         _clientMap.erase(*it);
-                        it = _selectFd.erase(it);                        
+                        it = _selectFd.erase(it);
                     } else {
                         ++it;
                     }

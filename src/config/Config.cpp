@@ -1,4 +1,4 @@
-#include "../include/Config.hpp"
+#include "../../include/Config.hpp"
 
 /* Nginx context tree
 main

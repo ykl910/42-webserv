@@ -1,5 +1,5 @@
-#include "../include/HttpResponse.hpp"
-#include "../include/Server.hpp"
+#include "../../include/HttpResponse.hpp"
+#include "../../include/Server.hpp"
 
 /* RESPONSE HEADERS
 Accept-Ranges

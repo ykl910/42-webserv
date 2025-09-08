@@ -31,25 +31,25 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 ###########################          SOURCE         ###########################
 
 SRC_DIR             := src
-SRC                 := CGI.cpp \
-                    Config.cpp \
-                    ConfigUtils.cpp \
-                    Cookies.cpp \
-                    DELETE.cpp \
-                    Epoll.cpp \
-                    Error.cpp \
-                    GET.cpp \
-                    HttpManager.cpp \
-                    HttpRequest.cpp \
-                    HttpResponse.cpp \
-                    main.cpp \
-                    Poll.cpp \
-                    POST.cpp \
-                    Select.cpp \
-                    Server.cpp \
-                    Signal.cpp \
-                    Socket.cpp \
-                    utils.cpp
+SRC                 := config/Config.cpp \
+                    config/ConfigUtils.cpp \
+                    http/CGI.cpp \
+                    http/Cookies.cpp \
+                    http/DELETE.cpp \
+                    http/GET.cpp \
+                    http/HttpManager.cpp \
+                    http/HttpRequest.cpp \
+                    http/HttpResponse.cpp \
+                    http/POST.cpp \
+                    multiplexer/Epoll.cpp \
+                    multiplexer/Poll.cpp \
+                    multiplexer/Select.cpp \
+                    server/Server.cpp \
+                    server/Socket.cpp \
+                    utils/Error.cpp \
+                    utils/Signal.cpp \
+                    utils/utils.cpp \
+                    main.cpp
 
 SRC                 := $(addprefix $(SRC_DIR)/, $(SRC))
 

@@ -1,6 +1,6 @@
-#include "../include/Epoll.hpp"
-#include "../include/HttpManager.hpp"
-#include "../include/WebServ.hpp"
+#include "../../include/Epoll.hpp"
+#include "../../include/HttpManager.hpp"
+#include "../../include/WebServ.hpp"
 
 /*
     typedef union epoll_data {
