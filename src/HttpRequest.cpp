@@ -62,6 +62,10 @@ const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
     return _headers;
 }
 
+const t_request_attr& HttpRequest::getRequestAttr() const {
+    return _attributes;
+}
+
 void    HttpRequest::extractRequest(const std::string &request)
 {
     std::stringstream ss(request);
@@ -74,6 +78,9 @@ void    HttpRequest::extractRequest(const std::string &request)
     _content = std::string(_method + " ");
     _content += _path + " ";
     _content += _http_version + "\n";
+    _attributes.method = _method;
+    _attributes.path = _path;
+    _attributes.httpVersion = _http_version;
 
     // parse headers
     while (std::getline(ss, line) && line != "\r") {

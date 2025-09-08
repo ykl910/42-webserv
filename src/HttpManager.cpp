@@ -71,8 +71,6 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     if (totalBytesSent != responseLen)
         _pendingResponse[clientFd] = totalBytesSent;
     else {
-        // std::cout << BOLD ITALIC MAGENTA <<  "Response:\n"
-        //           << response.substr(0, 200) << DEFAULT << std::endl;
         std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT
                   << _responses[clientFd].getResponseHeader() << "\n";
 
@@ -131,11 +129,14 @@ void    HttpManager::getRequest(int clientFd) {
 
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
 {
-    state = _state;
+    // state = _state;
+    (void)state;
     getRequest(clientFd);
 
-    if(_gotFullRequest[clientFd])
+    if (_gotFullRequest[clientFd]) {
+        state = RECEIVED;
         sendResponse(clientFd, _request[clientFd], serverAttr);
+    }
 }
 
 HttpManager::~HttpManager() {}

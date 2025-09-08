@@ -11,7 +11,33 @@
 #define OUT 0
 #define IN 1
 
+// Request include an define
+// #include <netinet/in.h>
+// #include <unistd.h>
+// #include <iostream>
+// #include <cstdlib>
+// #include <sstream>
+// #include <cstring>
+// #include <cerrno>
+// #include <string>
+// #include <cstdio>
+// #include <vector>
+// #include <map>
+
+#define FAILURE 0
+#define SUCCESS 1
+
 typedef struct s_serv_attr t_serv_attr;
+
+// typedef struct s_request
+// {
+
+// }t_request;
+
+// typedef struct s_response
+// {
+
+// }t_response;
 
 enum e_state {
     SENT,
@@ -24,6 +50,18 @@ public:
     bool receivedCompleteRequest(std::string &rawData) const;
     void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr);
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
+
+    // Request methods
+    const bool &getState() const;
+    const std::string &getPath() const;
+    const std::string &getBody() const;
+    const std::string &getMethod() const;
+    const std::string &getContent() const;
+    const std::string &getHttpVersion() const;
+    const t_request_attr& getRequestAttr() const;
+    const std::map<std::string, std::string> &getHeaders() const;
+    void extractRequest(const std::string &request);
+
 
     HttpManager() {}
     HttpManager(int clientFd, t_serv_attr &serverAttr, int &state);
@@ -38,4 +76,16 @@ private:
     static std::map<int, bool>          _gotResponse;
     static std::map<int, bool>          _gotFullRequest;
     static std::map<int, int>           _pendingResponse;
+
+    // Request attributes
+    // bool                                _state;
+    // std::string                         _path;
+    // std::string                         _body;
+    // std::string                         _method;
+    // std::string                         _content;
+    // std::string                         _http_version;
+    // t_request_attr                      _requestAttr;
+    // std::map<std::string, std::string>  _headers;
 };
+
+std::ostream& operator<<(std::ostream& os, const HttpRequest& request);

@@ -1,7 +1,7 @@
 #include "../include/WebServ.hpp"
 #include "../include/Signal.hpp"
 
-#define DEFAULT_PATH "config/test.conf"
+#define DEFAULT_PATH "config/webserv.conf"
 
 static bool    hadChoosenMultiplexer(const std::string& input)
 {

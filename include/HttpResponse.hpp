@@ -18,12 +18,7 @@
 #include <vector>
 #include <map>
 
-typedef struct s_response_attr
-{
-    std::string method;
-    std::string path;
-    std::string host;
-}t_response_attr;
+typedef struct s_request_attr t_request_attr;
 
 class HttpResponse {
 public:
@@ -36,7 +31,6 @@ public:
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
 
-    void resolveRequestHeaders(HttpRequest& request);
     void buildResponse(HttpRequest& request, int code, std::string msg);
 
     void handleThread(HttpRequest& request);
@@ -50,15 +44,17 @@ public:
     void handleDELETE(HttpRequest& request);
 
     HttpResponse() {}
-    HttpResponse(HttpRequest &request, t_serv_attr &serverAttr);
+    HttpResponse(t_request_attr& request, t_serv_attr &serverAttr);
+    HttpResponse(HttpRequest& request, t_serv_attr &serverAttr);
     ~HttpResponse() {}
 
 private:
-    std::string                         _body;
-    std::string                         _statusLine;
-    std::string                         _response;
-    std::map<std::string, std::string>  _headers;
-    t_serv_attr                         _servAttr;
+    std::string     _body;
+    std::string     _statusLine;
+    std::string     _response;
+    headerMap       _headers;
+    t_serv_attr     _servAttr;
+    t_request_attr  _request;
 };
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response);
