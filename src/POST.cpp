@@ -158,21 +158,21 @@ void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg
 
 void HttpResponse::handlePOST(HttpRequest& request)
 {
-    if (request.getPath().find(".cgi") != std::string::npos)
+    if (_request.path.find(".cgi") != std::string::npos)
         Cgi cgi(request, *this);
     else {
         std::map<std::string, std::string> headers = request.getHeaders();
         std::string contentType = getContentType(headers["Content-Type"]);
         std::string boundary = getBoundary(headers["Content-Type"]);
 
-        if (request.getPath() == "/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
+        if (_request.path == "/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             if (storeThread(request, boundary) == -1)
                 buildResponse(request, 500, "Internal error");
             else
                 buildResponse(request, 201, "Created");
-        } else if (request.getPath() == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
+        } else if (_request.path == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             Cookies cookie(request, *this, boundary);
-        } else if (request.getPath() == "/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
+        } else if (_request.path == "/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             Cookies cookie(request, *this, boundary);
         } else
             buildResponse(request, 400, "Bad Request");

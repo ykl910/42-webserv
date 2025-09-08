@@ -20,12 +20,6 @@
 
 typedef struct s_request_attr t_request_attr;
 
-// typedef struct s_response_attr
-// {
-//     std::string path;
-
-// }t_response_attr;
-
 class HttpResponse {
 public:
     std::string getResponse();
@@ -40,17 +34,18 @@ public:
     void buildResponse(HttpRequest& request, int code, std::string msg);
 
     void handleThread(HttpRequest& request);
-    int handleImg(HttpRequest& request, std::string path, std::string extension);
-    int handleCss(HttpRequest& request, std::string path, std::stringstream *buffer);
-    int handleHtml(HttpRequest& request, std::string path, std::stringstream *buffer);
-    void handleError(HttpRequest& request, std::stringstream *buffer, int success, std::string type);
+    int handleImg(HttpRequest& request);
+    int handleCss(HttpRequest& request, std::stringstream *buffer);
+    int handleHtml(HttpRequest& request, std::stringstream *buffer);
+    void handleError(std::stringstream *buffer, int success, std::string type);
 
     void handleGET(HttpRequest& request);
     void handlePOST(HttpRequest& request);
     void handleDELETE(HttpRequest& request);
 
-    // void solvePath():
-    // void routeRequest();
+    void solvePath();
+    void routeRequest();
+    bool canAccessFile(std::string& file);
 
     HttpResponse() {}
     HttpResponse(HttpRequest& request, t_serv_attr &serverAttr);
@@ -60,10 +55,10 @@ private:
     std::string     _body;
     std::string     _statusLine;
     std::string     _response;
+    std::string     _extension;
     headerMap       _headers;
-    t_serv_attr     _servAttr;
+    t_serv_attr     _server;
     t_request_attr  _request;
-    // t_response_attr _response;
 };
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response);
