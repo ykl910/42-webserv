@@ -43,8 +43,8 @@ public:
     void handlePOST(HttpRequest& request);
     void handleDELETE(HttpRequest& request);
 
+    bool isAsset();
     void solvePath();
-    void routeRequest();
     bool canAccessFile(std::string& file);
 
     HttpResponse() {}

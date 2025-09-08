@@ -171,7 +171,6 @@ void HttpResponse::handleGET(HttpRequest& request)
         std::stringstream buffer;
         // if (_request.path == "/list-files") {
         //     handleThread(request);
-        routeRequest();
         if (_extension == "html" || _extension == "htm" || _extension == "") {
             state = handleHtml(request, &buffer);
             if (state != 200)

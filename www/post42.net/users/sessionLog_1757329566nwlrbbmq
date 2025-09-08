@@ -352,3 +352,891 @@ response:HTTP/1.1 200 OK
 request:GET /css/style.css
 response:HTTP/1.1 200 OK
 
+request:GET /
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /favicon.ico
+response:HTTP/1.1 500 Internal error
+
+request:GET /
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 404 Not Found
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/404.webp
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 404 Not Found
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 404 Not Found
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 404 Not Found
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/404.webp
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 404 Not Found
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/hackers.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/hackers.png
+response:HTTP/1.1 200 OK
+
+request:GET /upload.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/writing.gif
+response:HTTP/1.1 200 OK
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 404 Not Found
+
+request:GET /login.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 404 Not Found
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 404 Not Found
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /upload.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/writing.gif
+response:HTTP/1.1 200 OK
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 404 Not Found
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /login.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /login.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /game.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/roulette.gif
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/8ball.gif
+response:HTTP/1.1 200 OK
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 404 Not Found
+
+request:GET /remove.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/remove.webp
+response:HTTP/1.1 200 OK
+
+request:GET /list-files
+response:HTTP/1.1 404 Not Found
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /upload.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/writing.gif
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /about.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/hackers.png
+response:HTTP/1.1 200 OK
+
+request:GET /request/GET.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /favicon.ico
+response:HTTP/1.1 500 Internal error
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /request/POST.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /request/DELETE.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /cgi.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /session.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /cookies.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /index.html
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 500 Internal error
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/404.webp
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 500 Internal error
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 500 Internal error
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 500 Internal error
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /assets/404.webp
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 404 Not Found
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
+request:GET /
+response:HTTP/1.1 200 OK
+
+request:GET /css/style.css
+response:HTTP/1.1 200 OK
+
+request:GET /images/bird.png
+response:HTTP/1.1 404 Not Found
+
+request:GET /images/post42logo.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/finland.png
+response:HTTP/1.1 200 OK
+
+request:GET /images/haribo.png
+response:HTTP/1.1 200 OK
+
+request:GET /assets/icon.png
+response:HTTP/1.1 200 OK
+
