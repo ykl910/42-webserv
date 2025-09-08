@@ -84,6 +84,9 @@ t_serv_attr HttpResponse::getServerAttr() const
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     : _servAttr(serverAttr), _request(request.getRequestAttr())
 {
+    if(request.getBody().size() > static_cast<size_t>(serverAttr.client_max_body_size))
+        setStatusLine(_request.httpVersion, 413, "Content Too Large");
+
     if (_request.method == "GET")
         handleGET(request);
     else if (_request.method == "POST")
