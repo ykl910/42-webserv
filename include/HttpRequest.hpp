@@ -25,6 +25,7 @@ typedef struct s_request_attr
     std::string host;
     std::string body;
     std::string content;
+    std::string prefix;
 }t_request_attr;
 
 class HttpRequest {
@@ -53,7 +54,6 @@ private:
     std::string     _http_version;
     t_request_attr  _attributes;
     headerMap       _headers;
-
 };
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);

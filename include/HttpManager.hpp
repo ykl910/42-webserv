@@ -68,6 +68,8 @@ public:
     ~HttpManager();
 
 private:
+    typedef int clientFd;
+
     int                                 _state;
     static std::map<int, HttpRequest>   _request;
     static std::map<int, HttpResponse>  _responses;

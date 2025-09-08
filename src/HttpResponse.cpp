@@ -75,14 +75,14 @@ std::string& HttpResponse::getResponseHeader()
 
 t_serv_attr HttpResponse::getServerAttr() const
 {
-    return _servAttr;
+    return _server;
 }
 
-// bool    hostFound(std::string)
-// {
-
-
-// }
+bool    hostFound(std::string& input)
+{
+    (void)input;
+    return true;
+}
 
 // stat
 // opendir
@@ -90,26 +90,68 @@ t_serv_attr HttpResponse::getServerAttr() const
 // readdir
 // closedir
 
-// void    HttpResponse::solvePath()
-// {
-//     _response;
-// }
+bool    HttpResponse::canAccessFile(std::string& fullPath)
+{
+    struct stat fileStat;
 
-// void    HttpResponse::routeRequest()
-// {
-//     // host
-//     if (hostFound())
-//     {
-//         // path
-//         solvePath();
-//     }
+    if (stat(fullPath.c_str(), &fileStat) != 0) {
+        std::cout << BOLD RED << "Can't find requested file\n" << DEFAULT;
+        return false;
+    }
 
-//     // location
+    if (!(fileStat.st_mode & S_IRUSR)) {
+        std::cout << BOLD RED << "Don't have read permissions\n" << DEFAULT;
+        return false;
+    }
 
-// }
+    return true;
+}
+
+void    HttpResponse::solvePath()
+{
+    // DIR *dir;
+    // DIR *rootDir;
+    std::string fullPath;
+
+    size_t dot_pos = _request.path.find_last_of(".");
+    if (dot_pos != std::string::npos)
+        _extension = _request.path.substr(dot_pos + 1);
+    std::cout << BOLD YELLOW << _extension << "\n" << DEFAULT;
+
+    if (_request.path == "" || _request.path == "/")
+        fullPath = _server.location.root + "/" + _server.location.index;
+    else {
+        fullPath = _server.location.root + _request.path;
+    }
+
+    _request.path = fullPath;
+    std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
+
+    // std::cout << BOLD GREEN << "Path: " << fullPath << "\n" << DEFAULT;
+
+    // dir = opendir(fullPath.c_str());
+    // rootDir = opendir(_server.location.root.c_str());
+    // if (!rootDir)
+    //     std::cout << BOLD RED << "Can't root dir\n" << DEFAULT << std::endl;
+    // if (!dir)
+    //     std::cout << BOLD RED << "Can't open dir\n" << DEFAULT << std::endl;
+    // closedir(dir);
+    // closedir(rootDir);
+}
+
+void    HttpResponse::routeRequest()
+{
+    // host
+    if (hostFound(_request.host)) {
+        // path
+        solvePath();
+    }
+
+    // location
+}
 
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
-    : _servAttr(serverAttr), _request(request.getRequestAttr())
+    : _server(serverAttr), _request(request.getRequestAttr())
 {
     if(request.getBody().size() > static_cast<size_t>(serverAttr.client_max_body_size))
         setStatusLine(_request.httpVersion, 413, "Content Too Large");

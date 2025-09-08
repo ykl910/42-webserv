@@ -2,20 +2,20 @@
 #include "../include/HttpResponse.hpp"
 #include "../include/WebServ.hpp"
 
-void HttpResponse::handleError(HttpRequest& request, std::stringstream *buffer, int success, std::string type)
+void HttpResponse::handleError(std::stringstream *buffer, int success, std::string type)
 {
     std::string fullPath;
     std::string body;
     if (type == "html") {
         if (success == 404) {
             fullPath = getServerAttr().error_page.err_404;
-            setStatusLine(request.getHttpVersion(), 404, "Not Found");
+            setStatusLine(_request.httpVersion, 404, "Not Found");
         } else if (success == 403) {
             fullPath = getServerAttr().error_page.err_403;
-            setStatusLine(request.getHttpVersion(), 403, "Forbidden");
+            setStatusLine(_request.httpVersion, 403, "Forbidden");
         } else {
             fullPath = getServerAttr().error_page.err_500;
-            setStatusLine(request.getHttpVersion(), 500, "Internal error");
+            setStatusLine(_request.httpVersion, 500, "Internal error");
         }
         std::ifstream file(fullPath.c_str());
         *buffer << file.rdbuf();
@@ -29,23 +29,24 @@ void HttpResponse::handleError(HttpRequest& request, std::stringstream *buffer, 
             body = "Forbidden";
         else
             body = "Internal error";
-        setStatusLine(request.getHttpVersion(), success, body);
+        setStatusLine(_request.httpVersion, success, body);
         setHeaders("Content-Type", "text/plain");
         setHeaders("Content-Length", itos(body.length()));
         setBody(body);
     }
 }
 
-int HttpResponse::handleHtml(HttpRequest& request, std::string path, std::stringstream *buffer)
+int HttpResponse::handleHtml(HttpRequest& request, std::stringstream *buffer)
 {
-    std::string fullPath = POST42dotNET"html" + path;
-    std::ifstream file(fullPath.c_str());
-    if (access(fullPath.c_str(), F_OK) != 0)
+    std::cout << BOLD BLUE << _request.path << DEFAULT << std::endl;
+    std::ifstream file(_request.path.c_str());
+    if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
-    else if (access(fullPath.c_str(), R_OK) != 0)
+    else if (access(_request.path.c_str(), R_OK) != 0)
         return 403;
     if (!file.is_open())
         return 500;
+
     *buffer << file.rdbuf();
     std::string body = buffer->str();
     setStatusLine(request.getHttpVersion(), 200, "OK");
@@ -55,32 +56,34 @@ int HttpResponse::handleHtml(HttpRequest& request, std::string path, std::string
     return 200;
 }
 
-int HttpResponse::handleCss(HttpRequest& request, std::string path, std::stringstream *buffer)
+int HttpResponse::handleCss(HttpRequest& request, std::stringstream *buffer)
 {
-    std::string fullPath = POST42dotNET + path;
-    std::ifstream file(fullPath.c_str());
-    if (access(fullPath.c_str(), F_OK) != 0)
+    std::ifstream file(_request.path.c_str());
+
+    if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
-    else if (access(fullPath.c_str(), R_OK) != 0)
+    else if (access(_request.path.c_str(), R_OK) != 0)
         return 403;
     if (!file.is_open())
         return 500;
+
     *buffer << file.rdbuf();
     std::string body = buffer->str();
     setStatusLine(request.getHttpVersion(), 200, "OK");
     setHeaders("Content-Type", "text/css");
     setHeaders("Content-Length", itos(body.length()));
     setBody(body);
+
     return 200;
 }
 
-int HttpResponse::handleImg(HttpRequest& request, std::string path, std::string extension)
+int HttpResponse::handleImg(HttpRequest& request)
 {
-    std::string fullPath = POST42dotNET + path;
-    std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::binary);
-    if (access(fullPath.c_str(), F_OK) != 0)
+    std::ifstream file(_request.path.c_str(), std::ios::in | std::ios::binary);
+
+    if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
-    else if (access(fullPath.c_str(), R_OK) != 0)
+    else if (access(_request.path.c_str(), R_OK) != 0)
         return 403;
     if (!file.is_open())
         return 500;
@@ -91,16 +94,19 @@ int HttpResponse::handleImg(HttpRequest& request, std::string path, std::string 
     }
     if (file.gcount() > 0)
         data.insert(data.end(), temp, temp + file.gcount());
+
     setStatusLine(request.getHttpVersion(), 200, "OK");
-    if (extension == "png")
+    if (_extension == "png")
         setHeaders("Content-Type", "image/png");
-    else if (extension == "gif")
+    else if (_extension == "gif")
         setHeaders("Content-Type", "image/gif");
-    else if (extension == "webp")
+    else if (_extension == "webp")
         setHeaders("Content-Type", "image/webp");
+
     setHeaders("Content-Length", itos(data.size()));
     setBody(std::string(&data[0], data.size()));
     file.close();
+
     return 200;
 }
 
@@ -109,7 +115,7 @@ void HttpResponse::handleThread(HttpRequest& request)
     std::string targetDir = POST42dotNET"threads";
     DIR* dir = opendir(targetDir.c_str());
     if (!dir) {
-        setStatusLine(request.getHttpVersion(), 200, "OK");
+        setStatusLine(_request.httpVersion, 200, "OK");
         std::string emptyArray = "[]";
         setHeaders("Content-Type", "application/json");
         setHeaders("Content-Length", itos(emptyArray.length()));
@@ -156,41 +162,32 @@ void HttpResponse::handleGET(HttpRequest& request)
 {
     if (_request.path.find(".cgi") != std::string::npos)
         Cgi cgi(request, *this);
+
     else {
-        if (_request.path == "" || _request.path == "/")
-            _request.path = "/index.html";
-
-        std::string extension;
-        size_t dot_pos = _request.path.find_last_of(".");
-        if (dot_pos != std::string::npos)
-            extension = _request.path.substr(dot_pos + 1);
-
-        std::cout << BOLD YELLOW << extension << "\n" << DEFAULT;
-
         if (_request.path == "/login.html" && isLogged(request))
             _request.path = "/isLogged.html";
 
         int state = 0;
         std::stringstream buffer;
-        if (_request.path == "/list-files") {
-            handleThread(request);
-
-        } else if (extension == "html" || extension == "htm" || extension == "") {
-            state = handleHtml(request, _request.path, &buffer);
+        // if (_request.path == "/list-files") {
+        //     handleThread(request);
+        routeRequest();
+        if (_extension == "html" || _extension == "htm" || _extension == "") {
+            state = handleHtml(request, &buffer);
             if (state != 200)
-                handleError(request, &buffer, state, "html");
+                handleError(&buffer, state, "html");
 
-        } else if (extension == "css") {
-            state = handleCss(request, _request.path, &buffer);
+        } else if (_extension == "css") {
+            state = handleCss(request, &buffer);
             if (state != 200)
-                handleError(request, &buffer, state, "img");
+                handleError(&buffer, state, "img");
 
-        } else if (extension == "png" || extension == "gif" || extension == "webp") {
-            state = handleImg(request, _request.path, extension);
+        } else if (_extension == "png" || _extension == "gif" || _extension == "webp") {
+            state = handleImg(request);
             if (state != 200)
-                handleError(request, &buffer, state, "img");
+                handleError(&buffer, state, "img");
 
         } else
-            handleError(request, &buffer, 500, "html");
+            handleError(&buffer, 500, "html");
     }
 }
