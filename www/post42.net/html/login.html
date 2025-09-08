@@ -4,6 +4,18 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <link rel="stylesheet" href="../css/style.css">
+   <script>
+      // Check for login cookie on page load
+      document.addEventListener('DOMContentLoaded', function() {
+         
+         console.log("Raw cookie string:", document.cookie);
+         if (document.cookie.includes('session=')) {
+            console.log("Session cookie found by direct check!");
+            window.location.href = 'isLogged.html';
+            return;
+         }
+      });
+    </script>
    <link rel="icon" href="../assets/icon.png" type="image/png">
    <title>Upload</title>
 </head>

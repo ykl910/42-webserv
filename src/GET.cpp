@@ -145,28 +145,12 @@ void HttpResponse::handleThread(HttpRequest& request)
     setBody(jsonResponse);
 }
 
-static int isLogged(HttpRequest& request)
-{
-    std::map<std::string, std::string>::const_iterator mapit;
-    std::string sessionId;
-
-    for (mapit = request.getHeaders().begin();
-         mapit != request.getHeaders().end(); ++mapit) {
-        if (mapit->first == "Cookie")
-            return 1;
-    }
-    return 0;
-}
-
 void HttpResponse::handleGET(HttpRequest& request)
 {
     if (_request.path.find(".cgi") != std::string::npos)
         Cgi cgi(request, *this);
 
     else {
-        if (_request.path == "/login.html" && isLogged(request))
-            _request.path = "/isLogged.html";
-
         int state = 0;
         std::stringstream buffer;
         // if (_request.path == "/list-files") {
