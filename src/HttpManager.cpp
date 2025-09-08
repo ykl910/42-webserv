@@ -124,7 +124,6 @@ void    HttpManager::getRequest(int clientFd) {
         _state = RECEIVED;
     } else
         _gotFullRequest[clientFd] = false;
-
 }
 
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
@@ -136,6 +135,7 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
     if (_gotFullRequest[clientFd]) {
         state = RECEIVED;
         sendResponse(clientFd, _request[clientFd], serverAttr);
+        _request.erase(clientFd);
     }
 }
 

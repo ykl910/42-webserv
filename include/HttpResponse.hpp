@@ -20,6 +20,12 @@
 
 typedef struct s_request_attr t_request_attr;
 
+// typedef struct s_response_attr
+// {
+//     std::string path;
+
+// }t_response_attr;
+
 class HttpResponse {
 public:
     std::string getResponse();
@@ -43,8 +49,10 @@ public:
     void handlePOST(HttpRequest& request);
     void handleDELETE(HttpRequest& request);
 
+    // void solvePath():
+    // void routeRequest();
+
     HttpResponse() {}
-    HttpResponse(t_request_attr& request, t_serv_attr &serverAttr);
     HttpResponse(HttpRequest& request, t_serv_attr &serverAttr);
     ~HttpResponse() {}
 
@@ -55,6 +63,7 @@ private:
     headerMap       _headers;
     t_serv_attr     _servAttr;
     t_request_attr  _request;
+    // t_response_attr _response;
 };
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response);

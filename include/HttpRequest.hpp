@@ -45,14 +45,14 @@ public:
     ~HttpRequest() {}
 
 private:
-    bool                                _state;
-    std::string                         _path;
-    std::string                         _body;
-    std::string                         _method;
-    std::string                         _content;
-    std::string                         _http_version;
-    t_request_attr                      _attributes;
-    headerMap                           _headers;
+    bool            _state;
+    std::string     _path;
+    std::string     _body;
+    std::string     _method;
+    std::string     _content;
+    std::string     _http_version;
+    t_request_attr  _attributes;
+    headerMap       _headers;
 
 };
 
