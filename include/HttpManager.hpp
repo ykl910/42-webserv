@@ -46,8 +46,8 @@ enum e_state {
 
 class HttpManager {
 public:
-    void getRequest(int clientFd);
-    bool receivedCompleteRequest(std::string &rawData) const;
+    void getRequest(int clientFd, t_serv_attr &serverAttr);
+    bool receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const;
     void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr);
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
 
