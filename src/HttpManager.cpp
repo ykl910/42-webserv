@@ -82,7 +82,7 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     }
 }
 
-bool    HttpManager::receivedCompleteRequest(std::string &rawData) const {
+bool    HttpManager::receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const {
 
     size_t headerEnd = rawData.find("\r\n\r\n");
     if (headerEnd == std::string::npos)
@@ -100,10 +100,12 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData) const {
     int contentLength = std::atoi(valueStr.c_str());
 
     size_t bodyLengh = rawData.size() - bodyStart;
+    if(bodyLengh > static_cast<size_t>(serverAttr.client_max_body_size))
+        return true;
     return bodyLengh >= static_cast<size_t>(contentLength);
 }
 
-void    HttpManager::getRequest(int clientFd) {
+void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr) {
 
     char buffer[4096];
 
@@ -111,7 +113,7 @@ void    HttpManager::getRequest(int clientFd) {
     if (bytes > 0)
         _buffers[clientFd].append(buffer, bytes);
 
-    if (receivedCompleteRequest(_buffers[clientFd])) {
+    if (receivedCompleteRequest(_buffers[clientFd], serverAttr)) {
         HttpRequest request(_buffers[clientFd]);
 
         std::cout << BOLD ITALIC CYAN << "Request:\n" << DEFAULT
@@ -130,7 +132,7 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
 {
     // state = _state;
     (void)state;
-    getRequest(clientFd);
+    getRequest(clientFd, serverAttr);
 
     if (_gotFullRequest[clientFd]) {
         state = RECEIVED;
