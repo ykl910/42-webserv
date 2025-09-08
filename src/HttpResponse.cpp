@@ -78,8 +78,35 @@ t_serv_attr HttpResponse::getServerAttr() const
     return _servAttr;
 }
 
-// HttpResponse::HttpResponse(t_request_attr &request, t_serv_attr &serverAttr)
-//     : _servAttr(serverAttr), _request(request)
+// bool    hostFound(std::string)
+// {
+
+
+// }
+
+// stat
+// opendir
+// chdir
+// readdir
+// closedir
+
+// void    HttpResponse::solvePath()
+// {
+//     _response;
+// }
+
+// void    HttpResponse::routeRequest()
+// {
+//     // host
+//     if (hostFound())
+//     {
+//         // path
+//         solvePath();
+//     }
+
+//     // location
+
+// }
 
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     : _servAttr(serverAttr), _request(request.getRequestAttr())
