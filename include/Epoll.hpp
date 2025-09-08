@@ -38,11 +38,12 @@ public:
     ~Epoll();
 
 private:
-    int                         _state;
+    //int                         _state;
     int                         _epollFd;
     int                         _nbEvents;
     vector                      _eventsQueue;
 
+    std::map<int, int>          _clientState;
     std::map<int, std::string>  _buffers;
     std::map<int, bool>         _gotResponse;
     std::map<int, bool>         _gotFullRequest;
