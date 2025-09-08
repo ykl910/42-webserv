@@ -50,6 +50,7 @@ public:
     bool receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const;
     void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr);
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
+    static bool hasCompletedResponse(int clientFd);
 
     // Request methods
     const bool &getState() const;
