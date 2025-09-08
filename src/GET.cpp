@@ -143,6 +143,7 @@ static int isLogged(HttpRequest& request)
 {
     std::map<std::string, std::string>::const_iterator mapit;
     std::string sessionId;
+
     for (mapit = request.getHeaders().begin();
          mapit != request.getHeaders().end(); ++mapit) {
         if (mapit->first == "Cookie")
@@ -153,39 +154,42 @@ static int isLogged(HttpRequest& request)
 
 void HttpResponse::handleGET(HttpRequest& request)
 {
-    std::string path = request.getPath();
-    if (path.find(".cgi") != std::string::npos)
+    if (_request.path.find(".cgi") != std::string::npos)
         Cgi cgi(request, *this);
     else {
-        if (path == "" || path == "/")
-            path = "/index.html";
+        if (_request.path == "" || _request.path == "/")
+            _request.path = "/index.html";
 
         std::string extension;
-        size_t dot_pos = path.find_last_of(".");
+        size_t dot_pos = _request.path.find_last_of(".");
         if (dot_pos != std::string::npos)
-            extension = path.substr(dot_pos + 1);
+            extension = _request.path.substr(dot_pos + 1);
 
         std::cout << BOLD YELLOW << extension << "\n" << DEFAULT;
 
-        if (path == "/login.html" && isLogged(request))
-            path = "/isLogged.html";
+        if (_request.path == "/login.html" && isLogged(request))
+            _request.path = "/isLogged.html";
 
         int state = 0;
         std::stringstream buffer;
-        if (request.getPath() == "/list-files") {
+        if (_request.path == "/list-files") {
             handleThread(request);
+
         } else if (extension == "html" || extension == "htm" || extension == "") {
-            state = handleHtml(request, path, &buffer);
+            state = handleHtml(request, _request.path, &buffer);
             if (state != 200)
                 handleError(request, &buffer, state, "html");
+
         } else if (extension == "css") {
-            state = handleCss(request, path, &buffer);
+            state = handleCss(request, _request.path, &buffer);
             if (state != 200)
                 handleError(request, &buffer, state, "img");
+
         } else if (extension == "png" || extension == "gif" || extension == "webp") {
-            state = handleImg(request, path, extension);
+            state = handleImg(request, _request.path, extension);
             if (state != 200)
                 handleError(request, &buffer, state, "img");
+
         } else
             handleError(request, &buffer, 500, "html");
     }

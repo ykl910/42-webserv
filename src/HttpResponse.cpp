@@ -59,10 +59,9 @@ std::string HttpResponse::getResponse()
 {
     std::string fullResponse;
     fullResponse += _statusLine;
-    for (std::map<std::string, std::string>::const_iterator it = _headers.begin();
-                                                            it != _headers.end(); ++it) {
+    for (headerMap::const_iterator it = _headers.begin();
+                                   it != _headers.end(); ++it)
         fullResponse += it->first + ": " + it->second + "\r\n";
-    }
     fullResponse += "\r\n";
     _response = fullResponse;
     fullResponse += _body;
@@ -79,24 +78,20 @@ t_serv_attr HttpResponse::getServerAttr() const
     return _servAttr;
 }
 
-void    HttpResponse::resolveRequestHeaders(HttpRequest& request)
-{
-    (void)request;
-}
+// HttpResponse::HttpResponse(t_request_attr &request, t_serv_attr &serverAttr)
+//     : _servAttr(serverAttr), _request(request)
 
-HttpResponse::HttpResponse(HttpRequest &request, t_serv_attr &serverAttr)
-    : _servAttr(serverAttr)
+HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
+    : _servAttr(serverAttr), _request(request.getRequestAttr())
 {
-    std::string method = request.getMethod();
-    resolveRequestHeaders(request);
-    if (method == "GET")
+    if (_request.method == "GET")
         handleGET(request);
-    else if (method == "POST")
+    else if (_request.method == "POST")
         handlePOST(request);
-    else if (method == "DELETE")
+    else if (_request.method == "DELETE")
         handleDELETE(request);
     else
-        setStatusLine(request.getHttpVersion(), 405, "Method not allowed");
+        setStatusLine(_request.httpVersion, 405, "Method not allowed");
 }
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response)

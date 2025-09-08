@@ -98,9 +98,11 @@ void Epoll::eventManager(epoll_ev &event)
             //if(_state == SENT)
             //    disableWriteEvent(event.data.fd);
             //_serverMap.erase(event.data.fd);
-            epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
-            _clientMap.erase(event.data.fd);
-            close(event.data.fd);
+            if (_state == RECEIVED) {
+                epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
+                _clientMap.erase(event.data.fd);
+                close(event.data.fd);
+            }
         }
     }
 }
