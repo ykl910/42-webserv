@@ -156,7 +156,7 @@ void Cookies::buildCookieResponse(HttpRequest& request, HttpResponse& response, 
 
     if (request.getPath() == "/login" && code == 200) {
         std::string sessionId = generateSessionID();
-        response.setHeaders("Set-Cookie", "session=" + sessionId + "; Path=/; HttpOnly");
+        response.setHeaders("Set-Cookie", "session=" + sessionId + "; Path=/;");
     }
     response.setStatusLine(request.getHttpVersion(), code, msg);
     response.setHeaders("Content-Type", "text/plain");
