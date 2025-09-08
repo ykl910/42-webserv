@@ -107,47 +107,31 @@ bool    HttpResponse::canAccessFile(std::string& fullPath)
     return true;
 }
 
+bool    HttpResponse::isAsset()
+{
+    return _extension == "png" || _extension == "gif" || _extension == "webp";
+}
+
 void    HttpResponse::solvePath()
 {
-    // DIR *dir;
-    // DIR *rootDir;
     std::string fullPath;
 
+    std::cout << BOLD CYAN << _request.path << std::endl << DEFAULT;
     size_t dot_pos = _request.path.find_last_of(".");
     if (dot_pos != std::string::npos)
         _extension = _request.path.substr(dot_pos + 1);
     std::cout << BOLD YELLOW << _extension << "\n" << DEFAULT;
 
     if (_request.path == "" || _request.path == "/")
-        fullPath = _server.location.root + "/" + _server.location.index;
+        fullPath = _server.location.root + "/html/" + _server.location.index;
     else {
-        fullPath = _server.location.root + _request.path;
+        if (_extension == "html")
+            fullPath = _server.location.root + "/html" + _request.path;
+        else if (_request.path[0] == '/')
+            fullPath = _server.location.root + _request.path;
     }
-
     _request.path = fullPath;
     std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
-
-    // std::cout << BOLD GREEN << "Path: " << fullPath << "\n" << DEFAULT;
-
-    // dir = opendir(fullPath.c_str());
-    // rootDir = opendir(_server.location.root.c_str());
-    // if (!rootDir)
-    //     std::cout << BOLD RED << "Can't root dir\n" << DEFAULT << std::endl;
-    // if (!dir)
-    //     std::cout << BOLD RED << "Can't open dir\n" << DEFAULT << std::endl;
-    // closedir(dir);
-    // closedir(rootDir);
-}
-
-void    HttpResponse::routeRequest()
-{
-    // host
-    if (hostFound(_request.host)) {
-        // path
-        solvePath();
-    }
-
-    // location
 }
 
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
@@ -156,6 +140,7 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     if(request.getBody().size() > static_cast<size_t>(serverAttr.client_max_body_size))
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
 
+    solvePath();
     if (_request.method == "GET")
         handleGET(request);
     else if (_request.method == "POST")
