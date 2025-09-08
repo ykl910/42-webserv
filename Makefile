@@ -33,7 +33,6 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 SRC_DIR             := src
 SRC                 := config/Config.cpp \
                     config/ConfigUtils.cpp \
-                    http/CGI.cpp \
                     http/Cookies.cpp \
                     http/DELETE.cpp \
                     http/GET.cpp \
@@ -44,6 +43,7 @@ SRC                 := config/Config.cpp \
                     multiplexer/Epoll.cpp \
                     multiplexer/Poll.cpp \
                     multiplexer/Select.cpp \
+                    server/CGI.cpp \
                     server/Server.cpp \
                     server/Socket.cpp \
                     utils/Error.cpp \
