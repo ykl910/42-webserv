@@ -2,6 +2,10 @@
 
 set -e
 
+header="\
+░█░░▒█▒██▀░██▄░▄▀▀▒██▀▒█▀▄░█▒█
+░▀▄▀▄▀░█▄▄▒█▄█▒▄██░█▄▄░█▀▄░▀▄▀"
+
 # Text formating
 DEFAULT="\033[0m"
 BOLD="\033[1m"
@@ -39,6 +43,8 @@ multiplexers=(
 
 main()
 {
+    echo -e "$BOLD$BLUE$header$DEFAULT\n"
+
     if [ $# -eq 1 ]; then
         case $1 in
             "subject")
@@ -65,7 +71,7 @@ main()
 
 print_usage()
 {
-    echo "usage: ./script.sh [test name]"
+    echo -e "$BOLD${WHITE}usage: ${DEFAULT}./script.sh [test name]"
 }
 
 setup_test()
@@ -84,14 +90,14 @@ run_all_test()
 
 run_subject_test()
 {
-    if [ ! -f "../subject/ubuntu_tester" ]; then
+    if [ ! -f "external/subject/ubuntu_tester" ]; then
         curl -O https://cdn.intra.42.fr/document/document/35869/ubuntu_tester
-        chmod 755 "../subject/ubuntu_tester"
+        chmod 755 "external/subject/ubuntu_tester"
     fi
 
-    if [ ! -f "../subject/ubuntu_cgi_tester" ]; then
+    if [ ! -f "external/subject/ubuntu_cgi_tester" ]; then
         curl -O https://cdn.intra.42.fr/document/document/35867/ubuntu_cgi_tester
-        chmod 755 "../subject/ubuntu_cgi_tester"
+        chmod 755 "external/subject/ubuntu_cgi_tester"
     fi
     # Welcome in this little webserver tester.
     # Passing the test here is the minimum before going to an evaluation.
@@ -144,6 +150,8 @@ run_subject_test()
     # Before starting please verify that the server is launched
     bash -c "cd $project_dir && ./webserv"
     # press enter to continue
+
+    rm -r YoupiBanane test.conf
 }
 
 run_siege_test()
@@ -153,8 +161,10 @@ run_siege_test()
     echo -e "${BOLD}${ITALIC}${YELLOW}Siege test${DEFAULT}"
     mkdir -p $log_dir/siege
     pushd .. > /dev/null
-    for multiplexer in "${multiplexers[@]}"; do
-        for port in "${ports[@]}"; do
+    for multiplexer in "${multiplexers[@]}";
+    do
+        for port in "${ports[@]}";
+        do
             ./webserv $multiplexer &> /dev/null &
             webserv_pid=$!
             siege -c 255 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
@@ -171,10 +181,12 @@ run_curl_test()
 
     mkdir -p ../log
     pushd .. > /dev/null
-    for multiplexer in "${multiplexers[@]}"; do
+    for multiplexer in "${multiplexers[@]}";
+    do
         ./webserv $multiplexer &
         webserv_pid=$!
-        for domain in "${domains[@]}"; do
+        for domain in "${domains[@]}";
+        do
             # Empty request
             # curl -d http $host:$port
 

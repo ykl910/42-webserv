@@ -24,4 +24,4 @@ public:
 private:
     Multiplexer _multiplexer;
 };
-#include "../src/WebServ.tpp"
+#include "../src/server/WebServ.tpp"

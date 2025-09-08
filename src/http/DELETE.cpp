@@ -1,6 +1,6 @@
-#include "../include/textFormatting.hpp"
-#include "../include/HttpResponse.hpp"
-#include "../include/WebServ.hpp"
+#include "../../include/textFormatting.hpp"
+#include "../../include/HttpResponse.hpp"
+#include "../../include/WebServ.hpp"
 
 void HttpResponse::handleDELETE(HttpRequest& request)
 {

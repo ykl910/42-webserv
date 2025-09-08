@@ -1,4 +1,4 @@
-#include "../include/CGI.hpp"
+#include "../../include/CGI.hpp"
 
 void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response)
 {

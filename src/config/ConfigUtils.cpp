@@ -1,4 +1,4 @@
-#include "../include/Config.hpp"
+#include "../../include/Config.hpp"
 
 // void    Config::printConfig(void) const {
 //     for (configIterator it = _config.begin(); it != _config.end(); ++it) {
