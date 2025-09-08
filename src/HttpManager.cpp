@@ -9,6 +9,10 @@ std::map<int, bool>          HttpManager::_gotFullRequest;
 std::map<int, int>           HttpManager::_pendingResponse;
 std::map<int, HttpResponse>  HttpManager::_responses;
 
+bool HttpManager::hasCompletedResponse(int clientFd) {
+    return _pendingResponse.find(clientFd) == _pendingResponse.end();
+}
+
 void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
 {
     std::map<std::string, std::string>::const_iterator mapit;
@@ -135,10 +139,10 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
     getRequest(clientFd, serverAttr);
 
     if (_gotFullRequest[clientFd]) {
-        state = RECEIVED;
         sendResponse(clientFd, _request[clientFd], serverAttr);
         _request.erase(clientFd);
     }
+
 }
 
 HttpManager::~HttpManager() {}
