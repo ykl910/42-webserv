@@ -25,13 +25,14 @@ enum e_server_directive {
     HOST,
     SERVER_NAME,
     CLIENT_MAX_BODY_SIZE,
-    AUTOINDEX
 };
 
 enum e_location_directiv {
     PATH,
     ROOT,
-    INDEX
+    INDEX,
+    AUTOINDEX,
+    METHOD
 };
 
 enum e_error_directive {
@@ -55,12 +56,12 @@ enum e_redirection_directive {
 
 enum e_location_directive {};
 
-typedef std::string directive;
+typedef std::string directiveValue;
 
 typedef uint32_t contextName;
 typedef uint32_t directiveName;
 
-typedef std::map<directiveName, directive> context;
+typedef std::map<directiveName, directiveValue> context;
 typedef context::const_iterator directiveIterator;
 
 typedef std::map<contextName, context> server;
@@ -77,7 +78,7 @@ public:
     bool gotAllContexts(void);
     configParser& getConfigParser(void);
     void printConfigFormat(void) const;
-    void printConfigParser(void) const;
+    void printConfig(void) const;
     void printServer(const server& srv) const;
     const char*& getConfigFilePath(void) const;
 
@@ -87,7 +88,7 @@ public:
 
     void getServer(std::ifstream& file, std::string& line, server& server);
     void getContext(std::ifstream& file, std::string& line, server& server);
-    void getDirective(std::string& line, directive& newDirective, int indentSize);
+    void getDirective(std::string& line, directiveValue& newDirective, int indentSize);
 
     void parseConfigFile(void);
     void initConfigParser(void);
@@ -96,8 +97,6 @@ public:
     ~Config();
 
 private:
-    uint8_t         _contextMask;
-    uint8_t         _directiveMask;
     unsigned int    _contextIndex;
     unsigned int    _directiveIndex;
     configParser    _configParser;

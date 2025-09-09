@@ -44,6 +44,8 @@ main
 */
 
 #define LOCATION_STRING_LENGTH 9 // location:
+#define EXPECTED_DIRECTIVE _configFormat[_contextIndex][_directiveIndex]
+#define EXPECTED_CONTEXT _contextNameList[_contextIndex]
 
 const char* _contextNameList[5] = {
     "server:", "location:", "error_page:", "redirection:", "cgi:"};
@@ -71,43 +73,41 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
     int lineLength = line.length();
 
     if (lineLength == 0)
-        throw std::runtime_error(
-            "Error config: line empty while excepting a directive.");
+        manageConfigError(line, EXPECTED_DIRECTIVE,
+            "line empty while excepting a directive.");
 
     else if (lineLength < indentSize
           || lineLength < indentSize + static_cast<int>(DIRECTIVE_NAME_LENGTH))
-        throw std::runtime_error("Error config: config not well formatted.");
+        manageConfigError(line, EXPECTED_DIRECTIVE, "config not well formatted.");
 
     else if (!rightIndentation(line, indentSize))
-        throw std::runtime_error("Error config: wrong indentation.");
+        manageConfigError(line, EXPECTED_DIRECTIVE, "wrong indentation.");
 
     // is directive name format valid
     else if (_configFormat[_contextIndex][_directiveIndex]
             != line.substr(indentSize, DIRECTIVE_NAME_LENGTH))
-        throw std::runtime_error("Error config: directive name not valid.");
+        manageConfigError(line, EXPECTED_DIRECTIVE, "directive name not valid.");
 
     std::string tmp = line.substr(indentSize + DIRECTIVE_NAME_LENGTH);
     if (!std::isspace(tmp[0]))
-        throw std::runtime_error(
-            "Error config: no space between directive name and directive value.");
-    else if (_contextIndex == LOCATION && tmp.length() < 2 && (!tmp[1] || tmp[1] != '/'))
-        throw std::runtime_error(
-            "Error config: location directive invalid.");
+        manageConfigError(line, EXPECTED_DIRECTIVE,
+            "no space between directive name and directive value.");
+
+    else if (_contextIndex == LOCATION && tmp.length() < 2
+        && (!tmp[1] || tmp[1] != '/'))
+        manageConfigError(line, EXPECTED_DIRECTIVE, "location directive invalid.");
+
     else if (!tmp[1] || std::isspace(tmp[1]))
-        throw std::runtime_error(
-            "Error config: directive value not well formatted.");
+        manageConfigError(line, EXPECTED_DIRECTIVE,
+            "directive value not well formatted.");
+
     return true;
 }
 
-void    Config::getDirective(std::string& line, directive& newDirective, int indentSize)
+void    Config::getDirective(std::string& line, directiveValue& newDirective, int indentSize)
 {
-    if (_directiveMask & 1 << _directiveIndex)
-        throw std::runtime_error(
-            "Error: config: got already this directive in this context.");
-
     newDirective = line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
         line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1);
-    _directiveMask |= 1 << _directiveIndex;
 }
 
 void    Config::getContext(std::ifstream& file, std::string& line, server& server)
@@ -118,10 +118,9 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
         indentSize = 4;
     else
         indentSize = 8;
-    _directiveMask = 0;
     _directiveIndex = 0;
     while (_directiveIndex < _configFormat[_contextIndex].size()) {
-        directive   newDirective;
+        directiveValue   newDirective;
 
         if (_contextIndex == LOCATION
             && _directiveIndex == PATH) {
@@ -145,24 +144,18 @@ bool    Config::contextFormatValid(const std::string& line)
         indentSize = 4;
     if (_contextIndex == LOCATION) {
         if (line.length() <= LOCATION_STRING_LENGTH + indentSize)
-            throw std::runtime_error("Error: location context format not valid.");
+            manageConfigError(line, EXPECTED_CONTEXT, "location context format not valid.");
         else
             return true;
     } else if (line.empty()
         || std::strlen(_contextNameList[_contextIndex]) + indentSize != line.length()
         || _contextNameList[_contextIndex] != line.substr(indentSize, line.length() - indentSize))
-        throw std::runtime_error("Error: context format not valid.");
+        manageConfigError(line, EXPECTED_CONTEXT, "context format not valid.");
     return true;
-}
-
-bool    Config::gotAllContexts(void)
-{
-    return _contextMask & 0b00001111;
 }
 
 void    Config::getServer(std::ifstream& file, std::string& line, server& server)
 {
-    _contextMask = 0;
     _contextIndex = SERVER;
     while (_contextIndex < _configFormat.size()) {
         std::getline(file, line);
@@ -186,7 +179,7 @@ bool    gotAnotherServer(std::ifstream& file, std::string& line)
     if (file.eof())
         return false;
     else if (!line.empty())
-        throw std::runtime_error("Error: config file not well formated.");
+        manageConfigError(line, "", "config file not well formated.");
     std::ifstream::pos_type streamPos = file.tellg();
     std::getline(file, line);
     file.seekg(streamPos);
@@ -199,7 +192,7 @@ void    Config::parseConfigFile(void)
     std::ifstream file(_configFilePath);
 
     if (!file)
-        throw std::runtime_error("Error: can't open config file");
+        manageConfigError(line, "", "can't open config file");
     while (GETTING_ALL_SERVERS) {
         server  server;
 
@@ -230,12 +223,13 @@ void    Config::initConfigParser(void)
     _configFormat[SERVER][HOST] = "host";
     _configFormat[SERVER][SERVER_NAME] = "server_name";
     _configFormat[SERVER][CLIENT_MAX_BODY_SIZE] = "client_max_body_size";
-    _configFormat[SERVER][AUTOINDEX] = "autoindex";
 
     // locationDirective
-    _configFormat[LOCATION][PATH] = "none";
+    _configFormat[LOCATION][PATH] = "";
     _configFormat[LOCATION][ROOT] = "root";
     _configFormat[LOCATION][INDEX] = "index";
+    _configFormat[LOCATION][AUTOINDEX] = "autoindex";
+    _configFormat[LOCATION][METHOD] = "method";
 
     // errorDirective
     _configFormat[ERROR][E_400] = "400";
@@ -266,7 +260,7 @@ Config::Config(const char*& configFilePath)
     initConfigParser();
     // printConfigFormat();
     parseConfigFile();
-    // printConfigParser();
+    // printConfig();
 }
 
 Config::~Config() {}
