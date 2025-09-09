@@ -12,6 +12,8 @@ typedef struct s_cgi {
 typedef struct s_location {
     std::string root;
     std::string index;
+    bool        autoindex;
+    uint8_t     method;
 }t_location;
 
 typedef struct s_redirection {

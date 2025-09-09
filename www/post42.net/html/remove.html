@@ -38,7 +38,7 @@
 
       <script>
          // Fetch the list of files from your server
-         fetch('/list-files')
+         fetch('/threads')
             .then(res => res.json()) // Expecting JSON array: ["file1.txt", "file2.txt"]
             .then(files => {
             const select = document.getElementById('fileSelect');
