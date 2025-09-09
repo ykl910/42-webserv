@@ -43,8 +43,6 @@ main
 └── include              (directive, includes external config)
 */
 
-#define LOCATION_STRING_LENGTH 9 // location:
-
 const char* _contextNameList[5] = {
     "server:", "location:", "error_page:", "redirection:", "cgi:"};
 
@@ -90,9 +88,6 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
     if (!std::isspace(tmp[0]))
         throw std::runtime_error(
             "Error config: no space between directive name and directive value.");
-    else if (_contextIndex == LOCATION && tmp.length() < 2 && (!tmp[1] || tmp[1] != '/'))
-        throw std::runtime_error(
-            "Error config: location directive invalid.");
     else if (!tmp[1] || std::isspace(tmp[1]))
         throw std::runtime_error(
             "Error config: directive value not well formatted.");
@@ -123,15 +118,9 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
     while (_directiveIndex < _configFormat[_contextIndex].size()) {
         directive   newDirective;
 
-        if (_contextIndex == LOCATION
-            && _directiveIndex == PATH) {
+        std::getline(file, line);
+        if (directiveFormatValid(line, indentSize))
             getDirective(line, newDirective, indentSize);
-        }
-        else {
-            std::getline(file, line);
-            if (directiveFormatValid(line, indentSize))
-                getDirective(line, newDirective, indentSize);
-        }
         server[_contextIndex][_directiveIndex] = newDirective;
         _directiveIndex++;
     }
@@ -139,16 +128,11 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
 
 bool    Config::contextFormatValid(const std::string& line)
 {
-    size_t indentSize = 0;
+    int indentSize = 0;
 
     if (_contextIndex > 0)
         indentSize = 4;
-    if (_contextIndex == LOCATION) {
-        if (line.length() <= LOCATION_STRING_LENGTH + indentSize)
-            throw std::runtime_error("Error: location context format not valid.");
-        else
-            return true;
-    } else if (line.empty()
+    if (line.empty()
         || std::strlen(_contextNameList[_contextIndex]) + indentSize != line.length()
         || _contextNameList[_contextIndex] != line.substr(indentSize, line.length() - indentSize))
         throw std::runtime_error("Error: context format not valid.");
@@ -168,15 +152,10 @@ void    Config::getServer(std::ifstream& file, std::string& line, server& server
         std::getline(file, line);
         if (file.eof())
             break;
-        if (_contextIndex == LOCATION && contextFormatValid(line))
-            while (contextFormatValid(line)) {
-                if (line.substr(4, 9) != "location:")
-                    break;
-                getContext(file, line, server);
-            }
         else if (contextFormatValid(line))
             getContext(file, line, server);
         _contextIndex++;
+
     }
     std::getline(file, line);
 }
@@ -233,7 +212,6 @@ void    Config::initConfigParser(void)
     _configFormat[SERVER][AUTOINDEX] = "autoindex";
 
     // locationDirective
-    _configFormat[LOCATION][PATH] = "none";
     _configFormat[LOCATION][ROOT] = "root";
     _configFormat[LOCATION][INDEX] = "index";
 

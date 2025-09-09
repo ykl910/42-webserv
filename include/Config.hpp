@@ -29,6 +29,7 @@ enum e_server_directive {
 };
 
 enum e_location_directiv {
+    PATH,
     ROOT,
     INDEX
 };
