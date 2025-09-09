@@ -153,9 +153,9 @@ void HttpResponse::handleGET(HttpRequest& request)
     else {
         int state = 0;
         std::stringstream buffer;
-        // if (_request.path == "/list-files") {
-        //     handleThread(request);
-        if (_extension == "html" || _extension == "htm" || _extension == "") {
+        if (_request.path == "www/post42.net/list-files") {
+            handleThread(request);
+        } else if (_extension == "html" || _extension == "htm" || _extension == "") {
             state = handleHtml(request, &buffer);
             if (state != 200)
                 handleError(&buffer, state, "html");
