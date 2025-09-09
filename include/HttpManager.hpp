@@ -40,15 +40,17 @@ typedef struct s_serv_attr t_serv_attr;
 // }t_response;
 
 enum e_state {
-    SENT,
-    RECEIVED
+    PENDING,
+    RECEIVED,
+    RESPONSE_TRUNCATE,
+    SENT
 };
 
 class HttpManager {
 public:
-    void getRequest(int clientFd, t_serv_attr &serverAttr);
+    void getRequest(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance);
     bool receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const;
-    void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr);
+    void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr, int &clientState);
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
     static bool hasCompletedResponse(int clientFd);
 
@@ -62,16 +64,14 @@ public:
     const t_request_attr& getRequestAttr() const;
     const std::map<std::string, std::string> &getHeaders() const;
     void extractRequest(const std::string &request);
+    inline bool checkPersistance(std::string &request);
 
 
     HttpManager() {}
-    HttpManager(int clientFd, t_serv_attr &serverAttr, int &state);
+    HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance);
     ~HttpManager();
 
 private:
-    typedef int clientFd;
-
-    int                                 _state;
     static std::map<int, HttpRequest>   _request;
     static std::map<int, HttpResponse>  _responses;
 
@@ -79,6 +79,7 @@ private:
     static std::map<int, bool>          _gotResponse;
     static std::map<int, bool>          _gotFullRequest;
     static std::map<int, int>           _pendingResponse;
+    static std::map<int, bool>          _responseSent;
 
     // Request attributes
     // bool                                _state;

@@ -51,40 +51,57 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
 }
 
 void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
-                                  t_serv_attr& servAttr) {
+                                  t_serv_attr& servAttr, int &clientState) {
     std::string response;
 
-    if (!_gotResponse[clientFd]) {
+    if (!_gotResponse[clientFd])
+    {
+        std::cout << BLUE << "client [" << clientFd << "]: No pending response" << DEFAULT << std::endl;
         HttpResponse Response(request, servAttr);
         writeUserInfo(request, Response);
         response = Response.getResponse();
         _responses[clientFd] = Response;
         _gotResponse[clientFd] = true;
-    } else
+    }
+    else
+    {
+        std::cout << BLUE << "client [" << clientFd << "]: pending response" << DEFAULT << std::endl;
         response = _responses[clientFd].getResponse();
+    }
 
     size_t totalBytesSent = _pendingResponse[clientFd];
     size_t responseLen = response.length();
 
-    while (totalBytesSent < responseLen) {
-        ssize_t bytesSent = send(clientFd,
-            response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
+    std::cout << BLUE << "client [" << clientFd << "]: " << "responseLen = " << responseLen << DEFAULT << std::endl;
+    std::cout << BLUE << "client [" << clientFd << "]: " << "totalBytesSent before loop = " << totalBytesSent << DEFAULT << std::endl;
+
+    while (totalBytesSent < responseLen)
+    {
+        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
+        std::cout << BLUE << "client [" << clientFd << "]: " << "bytesSent inside loop = " << bytesSent << DEFAULT << std::endl;
         if (bytesSent <= 0)
             break ;
         totalBytesSent += bytesSent;
     }
-    // if (totalBytesSent < responseLen)
-    //     _pendingResponse[clientFd] = totalBytesSent;
-    // else {
-        std::cout << BOLD ITALIC MAGENTA <<  "Response:\n" << DEFAULT
-                  << _responses[clientFd].getResponseHeader() << "\n";
 
+    std::cout << BLUE << "client [" << clientFd << "]: " << "totalBytesSent after loop = " << totalBytesSent << DEFAULT << std::endl;
+
+    if (totalBytesSent != responseLen)
+    {
+        clientState = RESPONSE_TRUNCATE;
+        _pendingResponse[clientFd] = totalBytesSent;
+    }
+    else
+    {
+        std::cout << BLUE << "client [" << clientFd << "]: Response Sent" DEFAULT << std::endl;
+
+        _request.erase(clientFd);
         _pendingResponse.erase(clientFd);
         _gotFullRequest.erase(clientFd);
         _gotResponse.erase(clientFd);
         _responses.erase(clientFd);
-        _state = SENT;
-    // }
+        clientState = SENT;
+    }
 }
 
 bool    HttpManager::receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const {
@@ -110,39 +127,55 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData, t_serv_attr &
     return bodyLengh >= static_cast<size_t>(contentLength);
 }
 
-void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr) {
+inline bool    HttpManager::checkPersistance(std::string &rawData)
+{
+    return (rawData.find("Connection: keep-alive") != std::string::npos);
+}
+
+void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clientState, bool &persistance) {
 
     char buffer[4096];
 
+    if(clientState == RECEIVED)
+        return ;
     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-    if (bytes > 0)
+    {
+        std::cout << CYAN << "client [" << clientFd << "]: bytes received = " << bytes << DEFAULT << std::endl;
+        if (bytes > 0)
         _buffers[clientFd].append(buffer, bytes);
+        if (bytes == -1)
+        {
+            //persistance = false;
+            return ;
+        }
+    }
 
     if (receivedCompleteRequest(_buffers[clientFd], serverAttr)) {
+
+        std::cout << CYAN << "client [" << clientFd << "]: Request received" << DEFAULT << std::endl;
+        std::cout << CYAN << "client [" << clientFd << "]: Request:\n" << _buffers[clientFd] << DEFAULT << std::endl;
+
+        persistance = checkPersistance(_buffers[clientFd]);
+        clientState = RECEIVED;
         HttpRequest request(_buffers[clientFd]);
-
-        std::cout << BOLD ITALIC CYAN << "Request:\n" << DEFAULT
-                  << request << "\n";
-
         _request[clientFd] = request;
         _gotFullRequest[clientFd] = true;
         _buffers.erase(clientFd);
         _pendingResponse[clientFd] = 0;
-        _state = RECEIVED;
-    } else
+    }
+    else
+    {
+        std::cout << CYAN << "client [" << clientFd << "]: Request pending" << DEFAULT << std::endl;
         _gotFullRequest[clientFd] = false;
+    }
 }
 
-HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &state)
+HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance)
 {
-    // state = _state;
-    (void)state;
-    getRequest(clientFd, serverAttr);
+    getRequest(clientFd, serverAttr, clientState, persistance);
 
-    if (_gotFullRequest[clientFd]) {
-        sendResponse(clientFd, _request[clientFd], serverAttr);
-    }
-
+    if (clientState == RECEIVED || clientState == RESPONSE_TRUNCATE)
+        sendResponse(clientFd, _request[clientFd], serverAttr, clientState);
 }
 
 HttpManager::~HttpManager() {}
