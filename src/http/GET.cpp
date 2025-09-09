@@ -8,13 +8,13 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
     std::string body;
     if (type == "html") {
         if (success == 404) {
-            fullPath = getServerAttr().error_page.err_404;
+            fullPath = _server.error_page.err_404;
             setStatusLine(_request.httpVersion, 404, "Not Found");
         } else if (success == 403) {
-            fullPath = getServerAttr().error_page.err_403;
+            fullPath = _server.error_page.err_403;
             setStatusLine(_request.httpVersion, 403, "Forbidden");
         } else {
-            fullPath = getServerAttr().error_page.err_500;
+            fullPath = _server.error_page.err_500;
             setStatusLine(_request.httpVersion, 500, "Internal error");
         }
         std::ifstream file(fullPath.c_str());
@@ -159,10 +159,11 @@ void HttpResponse::handleGET(HttpRequest& request)
         int state = 0;
         std::stringstream buffer;
 
-        if (_request.path == "www/post42.net/threads") {
-            handleThread(request);
+        // To do: trouver une solution pour manage threads en dehors du serveur -> CGI
+        // if (_request.path == "www/post42.net/threads") {
+        //     handleThread(request);
 
-        } else if (_extension == "html" || _extension == "htm" || _extension == "") {
+        if (_extension == "html" || _extension == "htm" || _extension == "") {
             state = handleHtml(request, &buffer);
             if (state != 200)
                 handleError(&buffer, state, "html");

@@ -32,6 +32,13 @@ void Server::storeRedirection(server& config) {
 void Server::storeLocation(server& config) {
     _attribute.location.root = config[LOCATION][ROOT];
     _attribute.location.index = config[LOCATION][INDEX];
+
+    if (config[LOCATION][AUTOINDEX] == "on")
+        _attribute.location.autoindex = true;
+    else if (config[LOCATION][AUTOINDEX] == "off")
+        _attribute.location.autoindex = false;
+
+    // _attribute.location.method = config[LOCATION][METHOD];
 }
 
 void Server::storeCgi(server& config) {

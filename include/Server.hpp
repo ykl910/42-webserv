@@ -10,6 +10,7 @@ typedef struct s_cgi {
 }t_cgi;
 
 typedef struct s_location {
+    std::string path;
     std::string root;
     std::string index;
     bool        autoindex;

@@ -6,6 +6,18 @@ void printError()
     std::cerr << strerror(errno) << std::endl;
 }
 
+void manageConfigError(const std::string& line, const std::string& expected,
+                        const std::string& context)
+{
+    std::cerr
+    << BOLD RED << "Error: " << DEFAULT << context << "\n";
+    if (!expected.empty()) {
+        std::cerr << BOLD YELLOW << "got\n" << DEFAULT << line << "\n"
+        << BOLD WHITE << "expected\n" <<  DEFAULT << expected << "\n";
+    }
+    throw std::runtime_error("");
+}
+
 void printErrorAndThrow(std::string const &context)
 {
     std::ostringstream oss;

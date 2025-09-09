@@ -22,8 +22,8 @@ void    Config::printServer(const server& srv) const {
     }
 }
 
-void    Config::printConfigParser(void) const {
-    std::cout << "\n----- Print parser config -----\n";
+void    Config::printConfig(void) const {
+    std::cout << "\n----- Print config -----\n";
     for (configParserIterator it = _configParser.begin();
                         it != _configParser.end(); ++it) {
         printServer(*it);

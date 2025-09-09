@@ -22,11 +22,11 @@ static bool    gotConfigFilePath(const int argc, const char* argv)
         try {
             std::string config_file(argv);
             if (config_file.empty())
-                throw std::runtime_error("Error: no config file name.");
+                manageConfigError("", "", "no config file name.");
             else if (!gotRightSuffix(config_file))
-                throw std::runtime_error("Error: wrong config file name.");
+                manageConfigError(argv, "", "wrong config file name.");
             else if (access(config_file.c_str(), R_OK) != 0)
-                throw std::runtime_error("Error: can't read config file.");
+                manageConfigError(argv, "", "can't read config file.");
             return true;
         } catch (std::exception& e) {
             std::cerr << BOLD RED << e.what() << DEFAULT << std::endl;
