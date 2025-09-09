@@ -37,9 +37,6 @@ int Socket::acceptClient(void)
     int flags = fcntl(clientFd, F_GETFL, 0);
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
         printErrorAndThrow("fcntl");
-    int flags2 = fcntl(clientFd, F_GETFD, 0);
-    if (flags2 == -1 || fcntl(clientFd, F_SETFD, flags2 | FD_CLOEXEC) == -1)
-        printErrorAndThrow("fcntl");
     return clientFd;
 }
 

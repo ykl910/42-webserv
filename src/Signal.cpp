@@ -58,4 +58,5 @@ void    initSignalHandler(void)
     if (signal(SIGINT, signalHandler) == SIG_ERR
         || signal(SIGQUIT, signalHandler) == SIG_ERR)
         throw std::runtime_error("Error: signal init.");
+    signal(SIGPIPE, SIG_IGN);
 }

@@ -65,10 +65,14 @@ void    Select::run()
                     ++it;
                 } else { //* read request and send response
                     int serverFd = _clientMap[*it];
-                    HttpManager(int(*it), _serverMap[serverFd].getServerAttribute(), _state);
-                    close(*it);
-                    _clientMap.erase(*it);
-                    it = _selectFd.erase(it);
+                    bool persistance = false;
+                    HttpManager(int(*it), _serverMap[serverFd].getServerAttribute(), _state, persistance);
+                    if(!persistance)
+                    {
+                        close(*it);
+                        _clientMap.erase(*it);
+                        it = _selectFd.erase(it);
+                    }
                 }
             } else
                 ++it;

@@ -69,10 +69,14 @@ void    Poll::run()
             } else if (it->revents & POLLIN) {
                 Server serv = _serverMap[it->fd];
 
-                HttpManager(it->fd, serv.getServerAttribute(), _state);
-                _clientMap.erase(it->fd);
-                close(it->fd);
-                it = _pollFd.erase(it);
+                bool persistance = false;
+                HttpManager(it->fd, serv.getServerAttribute(), _state, persistance);
+                if(!persistance)
+                {
+                    _clientMap.erase(it->fd);
+                    close(it->fd);
+                    it = _pollFd.erase(it);
+                }
             } else
                 ++it;
         }
