@@ -158,7 +158,7 @@ run_siege_test()
 {
     local client_number=100
 
-    echo -e "${BOLD}${ITALIC}${YELLOW}Siege test${DEFAULT}"
+    echo -e "$BOLD$ITALIC${YELLOW}Siege test$DEFAULT"
     mkdir -p $log_dir/siege
     pushd .. > /dev/null
     for multiplexer in "${multiplexers[@]}";
@@ -179,28 +179,36 @@ run_curl_test()
 {
     local webserv_pid
     echo -e "${BOLD}${ITALIC}${YELLOW}cURL test${DEFAULT}"
+    tests=(
+        " "
+
+        # GET
+        " -X GET"
+
+        # POST
+        " -X POST"
+
+        # DELETE
+        " -X DELETE"
+    )
 
     mkdir -p ../log
     pushd .. > /dev/null
     for multiplexer in "${multiplexers[@]}";
     do
-        ./webserv $multiplexer &
-        webserv_pid=$!
-        for domain in "${domains[@]}";
+        for port in "${ports[@]}";
         do
-            # Empty request
-            # curl -d http $host:$port
-
-            # GET
-            curl -X GET http://$host:$port
-
-            # POST
-            curl -X POST http://$host:$port
-
-            # DELETE
-            curl -X DELETE http://$host:$port
+            ./webserv $multiplexer &
+            webserv_pid=$!
+            for test in "${tests[@]}"
+            do
+                curl "$test" http://$host:$port
+                if [ $? -ne 0 ]; then
+                    echo -e "Error curl"
+                fi
+            done
+            kill $webserv_pid
         done
-        kill $webserv_pid
     done
     popd > dev/null
 }
