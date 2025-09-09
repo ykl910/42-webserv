@@ -1,6 +1,6 @@
-website/threads
 threads/
 webserv
+users/
 *.bkp
 *.dtmp
 obj/

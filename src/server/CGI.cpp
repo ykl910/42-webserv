@@ -171,13 +171,13 @@ int Cgi::execFromPost(HttpRequest &request)
 
 void Cgi::execute(HttpRequest &request, HttpResponse &response)
 {
-    if(request.getMethod() == "GET") {
+    if (request.getMethod() == "GET") {
         if(execFromGet() == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
             generateResponse(request, response);
     }
-    if(request.getMethod() == "POST") {
+    if (request.getMethod() == "POST") {
         if(execFromPost(request) == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else

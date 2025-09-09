@@ -42,7 +42,7 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
         _clientMap.insert(
             std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
 
-        std::cout << BOLD YELLOW << "Epoll: new client accepted with fd: " << newClient.data.fd << DEFAULT << std::endl;
+        std::cout << BOLD YELLOW << "Epoll: new client accepted with fd " << BOLD WHITE << newClient.data.fd << DEFAULT << std::endl;
         _clientState[clientFd] = PENDING;
         _persistance[clientFd] = false;
     }
@@ -50,7 +50,7 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
 
 void Epoll::eraseClientToEpoll(int clientFd)
 {
-    std::cout << RED << "client [" << clientFd << "]: Connection closed" << std::endl;
+    std::cout << RED << "client [" << clientFd << "]: Connection closed" << DEFAULT << '\n';
     _buffers.erase(clientFd);
     epoll_ctl(_epollFd, EPOLL_CTL_DEL, clientFd, NULL);
     close(clientFd);

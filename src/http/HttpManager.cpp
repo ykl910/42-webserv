@@ -143,8 +143,7 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
         std::cout << CYAN << "client [" << clientFd << "]: bytes received = " << bytes << DEFAULT << std::endl;
         if (bytes > 0)
         _buffers[clientFd].append(buffer, bytes);
-        if (bytes == -1)
-        {
+        if (bytes == -1) {
             //persistance = false;
             return ;
         }
@@ -153,7 +152,7 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
     if (receivedCompleteRequest(_buffers[clientFd], serverAttr)) {
 
         std::cout << CYAN << "client [" << clientFd << "]: Request received" << DEFAULT << std::endl;
-        std::cout << CYAN << "client [" << clientFd << "]: Request:\n" << _buffers[clientFd] << DEFAULT << std::endl;
+        std::cout << CYAN << "client [" << clientFd << "]: Request:\n" << DEFAULT << _buffers[clientFd] << std::endl;
 
         persistance = checkPersistance(_buffers[clientFd]);
         clientState = RECEIVED;

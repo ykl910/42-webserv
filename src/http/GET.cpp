@@ -40,6 +40,8 @@ int HttpResponse::handleHtml(HttpRequest& request, std::stringstream *buffer)
 {
     std::cout << BOLD BLUE << _request.path << DEFAULT << std::endl;
     std::ifstream file(_request.path.c_str());
+
+    (void)request;
     if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
     else if (access(_request.path.c_str(), R_OK) != 0)
@@ -49,7 +51,7 @@ int HttpResponse::handleHtml(HttpRequest& request, std::stringstream *buffer)
 
     *buffer << file.rdbuf();
     std::string body = buffer->str();
-    setStatusLine(request.getHttpVersion(), 200, "OK");
+    setStatusLine(_request.httpVersion, 200, "OK");
     setHeaders("Content-Type", "text/html");
     setHeaders("Content-Length", itos(body.length()));
     setBody(body);
@@ -60,6 +62,7 @@ int HttpResponse::handleCss(HttpRequest& request, std::stringstream *buffer)
 {
     std::ifstream file(_request.path.c_str());
 
+    (void)request;
     if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
     else if (access(_request.path.c_str(), R_OK) != 0)
@@ -69,7 +72,7 @@ int HttpResponse::handleCss(HttpRequest& request, std::stringstream *buffer)
 
     *buffer << file.rdbuf();
     std::string body = buffer->str();
-    setStatusLine(request.getHttpVersion(), 200, "OK");
+    setStatusLine(_request.httpVersion, 200, "OK");
     setHeaders("Content-Type", "text/css");
     setHeaders("Content-Length", itos(body.length()));
     setBody(body);
@@ -77,10 +80,11 @@ int HttpResponse::handleCss(HttpRequest& request, std::stringstream *buffer)
     return 200;
 }
 
-int HttpResponse::handleImg(HttpRequest& request)
+int HttpResponse::handleImage(HttpRequest& request)
 {
     std::ifstream file(_request.path.c_str(), std::ios::in | std::ios::binary);
 
+    (void)request;
     if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
     else if (access(_request.path.c_str(), R_OK) != 0)
@@ -95,7 +99,7 @@ int HttpResponse::handleImg(HttpRequest& request)
     if (file.gcount() > 0)
         data.insert(data.end(), temp, temp + file.gcount());
 
-    setStatusLine(request.getHttpVersion(), 200, "OK");
+    setStatusLine(_request.httpVersion, 200, "OK");
     if (_extension == "png")
         setHeaders("Content-Type", "image/png");
     else if (_extension == "gif")
@@ -112,6 +116,7 @@ int HttpResponse::handleImg(HttpRequest& request)
 
 void HttpResponse::handleThread(HttpRequest& request)
 {
+    (void)request;
     std::string targetDir = POST42dotNET"threads";
     DIR* dir = opendir(targetDir.c_str());
     if (!dir) {
@@ -139,7 +144,7 @@ void HttpResponse::handleThread(HttpRequest& request)
     }
     jsonResponse += "]";
     closedir(dir);
-    setStatusLine(request.getHttpVersion(), 200, "OK");
+    setStatusLine(_request.httpVersion, 200, "OK");
     setHeaders("Content-Type", "application/json");
     setHeaders("Content-Length", itos(jsonResponse.length()));
     setBody(jsonResponse);
@@ -153,8 +158,10 @@ void HttpResponse::handleGET(HttpRequest& request)
     else {
         int state = 0;
         std::stringstream buffer;
+
         if (_request.path == "www/post42.net/threads") {
             handleThread(request);
+
         } else if (_extension == "html" || _extension == "htm" || _extension == "") {
             state = handleHtml(request, &buffer);
             if (state != 200)
@@ -165,8 +172,8 @@ void HttpResponse::handleGET(HttpRequest& request)
             if (state != 200)
                 handleError(&buffer, state, "img");
 
-        } else if (_extension == "png" || _extension == "gif" || _extension == "webp") {
-            state = handleImg(request);
+        } else if (isImage()) {
+            state = handleImage(request);
             if (state != 200)
                 handleError(&buffer, state, "img");
 

@@ -64,6 +64,8 @@ std::string HttpResponse::getResponse()
         fullResponse += it->first + ": " + it->second + "\r\n";
     fullResponse += "\r\n";
     _response = fullResponse;
+    std::cout << BOLD ITALIC MAGENTA << "Response:\n" << DEFAULT
+    << _response << "\n";
     fullResponse += _body;
     return fullResponse;
 }
@@ -134,6 +136,27 @@ void    HttpResponse::solvePath()
     std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
 }
 
+bool    HttpResponse::isImage()
+{
+    return _extension == "jpg" || _extension == "jpeg" || _extension == "png"
+        || _extension == "gif" || _extension == "bmp" || _extension == "tif"
+        || _extension == "tiff" || _extension == "ico" || _extension == "webp"
+        || _extension == "avif" || _extension == "svg" || _extension == "apng"
+        || _extension == "heic" || _extension == "heif";
+}
+
+bool    HttpResponse::isAudio()
+{
+    return _extension == "mp3" || _extension == "wav" || _extension == "ogg"
+        || _extension == "oga" || _extension == "m4a" || _extension == "aac"
+        || _extension == "flac" || _extension == "opus";
+}
+
+void    HttpResponse::solveMimeType()
+{
+    return;
+}
+
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     : _server(serverAttr), _request(request.getRequestAttr())
 {
@@ -141,6 +164,7 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
 
     solvePath();
+    solveMimeType();
     if (_request.method == "GET")
         handleGET(request);
     else if (_request.method == "POST")

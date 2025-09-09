@@ -33,8 +33,8 @@ public:
 
     void buildResponse(HttpRequest& request, int code, std::string msg);
 
+    int handleImage(HttpRequest& request);
     void handleThread(HttpRequest& request);
-    int handleImg(HttpRequest& request);
     int handleCss(HttpRequest& request, std::stringstream *buffer);
     int handleHtml(HttpRequest& request, std::stringstream *buffer);
     void handleError(std::stringstream *buffer, int success, std::string type);
@@ -44,6 +44,10 @@ public:
     void handleDELETE(HttpRequest& request);
 
     bool isAsset();
+    bool isAudio();
+    bool isImage();
+
+    void solveMimeType();
     void solvePath();
     bool canAccessFile(std::string& file);
 

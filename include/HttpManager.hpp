@@ -29,15 +29,11 @@
 
 typedef struct s_serv_attr t_serv_attr;
 
-// typedef struct s_request
-// {
-
-// }t_request;
-
-// typedef struct s_response
-// {
-
-// }t_response;
+enum e_success_code {
+    OK_200 = 200,
+    CREATED_201,
+    ACCEPTED_202
+};
 
 enum e_state {
     PENDING,
