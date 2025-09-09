@@ -20,10 +20,19 @@ std::vector<Server> Epoll::getServer(void) const {
     return _server;
 }
 
+void Epoll::printFdError(int clientFd)
+{
+    int err = 0;
+    socklen_t len = sizeof(err);
+
+    if (getsockopt(clientFd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
+        printError();
+}
+
 void Epoll::addClientToEpoll(int clientFd, int serverFd)
 {
     epoll_ev newClient;
-    newClient.events = EPOLLIN | EPOLLRDHUP;
+    newClient.events = EPOLLIN | EPOLLRDHUP | EPOLLERR;
     newClient.data.fd = clientFd;
 
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1) {
@@ -33,17 +42,26 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
         _clientMap.insert(
             std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
 
-        std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
-        BOLD BLUE << newClient.data.fd << DEFAULT << "\n";
+        std::cout << BOLD YELLOW << "Epoll: new client accepted with fd: " << newClient.data.fd << DEFAULT << std::endl;
         _clientState[clientFd] = PENDING;
+        _persistance[clientFd] = false;
     }
 }
 
+void Epoll::eraseClientToEpoll(int clientFd)
+{
+    std::cout << RED << "client [" << clientFd << "]: Connection closed" << std::endl;
+    _buffers.erase(clientFd);
+    epoll_ctl(_epollFd, EPOLL_CTL_DEL, clientFd, NULL);
+    close(clientFd);
+}
+
+
 void Epoll::enableWriteEvent(int clientFd)
 {
-    std::cout << GREEN << "Write event enabled" << DEFAULT << std::endl;
+    std::cout << GREEN << "client [" << clientFd << "]: Write event enabled" << DEFAULT << std::endl;
     epoll_ev ev;
-    ev.events = EPOLLIN | EPOLLRDHUP| EPOLLOUT;
+    ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLOUT;
     ev.data.fd = clientFd;
     if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
         printErrorAndThrow("epoll_ctl(enableWriteEvent)");
@@ -51,8 +69,9 @@ void Epoll::enableWriteEvent(int clientFd)
 
 void Epoll::disableWriteEvent(int clientFd)
 {
+    std::cout << GREEN << "client [" << clientFd << "]: Write event disabled" << DEFAULT << std::endl;
     epoll_ev ev;
-    ev.events = EPOLLIN | EPOLLRDHUP;
+    ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR;
     ev.data.fd = clientFd;
     if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
         printErrorAndThrow("epoll_ctl(enableWriteEvent)");
@@ -69,41 +88,45 @@ inline bool Epoll::isSocketFd(int fd) const
 
 void Epoll::eventManager(epoll_ev &event)
 {
-    if (event.events & EPOLLERR) {
-        int err = 0;
-        socklen_t len = sizeof(err);
+    if (event.events & EPOLLERR)
+    {
+        printFdError(event.data.fd);
+        eraseClientToEpoll(event.data.fd);
+    }
+    else if (event.events & EPOLLHUP || event.events & EPOLLRDHUP)
+    {
+        eraseClientToEpoll(event.data.fd);
+    }
+    else if (event.events & EPOLLIN || event.events & EPOLLOUT)
+    {
 
-        if (getsockopt(event.data.fd, SOL_SOCKET, SO_ERROR, &err, &len) == -1)
-            printError();
-        _buffers.erase(event.data.fd);
-        epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
-        close(event.data.fd);
-
-    } else if (event.events & EPOLLHUP || event.events & EPOLLRDHUP) {
-        std::cout << "Connexion closed with a client" << std::endl;
-        _buffers.erase(event.data.fd);
-        epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
-        close(event.data.fd);
-
-    } else if (event.events & EPOLLIN || event.events & EPOLLOUT) {
-
-        if (isSocketFd(event.data.fd)) {
+        if (isSocketFd(event.data.fd))
+        {
             int clientFd = _serverMap[event.data.fd].getSocket().acceptClient();
             if (clientFd)
                 addClientToEpoll(clientFd, event.data.fd);
-        } else {
+        }
+        else
+        {
             Server serv = _serverMap[_clientMap[event.data.fd]];
+            HttpManager(event.data.fd, serv.getServerAttribute(), _clientState[event.data.fd], _persistance[event.data.fd]);
 
-            HttpManager(event.data.fd, serv.getServerAttribute(), _clientState[event.data.fd]);
             if (_clientState[event.data.fd] == RESPONSE_TRUNCATE)
                 enableWriteEvent(event.data.fd);
-            if (_clientState[event.data.fd] == SENT) {
-                disableWriteEvent(event.data.fd);
-                //std::cout << RED BOLD << "client: " << event.data.fd << " erased from epoll" << DEFAULT << std::endl;
-                //epoll_ctl(_epollFd, EPOLL_CTL_DEL, event.data.fd, NULL);
-                //_clientMap.erase(event.data.fd);
-                //close(event.data.fd);
-            }
+            if( _clientState[event.data.fd] == SENT && !_persistance[event.data.fd])
+                eraseClientToEpoll(event.data.fd);
+        }
+    }
+    else if (event.events & EPOLLOUT)
+    {
+        Server serv = _serverMap[_clientMap[event.data.fd]];
+        HttpManager(event.data.fd, serv.getServerAttribute(), _clientState[event.data.fd], _persistance[event.data.fd]);
+
+        if (_clientState[event.data.fd] == SENT)
+        {
+            disableWriteEvent(event.data.fd);
+            if(!_persistance[event.data.fd])
+                eraseClientToEpoll(event.data.fd);
         }
     }
 }

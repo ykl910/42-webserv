@@ -48,7 +48,7 @@ enum e_state {
 
 class HttpManager {
 public:
-    void getRequest(int clientFd, t_serv_attr &serverAttr, int &clientState);
+    void getRequest(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance);
     bool receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const;
     void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr, int &clientState);
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
@@ -63,10 +63,11 @@ public:
     const t_request_attr& getRequestAttr() const;
     const std::map<std::string, std::string> &getHeaders() const;
     void extractRequest(const std::string &request);
+    inline bool checkPersistance(std::string &request);
 
 
     HttpManager() {}
-    HttpManager(int clientFd, t_serv_attr &serverAttr, int &Responsestate);
+    HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance);
     ~HttpManager();
 
 private:
