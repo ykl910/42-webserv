@@ -164,15 +164,14 @@ void HttpResponse::handlePOST(HttpRequest& request)
         std::map<std::string, std::string> headers = request.getHeaders();
         std::string contentType = getContentType(headers["Content-Type"]);
         std::string boundary = getBoundary(headers["Content-Type"]);
-
-        if (_request.path == "/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
+        if (_request.path == "www/post42.net/upload" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             if (storeThread(request, boundary) == -1)
                 buildResponse(request, 500, "Internal error");
             else
                 buildResponse(request, 201, "Created");
-        } else if (_request.path == "/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
+        } else if (_request.path == "www/post42.net/login" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             Cookies cookie(request, *this, boundary);
-        } else if (_request.path == "/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
+        } else if (_request.path == "www/post42.net/register" && (!contentType.empty() && contentType == "multipart/form-data") && !boundary.empty()) {
             Cookies cookie(request, *this, boundary);
         } else
             buildResponse(request, 400, "Bad Request");
