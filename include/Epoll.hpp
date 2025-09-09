@@ -30,6 +30,8 @@ public:
     void disableWriteEvent(int clientFd);
     inline bool isSocketFd(int fd) const;
     void addClientToEpoll(int clientFd, int serverFd);
+    void eraseClientToEpoll(int clientFd);
+    void printFdError(int clientFd);
 
     void initServer(Config& config);
     void eventManager(epoll_ev &event);
@@ -38,11 +40,13 @@ public:
     ~Epoll();
 
 private:
-    int                         _state;
+    //int                         _state;
     int                         _epollFd;
     int                         _nbEvents;
     vector                      _eventsQueue;
 
+    std::map<int, bool>         _persistance;
+    std::map<int, int>          _clientState;
     std::map<int, std::string>  _buffers;
     std::map<int, bool>         _gotResponse;
     std::map<int, bool>         _gotFullRequest;
