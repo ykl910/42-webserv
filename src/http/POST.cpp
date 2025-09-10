@@ -154,6 +154,7 @@ void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg
     std::string body = buffer.str();
     setHeaders("Content-Length", itos(body.size()));
     setBody(body);
+
 }
 
 void HttpResponse::handlePOST(HttpRequest& request)
