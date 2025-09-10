@@ -38,7 +38,7 @@
 
       <script>
          // Fetch the list of files from your server
-         fetch('/threads')
+         fetch('/threads.py')
             .then(res => res.json()) // Expecting JSON array: ["file1.txt", "file2.txt"]
             .then(files => {
             const select = document.getElementById('fileSelect');
@@ -53,7 +53,7 @@
             })
             .catch(err => {
             console.error('Error fetching file list:', err);
-            document.getElementById('fileSelect').innerHTML = '<option>Error loading files</option>';
+            document.getElementById('fileSelect').innerHTML = '<option>No files to delete</option>';
             });
 
          // Handle delete action

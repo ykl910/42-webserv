@@ -114,55 +114,14 @@ int HttpResponse::handleImage(HttpRequest& request)
     return 200;
 }
 
-void HttpResponse::handleThread(HttpRequest& request)
-{
-    (void)request;
-    std::string targetDir = POST42dotNET"threads";
-    DIR* dir = opendir(targetDir.c_str());
-    if (!dir) {
-        setStatusLine(_request.httpVersion, 200, "OK");
-        std::string emptyArray = "[]";
-        setHeaders("Content-Type", "application/json");
-        setHeaders("Content-Length", itos(emptyArray.length()));
-        setBody(emptyArray);
-        return;
-    }
-    std::string jsonResponse = "[";
-    struct dirent* entry;
-    bool firstEntry = true;
-    while ((entry = readdir(dir)) != NULL) {
-        std::string filename = entry->d_name;
-        if (filename[0] == '.')
-            continue;
-        else {
-            if (!firstEntry)
-                jsonResponse += ",";
-            else
-                firstEntry = false;
-            jsonResponse += "\"" + filename + "\"";
-        }
-    }
-    jsonResponse += "]";
-    closedir(dir);
-    setStatusLine(_request.httpVersion, 200, "OK");
-    setHeaders("Content-Type", "application/json");
-    setHeaders("Content-Length", itos(jsonResponse.length()));
-    setBody(jsonResponse);
-}
-
 void HttpResponse::handleGET(HttpRequest& request)
 {
-    if (_request.path.find(".cgi") != std::string::npos)
+    if (_request.path.find(".cgi") != std::string::npos || _request.path.find(".py") != std::string::npos)
         Cgi cgi(request, *this);
 
     else {
         int state = 0;
         std::stringstream buffer;
-
-        // To do: trouver une solution pour manage threads en dehors du serveur -> CGI
-        // if (_request.path == "www/post42.net/threads") {
-        //     handleThread(request);
-
         if (_extension == "html" || _extension == "htm" || _extension == "") {
             state = handleHtml(request, &buffer);
             if (state != 200)
