@@ -93,6 +93,7 @@ int Cgi::execFromGet()
         printError();
         return EXIT_FAILURE;
     } else if (pid == 0) {
+
         std::vector<char*> envpStr;
         std::vector<char*> argvStr;
 
@@ -106,8 +107,8 @@ int Cgi::execFromGet()
 
         close(fds[0]);
         close(fds[1]);
-
-        execve("./www/post42.net/cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
+        execve("./www/post42.net/cgi/bin/threads.py", argvStr.data(), envpStr.data());
+        //execve("./www/post42.net/cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     } else {

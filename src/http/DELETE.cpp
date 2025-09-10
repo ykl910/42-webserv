@@ -5,8 +5,6 @@
 void HttpResponse::handleDELETE(HttpRequest& request)
 {
     (void)request;
-    // if (_request.path == POST42dotNET"threads/")
-    //     _request.path = POST42dotNET"threads/nothingSelected";
     std::string body;
     if (access(_request.path.c_str(), F_OK) != 0) {
         body = "Not Found";
