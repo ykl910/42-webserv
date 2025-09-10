@@ -13,7 +13,7 @@ std::vector<Server> Select::getServer(void) const {
 
 void    Select::run()
 {
-    while (true) {
+    while (g_signal != SIGINT) {
         FD_ZERO(&_readFds);
         /*
             This  macro  clears  (removes all file descriptors from) set.

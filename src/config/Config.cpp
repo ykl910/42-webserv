@@ -124,6 +124,7 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
     while (_directiveIndex < _configFormat[_contextIndex].size()) {
         directiveValue   newDirective;
 
+        std::cout << line << std::endl;
         if (_contextIndex == LOCATION
             && _directiveIndex == PATH) {
             // extractDirective(line, newDirective, indentSize);
@@ -160,6 +161,7 @@ bool    Config::contextFormatValid(const std::string& line)
 
 void    Config::extractServer(std::ifstream& file, std::string& line, server& server)
 {
+    _locationNbr = 0;
     _contextIndex = SERVER;
     while (_contextIndex < _configFormat.size()) {
         std::getline(file, line);
@@ -170,6 +172,10 @@ void    Config::extractServer(std::ifstream& file, std::string& line, server& se
                 if (line.substr(4, 9) != "location:")
                     break;
                 extractContext(file, line, server);
+                _locationNbr++;
+                std::ifstream::pos_type streamPos = file.tellg();
+                std::getline(file, line);
+                file.seekg(streamPos);
             }
         else if (contextFormatValid(line))
             extractContext(file, line, server);

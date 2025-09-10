@@ -35,7 +35,7 @@ std::vector<Server> Poll::getServer(void) const {
 
 void    Poll::run()
 {
-    while (true) {
+    while (g_signal != SIGINT) {
         _activity = poll(&_pollFd[0], _pollFd.size(), 10); // 10 ms timeout
         if (_activity == -1) {
             if (g_signal == SIGINT)
