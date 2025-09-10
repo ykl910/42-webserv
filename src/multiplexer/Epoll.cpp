@@ -51,9 +51,11 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
 void Epoll::eraseClientToEpoll(int clientFd)
 {
     std::cout << RED << "client [" << clientFd << "]: Connection closed" << DEFAULT << '\n';
-    _buffers.erase(clientFd);
     epoll_ctl(_epollFd, EPOLL_CTL_DEL, clientFd, NULL);
     close(clientFd);
+    _persistance.erase(clientFd);
+    _clientState.erase(clientFd);
+    _buffers.erase(clientFd);
 }
 
 
@@ -113,8 +115,13 @@ void Epoll::eventManager(epoll_ev &event)
 
             if (_clientState[event.data.fd] == RESPONSE_TRUNCATE)
                 enableWriteEvent(event.data.fd);
-            if( _clientState[event.data.fd] == SENT && !_persistance[event.data.fd])
-                eraseClientToEpoll(event.data.fd);
+            if( _clientState[event.data.fd] == SENT)
+            {
+                if(!_persistance[event.data.fd])
+                    eraseClientToEpoll(event.data.fd);
+                else
+                    _clientState[event.data.fd] = PENDING;
+            }
         }
     }
     else if (event.events & EPOLLOUT)
@@ -124,9 +131,13 @@ void Epoll::eventManager(epoll_ev &event)
 
         if (_clientState[event.data.fd] == SENT)
         {
-            disableWriteEvent(event.data.fd);
             if(!_persistance[event.data.fd])
                 eraseClientToEpoll(event.data.fd);
+            else
+            {
+                disableWriteEvent(event.data.fd);
+                _clientState[event.data.fd] = PENDING;
+            }
         }
     }
 }

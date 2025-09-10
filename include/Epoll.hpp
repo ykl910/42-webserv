@@ -48,11 +48,11 @@ private:
     std::map<int, bool>         _persistance;
     std::map<int, int>          _clientState;
     std::map<int, std::string>  _buffers;
-    std::map<int, bool>         _gotResponse;
-    std::map<int, bool>         _gotFullRequest;
-    std::map<int, int>          _pendingResponse;
-    std::map<int, HttpRequest>  _requests;
-    std::map<int, HttpResponse> _responses;
+    //std::map<int, bool>         _gotResponse;
+    //std::map<int, bool>         _gotFullRequest;
+    //std::map<int, int>          _pendingResponse;
+    //std::map<int, HttpRequest>  _requests;
+    //std::map<int, HttpResponse> _responses;
 
     std::vector<int>            _listenFd;
     std::vector<Server>         _server;
