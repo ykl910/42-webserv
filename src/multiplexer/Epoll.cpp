@@ -144,7 +144,7 @@ void Epoll::eventManager(epoll_ev &event)
 
 void Epoll::run()
 {
-    while (true) {
+    while (g_signal != SIGINT) {
         _nbEvents = epoll_wait(_epollFd, _eventsQueue.data(), MAXEVENTS, 0);
         if (g_signal == SIGINT)
             return;

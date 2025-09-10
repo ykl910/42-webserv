@@ -98,6 +98,7 @@ public:
     ~Config();
 
 private:
+    size_t          _locationNbr;
     unsigned int    _contextIndex;
     unsigned int    _directiveIndex;
     configParser    _configParser;
