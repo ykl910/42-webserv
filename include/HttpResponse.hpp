@@ -43,7 +43,6 @@ public:
     void handlePOST(HttpRequest& request);
     void handleDELETE(HttpRequest& request);
 
-    bool isAsset();
     bool isAudio();
     bool isImage();
 

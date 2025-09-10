@@ -109,15 +109,12 @@ bool    HttpResponse::canAccessFile(std::string& fullPath)
     return true;
 }
 
-bool    HttpResponse::isAsset()
-{
-    return _extension == "png" || _extension == "gif" || _extension == "webp";
-}
-
 void    HttpResponse::solvePath()
 {
     std::string fullPath;
 
+    std::cout << "Request PATH: " << _request.path << "\n";
+    std::cout << "Server location: " << _server.location[0].path << "\n";
     std::cout << BOLD CYAN << _request.path << std::endl << DEFAULT;
     size_t dot_pos = _request.path.find_last_of(".");
     if (dot_pos != std::string::npos)
@@ -125,12 +122,12 @@ void    HttpResponse::solvePath()
     std::cout << BOLD YELLOW << _extension << "\n" << DEFAULT;
 
     if (_request.path == "" || _request.path == "/")
-        fullPath = _server.location.root + "/html/" + _server.location.index;
+        fullPath = _server.location[0].root + "/html/" + _server.location[0].index;
     else {
         if (_extension == "html")
-            fullPath = _server.location.root + "/html" + _request.path;
+            fullPath = _server.location[0].root + "/html" + _request.path;
         else if (_request.path[0] == '/')
-            fullPath = _server.location.root + _request.path;
+            fullPath = _server.location[0].root + _request.path;
     }
     _request.path = fullPath;
     std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;

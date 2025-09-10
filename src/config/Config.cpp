@@ -44,7 +44,7 @@ main
 */
 
 #define LOCATION_STRING_LENGTH 9 // location:
-#define EXPECTED_DIRECTIVE _configFormat[_contextIndex][_directiveIndex]
+#define EXPECTED_DIRECTIVE _configFormat[_contextIndex][_directiveIndex][0]
 #define EXPECTED_CONTEXT _contextNameList[_contextIndex]
 
 const char* _contextNameList[5] = {
@@ -84,9 +84,10 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
         manageConfigError(line, EXPECTED_DIRECTIVE, "wrong indentation.");
 
     // is directive name format valid
-    else if (_configFormat[_contextIndex][_directiveIndex]
+    else if (_configFormat[_contextIndex][_directiveIndex][NAME]
             != line.substr(indentSize, DIRECTIVE_NAME_LENGTH))
-        manageConfigError(line, EXPECTED_DIRECTIVE, "directive name not valid.");
+        manageConfigError(line, EXPECTED_DIRECTIVE,
+            "directive name not valid.");
 
     std::string tmp = line.substr(indentSize + DIRECTIVE_NAME_LENGTH);
     if (!std::isspace(tmp[0]))
@@ -95,7 +96,8 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
     else if (_contextIndex == LOCATION && tmp.length() < 2
         && (!tmp[1] || tmp[1] != '/'))
-        manageConfigError(line, EXPECTED_DIRECTIVE, "location directive invalid.");
+        manageConfigError(line, EXPECTED_DIRECTIVE,
+            "location directive invalid.");
 
     else if (!tmp[1] || std::isspace(tmp[1]))
         manageConfigError(line, EXPECTED_DIRECTIVE,
@@ -104,13 +106,13 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
     return true;
 }
 
-void    Config::getDirective(std::string& line, directiveValue& newDirective, int indentSize)
+void    Config::extractDirective(std::string& line, directiveValue& newDirective, int indentSize)
 {
-    newDirective = line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
-        line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1);
+    newDirective.push_back(line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
+        line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1));
 }
 
-void    Config::getContext(std::ifstream& file, std::string& line, server& server)
+void    Config::extractContext(std::ifstream& file, std::string& line, server& server)
 {
     int indentSize;
 
@@ -124,12 +126,14 @@ void    Config::getContext(std::ifstream& file, std::string& line, server& serve
 
         if (_contextIndex == LOCATION
             && _directiveIndex == PATH) {
-            getDirective(line, newDirective, indentSize);
+            // extractDirective(line, newDirective, indentSize);
+            newDirective.push_back(line.substr(4 + 10,
+                                    line.length() - 4 - 10));
         }
         else {
             std::getline(file, line);
             if (directiveFormatValid(line, indentSize))
-                getDirective(line, newDirective, indentSize);
+                extractDirective(line, newDirective, indentSize);
         }
         server[_contextIndex][_directiveIndex] = newDirective;
         _directiveIndex++;
@@ -154,7 +158,7 @@ bool    Config::contextFormatValid(const std::string& line)
     return true;
 }
 
-void    Config::getServer(std::ifstream& file, std::string& line, server& server)
+void    Config::extractServer(std::ifstream& file, std::string& line, server& server)
 {
     _contextIndex = SERVER;
     while (_contextIndex < _configFormat.size()) {
@@ -165,10 +169,10 @@ void    Config::getServer(std::ifstream& file, std::string& line, server& server
             while (contextFormatValid(line)) {
                 if (line.substr(4, 9) != "location:")
                     break;
-                getContext(file, line, server);
+                extractContext(file, line, server);
             }
         else if (contextFormatValid(line))
-            getContext(file, line, server);
+            extractContext(file, line, server);
         _contextIndex++;
     }
     std::getline(file, line);
@@ -196,7 +200,7 @@ void    Config::parseConfigFile(void)
     while (GETTING_ALL_SERVERS) {
         server  server;
 
-        getServer(file, line, server);
+        extractServer(file, line, server);
         _configParser.push_back(server);
         if (!gotAnotherServer(file, line))
             break;
@@ -219,26 +223,26 @@ void    Config::initConfigParser(void)
     // _configFormat[CGI] = cgi;
 
     // serverDirective
-    _configFormat[SERVER][LISTEN] = "listen";
-    _configFormat[SERVER][HOST] = "host";
-    _configFormat[SERVER][SERVER_NAME] = "server_name";
-    _configFormat[SERVER][CLIENT_MAX_BODY_SIZE] = "client_max_body_size";
+    _configFormat[SERVER][LISTEN].push_back("listen");
+    _configFormat[SERVER][HOST].push_back("host");
+    _configFormat[SERVER][SERVER_NAME].push_back("server_name");
+    _configFormat[SERVER][CLIENT_MAX_BODY_SIZE].push_back("client_max_body_size");
 
     // locationDirective
-    _configFormat[LOCATION][PATH] = "";
-    _configFormat[LOCATION][ROOT] = "root";
-    _configFormat[LOCATION][INDEX] = "index";
-    _configFormat[LOCATION][AUTOINDEX] = "autoindex";
-    _configFormat[LOCATION][METHOD] = "method";
+    _configFormat[LOCATION][PATH].push_back("");
+    _configFormat[LOCATION][ROOT].push_back("root");
+    _configFormat[LOCATION][INDEX].push_back("index");
+    _configFormat[LOCATION][AUTOINDEX].push_back("autoindex");
+    _configFormat[LOCATION][METHOD].push_back("method");
 
     // errorDirective
-    _configFormat[ERROR][E_400] = "400";
+    _configFormat[ERROR][E_400].push_back("400");
     //_configFormat[ERROR][E_401] = "401";
     //_configFormat[ERROR][E_402] = "402";
-    _configFormat[ERROR][E_403] = "403";
-    _configFormat[ERROR][E_404] = "404";
+    _configFormat[ERROR][E_403].push_back("403");
+    _configFormat[ERROR][E_404].push_back("404");
 
-    _configFormat[ERROR][E_500] = "500";
+    _configFormat[ERROR][E_500].push_back("500");
     //_configFormat[ERROR][E_501] = "501";
     //_configFormat[ERROR][E_502] = "502";
 
