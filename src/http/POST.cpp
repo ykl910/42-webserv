@@ -101,7 +101,6 @@ int storeThread(HttpRequest &request, std::string boundary)
             return -1;
     }
 
-
     std::vector<std::string> tokens = split(request.getBody(), boundary);
     std::vector<std::string>::iterator tokenIt;
 
@@ -172,5 +171,5 @@ void HttpResponse::handlePOST(HttpRequest& request)
         Cookies cookie(request, *this, boundary);
     }
     else
-        buildResponse(request, 400, "Bad Request");
+        buildResponse(request, 404, "Not found");
 }
