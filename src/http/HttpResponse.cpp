@@ -64,8 +64,6 @@ std::string HttpResponse::getResponse()
         fullResponse += it->first + ": " + it->second + "\r\n";
     fullResponse += "\r\n";
     _response = fullResponse;
-    std::cout << BOLD ITALIC MAGENTA << "Response:\n" << DEFAULT
-    << _response << "\n";
     fullResponse += _body;
     return fullResponse;
 }
@@ -119,7 +117,7 @@ void    HttpResponse::solvePath()
     size_t dot_pos = _request.path.find_last_of(".");
     if (dot_pos != std::string::npos)
         _extension = _request.path.substr(dot_pos + 1);
-    std::cout << BOLD YELLOW << _extension << "\n" << DEFAULT;
+    //std::cout << BOLD YELLOW << _extension << "\n" << DEFAULT;
 
     if (_request.path == "" || _request.path == "/")
         fullPath = _server.location[0].root + "/html/" + _server.location[0].index;
@@ -130,7 +128,7 @@ void    HttpResponse::solvePath()
             fullPath = _server.location[0].root + _request.path;
     }
     _request.path = fullPath;
-    std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
+    //std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
 }
 
 bool    HttpResponse::isImage()
@@ -157,9 +155,14 @@ void    HttpResponse::solveMimeType()
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     : _server(serverAttr), _request(request.getRequestAttr())
 {
-    if(request.getBody().size() > static_cast<size_t>(serverAttr.client_max_body_size))
-        setStatusLine(_request.httpVersion, 413, "Content Too Large");
-
+    std::map<std::string, std::string>header = request.getHeaders();
+    std::map<std::string, std::string>::iterator it = header.find("Content-Length");
+    if(!it->second.empty())
+    {
+        int bodySize =  std::atoi(header["Content-Length"].c_str());
+        if(bodySize > serverAttr.client_max_body_size)
+            setStatusLine(_request.httpVersion, 413, "Content Too Large");
+    }
     solvePath();
     solveMimeType();
     if (_request.method == "GET")

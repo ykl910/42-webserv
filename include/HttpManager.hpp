@@ -70,22 +70,11 @@ public:
 private:
     static std::map<int, HttpRequest>   _request;
     static std::map<int, HttpResponse>  _responses;
-
     static std::map<int, std::string>   _buffers;
     static std::map<int, bool>          _gotResponse;
     static std::map<int, bool>          _gotFullRequest;
     static std::map<int, int>           _pendingResponse;
     static std::map<int, bool>          _responseSent;
-
-    // Request attributes
-    // bool                                _state;
-    // std::string                         _path;
-    // std::string                         _body;
-    // std::string                         _method;
-    // std::string                         _content;
-    // std::string                         _http_version;
-    // t_request_attr                      _requestAttr;
-    // std::map<std::string, std::string>  _headers;
 };
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);
