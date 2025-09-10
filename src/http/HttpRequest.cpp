@@ -72,17 +72,16 @@ void    HttpRequest::extractRequest(const std::string &request)
     std::string line;
     std::getline(ss, line);
 
-    // parse request line
+    // extract request line
     std::stringstream requestLine(line);
-    requestLine >> _method >> _path >> _http_version;
-    _content = std::string(_method + " ");
-    _content += _path + " ";
-    _content += _http_version + "\n";
-    _attributes.method = _method;
-    _attributes.path = _path;
-    _attributes.httpVersion = _http_version;
+    requestLine >> _attributes.method
+                >> _attributes.path
+                >> _attributes.httpVersion;
+    _content = std::string(_attributes.method + " ");
+    _content += _attributes.path + " ";
+    _content += _attributes.httpVersion + "\n";
 
-    // parse headers
+    // extract headers
     while (std::getline(ss, line) && line != "\r") {
 
         if (!line.empty() && line[line.length() - 1] == '\r')
@@ -98,7 +97,7 @@ void    HttpRequest::extractRequest(const std::string &request)
         }
     }
 
-    // parse body
+    // extract body
     std::string bodyLine;
     while (std::getline(ss, bodyLine)) {
         _body += bodyLine + "\n";

@@ -53,6 +53,8 @@ public:
     void storeErrorPage(server& config, size_t locationNbr);
     void storeRedirection(server& config);
 
+    bool methodAlreadyDefined(uint8_t mask, size_t method);
+
     Socket& getSocket(void);
     int getSocketFd(void) const;
     t_serv_attr& getServerAttribute(void);

@@ -29,6 +29,15 @@ void Server::storeRedirection(server& config) {
     (void)config;
 }
 
+#define GET 0
+#define POST 1
+#define DELETE 2
+
+bool Server::methodAlreadyDefined(uint8_t mask, size_t method)
+{
+    return mask &= 1 << method;
+}
+
 void Server::storeLocation(server& config, size_t locationNbr)
 {
     for (size_t i = 0; i < locationNbr; ++i) {
@@ -42,11 +51,20 @@ void Server::storeLocation(server& config, size_t locationNbr)
             newLocation.autoindex = true;
         else if (config[LOCATION + i][AUTOINDEX][0] == "off")
             newLocation.autoindex = false;
-        // newLocation.method = config[LOCATION][METHOD][0];
 
+        std::stringstream methodDirective(config[LOCATION + i][METHOD][0]);
+        std::string method;
+        newLocation.method = 0;
+        while (methodDirective >> method) {
+            if (method == "GET" && !methodAlreadyDefined(newLocation.method, GET))
+                newLocation.method |= 1 << GET;
+            else if (method == "POST" && !methodAlreadyDefined(newLocation.method, POST))
+                newLocation.method |= 1 << POST;
+            else if (method == "DELETE" && !methodAlreadyDefined(newLocation.method, DELETE))
+                newLocation.method |= 1 << DELETE;
+        }
         _attribute.location.push_back(newLocation);
     }
-
 }
 
 void Server::storeCgi(server& config, size_t cgiNbr) {
