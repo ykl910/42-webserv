@@ -92,7 +92,8 @@ void    Select::initServer(Config& config)
                               it != parser.end(); ++it) {
         server serverConfig = *it;
 
-        _server.push_back(Server(serverConfig));
+        _server.push_back(Server(serverConfig,
+            config.getLocationNbr(i), config.getCgiNbr(i)));
         _server[i].initSocket();
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));

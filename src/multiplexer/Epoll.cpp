@@ -163,8 +163,9 @@ void    Epoll::initServer(Config& config)
     configParser parser = config.getConfigParser();
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
-        server config = *it;
-        _server.push_back(Server(config));
+        server servConfig = *it;
+        _server.push_back(Server(servConfig,
+            config.getLocationNbr(i), config.getCgiNbr(i)));
         _server[i].initSocket();
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));

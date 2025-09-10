@@ -58,6 +58,16 @@ configParser&   Config::getConfigParser(void) {
     return _configParser;
 }
 
+size_t  Config::getLocationNbr(size_t i)
+{
+    return _locationNbrMap[i];
+}
+
+size_t  Config::getCgiNbr(size_t i)
+{
+    return _cgiNbrMap[i];
+}
+
 bool    rightIndentation(const std::string& line, uint32_t indentSize) {
     return line.length() > indentSize
         && line.substr(0, indentSize).find_first_not_of(" ");
@@ -137,7 +147,7 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
             if (directiveFormatValid(line, indentSize))
                 extractDirective(line, newDirective, indentSize);
         }
-        server[_contextIndex][_directiveIndex] = newDirective;
+        server[_contextIndex + _locationNbr][_directiveIndex] = newDirective;
         _directiveIndex++;
     }
 }
@@ -188,6 +198,7 @@ void    Config::extractServer(std::ifstream& file, std::string& line, server& se
             extractContext(file, line, server);
         _contextIndex++;
     }
+    _locationNbrMap[_serverIndex] = _locationNbr;
     std::getline(file, line);
 }
 
@@ -210,6 +221,7 @@ void    Config::parseConfigFile(void)
 
     if (!file)
         manageConfigError(line, "", "can't open config file", _lineNbr);
+    _serverIndex = 0;
     while (GETTING_ALL_SERVERS) {
         server  server;
 
@@ -217,6 +229,7 @@ void    Config::parseConfigFile(void)
         _configParser.push_back(server);
         if (!gotAnotherServer(file, line))
             break;
+        _serverIndex++;
     }
     file.close();
 }

@@ -82,6 +82,8 @@ public:
 
     configParser& getConfigParser(void);
     const char*& getConfigFilePath(void) const;
+    size_t getLocationNbr(size_t i);
+    size_t getCgiNbr(size_t i);
 
     bool contextFormatValid(const std::string& line);
     bool gotAnotherServer(std::ifstream& file, std::string& line);
@@ -101,6 +103,9 @@ public:
 private:
     size_t          _lineNbr;
     size_t          _locationNbr;
+    size_t          _serverIndex;
+    std::map<int, int> _locationNbrMap;
+    std::map<int, int> _cgiNbrMap;
     unsigned int    _contextIndex;
     unsigned int    _directiveIndex;
     configParser    _configParser;
