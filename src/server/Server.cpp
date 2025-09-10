@@ -36,8 +36,8 @@ void Server::storeLocation(server& config) {
 
         newLocation.path = config[LOCATION][PATH][0];
         newLocation.root = config[LOCATION][ROOT][0];
-        std::cout << BOLD RED << newLocation.root << std::endl;
-        std::cout << BOLD RED << newLocation.path << std::endl;
+        // std::cout << BOLD RED << newLocation.root << std::endl;
+        // std::cout << BOLD RED << newLocation.path << std::endl;
         newLocation.index = config[LOCATION][INDEX][0];
 
         if (config[LOCATION][AUTOINDEX][0] == "on")
