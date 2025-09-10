@@ -43,8 +43,12 @@ public:
     void handlePOST(HttpRequest& request);
     void handleDELETE(HttpRequest& request);
 
+    bool isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const;
     bool isAudio();
     bool isImage();
+
+    const std::string getFileExtention(const std::string &requestPath) const;
+    bool isCgi(std::string &Requestpath);
 
     void solveMimeType();
     void solvePath();

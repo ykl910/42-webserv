@@ -152,20 +152,59 @@ void    HttpResponse::solveMimeType()
     return;
 }
 
-HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
-    : _server(serverAttr), _request(request.getRequestAttr())
+const std::string HttpResponse::getFileExtention(const std::string &path) const
+{
+    size_t questionMarkPos = path.rfind("?");
+    size_t extentionDotPos = path.rfind(".");
+
+    if(questionMarkPos == std::string::npos || questionMarkPos < extentionDotPos)
+        return path.substr(extentionDotPos, path.size());
+    else
+        return path.substr(extentionDotPos, questionMarkPos - extentionDotPos);
+}
+
+bool HttpResponse::isCgi(std::string &requestPath)
+{
+    std::string fileExtention = getFileExtention(requestPath);
+
+    //!waiting for implementation of cgi structs
+   //for(int i = 0; _server.cgi[i]; ++i)
+   //{
+   //    if(_server.cgi[i].name == fileExtention)
+   //        return true;
+   //}
+   return false;
+}
+
+bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const
 {
     std::map<std::string, std::string>header = request.getHeaders();
     std::map<std::string, std::string>::iterator it = header.find("Content-Length");
-    if(!it->second.empty())
+    if(it->second.empty())
+        return true;
+    else
     {
         int bodySize =  std::atoi(header["Content-Length"].c_str());
-        if(bodySize > serverAttr.client_max_body_size)
-            setStatusLine(_request.httpVersion, 413, "Content Too Large");
+        return bodySize > serverAttr.client_max_body_size;
     }
+}
+
+HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
+    : _server(serverAttr), _request(request.getRequestAttr())
+{
+    if(!isValidBodySize(request, serverAttr))
+        setStatusLine(_request.httpVersion, 413, "Content Too Large");
     solvePath();
     solveMimeType();
-    if (_request.method == "GET")
+
+    std::string ext = getFileExtention(_request.path);
+    std::cout << RED BOLD << "File extention: " << ext << DEFAULT << std::endl;
+
+    //!waiting for implementation of cgi structs
+    //if(isCgi(_request.path))
+    //    Cgi cgi(request, *this);
+
+        if (_request.method == "GET")
         handleGET(request);
     else if (_request.method == "POST")
         handlePOST(request);
