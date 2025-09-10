@@ -6,7 +6,8 @@
 #include <iostream>
 
 typedef struct s_cgi {
-
+    std::string extension;
+    std::string path;
 }t_cgi;
 
 typedef struct s_location {
