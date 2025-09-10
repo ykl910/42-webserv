@@ -158,7 +158,7 @@ const std::string HttpResponse::getFileExtention(const std::string &path) const
     size_t extentionDotPos = path.rfind(".");
 
     if(questionMarkPos == std::string::npos || questionMarkPos < extentionDotPos)
-        return path.substr(extentionDotPos, path.size());
+        return path.substr(extentionDotPos, path.size() - extentionDotPos);
     else
         return path.substr(extentionDotPos, questionMarkPos - extentionDotPos);
 }
@@ -167,13 +167,12 @@ bool HttpResponse::isCgi(std::string &requestPath)
 {
     std::string fileExtention = getFileExtention(requestPath);
 
-    //!waiting for implementation of cgi structs
-   //for(int i = 0; _server.cgi[i]; ++i)
-   //{
-   //    if(_server.cgi[i].name == fileExtention)
-   //        return true;
-   //}
-   return false;
+    for(size_t i = 0; i < _server.cgi.size(); i++)
+    {
+        if(!_server.cgi[i].extension.empty() && _server.cgi[i].extension == fileExtention)
+           return true;
+    }
+    return false;
 }
 
 bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const
@@ -197,14 +196,9 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     solvePath();
     solveMimeType();
 
-    std::string ext = getFileExtention(_request.path);
-    std::cout << RED BOLD << "File extention: " << ext << DEFAULT << std::endl;
-
-    //!waiting for implementation of cgi structs
-    //if(isCgi(_request.path))
-    //    Cgi cgi(request, *this);
-
-        if (_request.method == "GET")
+    if(isCgi(_request.path))
+        Cgi cgi(request, *this);
+    else if (_request.method == "GET")
         handleGET(request);
     else if (_request.method == "POST")
         handlePOST(request);
