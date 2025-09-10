@@ -16,33 +16,31 @@ int Server::getClientMaxBodySize(const std::string& input) {
     return std::atoi(input.substr(0, input.length() - 1).c_str());
 }
 
-void Server::storeErrorPage(server& config) {
+void Server::storeErrorPage(server& config, size_t locationNbr) {
     std::string root(_attribute.location[0].root);
 
-    _attribute.error_page.err_400 = root + "/" + config[ERROR][E_400][VALUE];
-    _attribute.error_page.err_403 = root + "/" + config[ERROR][E_403][VALUE];
-    _attribute.error_page.err_404 = root + "/" + config[ERROR][E_404][VALUE];
-    _attribute.error_page.err_500 = root + "/" + config[ERROR][E_500][VALUE];
+    _attribute.error_page.err_400 = root + "/" + config[ERROR + locationNbr][E_400][VALUE];
+    _attribute.error_page.err_403 = root + "/" + config[ERROR + locationNbr][E_403][VALUE];
+    _attribute.error_page.err_404 = root + "/" + config[ERROR + locationNbr][E_404][VALUE];
+    _attribute.error_page.err_500 = root + "/" + config[ERROR + locationNbr][E_500][VALUE];
 }
 
 void Server::storeRedirection(server& config) {
     (void)config;
 }
 
-void Server::storeLocation(server& config) {
-
-    for (size_t i = 0; i < config[LOCATION].size(); ++i) {
+void Server::storeLocation(server& config, size_t locationNbr)
+{
+    for (size_t i = 0; i < locationNbr; ++i) {
         t_location newLocation;
 
-        newLocation.path = config[LOCATION][PATH][0];
-        newLocation.root = config[LOCATION][ROOT][0];
-        // std::cout << BOLD RED << newLocation.root << std::endl;
-        // std::cout << BOLD RED << newLocation.path << std::endl;
-        newLocation.index = config[LOCATION][INDEX][0];
+        newLocation.path = config[LOCATION + i][PATH][0];
+        newLocation.root = config[LOCATION + i][ROOT][0];
+        newLocation.index = config[LOCATION + i][INDEX][0];
 
-        if (config[LOCATION][AUTOINDEX][0] == "on")
+        if (config[LOCATION + i][AUTOINDEX][0] == "on")
             newLocation.autoindex = true;
-        else if (config[LOCATION][AUTOINDEX][0] == "off")
+        else if (config[LOCATION + i][AUTOINDEX][0] == "off")
             newLocation.autoindex = false;
         // newLocation.method = config[LOCATION][METHOD][0];
 
@@ -51,8 +49,9 @@ void Server::storeLocation(server& config) {
 
 }
 
-void Server::storeCgi(server& config) {
+void Server::storeCgi(server& config, size_t cgiNbr) {
     (void)config;
+    (void)cgiNbr;
 }
 
 void    Server::initSocket(void)
@@ -77,17 +76,17 @@ Server& Server::operator=(Server& other)
     return *this;
 }
 
-Server::Server(server& config) : _socket()
+Server::Server(server& config, size_t locationNbr, size_t cgiNbr) : _socket()
 {
     _attribute.port = config[SERVER][LISTEN][0];
     _attribute.host = config[SERVER][HOST][0];
     _attribute.server_name = config[SERVER][SERVER_NAME][0];
     _attribute.client_max_body_size =
     getClientMaxBodySize(config[SERVER][CLIENT_MAX_BODY_SIZE][0]);
-    storeLocation(config);
-    storeErrorPage(config);
+    storeLocation(config, locationNbr);
+    storeErrorPage(config, locationNbr);
     storeRedirection(config);
-    storeCgi(config);
+    storeCgi(config, cgiNbr);
 }
 
 Server::~Server() {}

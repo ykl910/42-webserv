@@ -48,9 +48,9 @@ class Server {
 public:
     void initSocket(void);
 
-    void storeCgi(server& config);
-    void storeLocation(server& config);
-    void storeErrorPage(server& config);
+    void storeCgi(server& config, size_t cgiNbr);
+    void storeLocation(server& config, size_t locationNbr);
+    void storeErrorPage(server& config, size_t locationNbr);
     void storeRedirection(server& config);
 
     Socket& getSocket(void);
@@ -59,7 +59,7 @@ public:
     int getClientMaxBodySize(const std::string& input);
 
     Server() {}
-    Server(server& config);
+    Server(server& config, size_t locationNbr, size_t cgiNbr);
     Server& operator=(Server& other);
     ~Server();
 
