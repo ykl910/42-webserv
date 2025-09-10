@@ -110,25 +110,28 @@ bool    HttpResponse::canAccessFile(std::string& fullPath)
 void    HttpResponse::solvePath()
 {
     std::string fullPath;
-
-    std::cout << "Request PATH: " << _request.path << "\n";
-    std::cout << "Server location: " << _server.location[0].path << "\n";
-    std::cout << BOLD CYAN << _request.path << std::endl << DEFAULT;
     size_t dot_pos = _request.path.find_last_of(".");
     if (dot_pos != std::string::npos)
         _extension = _request.path.substr(dot_pos + 1);
-    //std::cout << BOLD YELLOW << _extension << "\n" << DEFAULT;
 
-    if (_request.path == "" || _request.path == "/")
-        fullPath = _server.location[0].root + "/html/" + _server.location[0].index;
-    else {
-        if (_extension == "html")
-            fullPath = _server.location[0].root + "/html" + _request.path;
-        else if (_request.path[0] == '/')
-            fullPath = _server.location[0].root + _request.path;
+    for (size_t i = 0; i < _server.location.size(); ++i)
+    {
+        std::cout << "Request PATH: " << _request.path << "\n";
+        std::cout << "Server location path: " << i << _server.location[i].path << "\n";
+        if (_request.path.find(_server.location[i].path) == 0)
+        {
+            std::cout << "Request PATH: " << _request.path << "\n";
+            std::cout << "Server location path: " <<  _server.location[i].path << "\n";
+            std::cout << "Server location root: " <<  _server.location[i].root << "\n";
+            if (_request.path == "" || _request.path == _server.location[i].path
+                || _request.path == _server.location[i].path + "/")
+                fullPath = _server.location[i].root + "/" + _server.location[i].index;                
+            else
+                fullPath = _server.location[i].root + _request.path;
+        }
     }
     _request.path = fullPath;
-    //std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
+    std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
 }
 
 bool    HttpResponse::isImage()
