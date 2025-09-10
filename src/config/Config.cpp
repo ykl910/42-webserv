@@ -74,34 +74,34 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
     if (lineLength == 0)
         manageConfigError(line, EXPECTED_DIRECTIVE,
-            "line empty while excepting a directive.");
+            "line empty while excepting a directive.", _lineNbr);
 
     else if (lineLength < indentSize
           || lineLength < indentSize + static_cast<int>(DIRECTIVE_NAME_LENGTH))
-        manageConfigError(line, EXPECTED_DIRECTIVE, "config not well formatted.");
+        manageConfigError(line, EXPECTED_DIRECTIVE, "config not well formatted.", _lineNbr);
 
     else if (!rightIndentation(line, indentSize))
-        manageConfigError(line, EXPECTED_DIRECTIVE, "wrong indentation.");
+        manageConfigError(line, EXPECTED_DIRECTIVE, "wrong indentation.", _lineNbr);
 
     // is directive name format valid
     else if (_configFormat[_contextIndex][_directiveIndex][NAME]
             != line.substr(indentSize, DIRECTIVE_NAME_LENGTH))
         manageConfigError(line, EXPECTED_DIRECTIVE,
-            "directive name not valid.");
+            "directive name not valid.", _lineNbr);
 
     std::string tmp = line.substr(indentSize + DIRECTIVE_NAME_LENGTH);
     if (!std::isspace(tmp[0]))
         manageConfigError(line, EXPECTED_DIRECTIVE,
-            "no space between directive name and directive value.");
+            "no space between directive name and directive value.", _lineNbr);
 
     else if (_contextIndex == LOCATION && tmp.length() < 2
         && (!tmp[1] || tmp[1] != '/'))
         manageConfigError(line, EXPECTED_DIRECTIVE,
-            "location directive invalid.");
+            "location directive invalid.", _lineNbr);
 
     else if (!tmp[1] || std::isspace(tmp[1]))
         manageConfigError(line, EXPECTED_DIRECTIVE,
-            "directive value not well formatted.");
+            "directive value not well formatted.", _lineNbr);
 
     return true;
 }
@@ -124,7 +124,7 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
     while (_directiveIndex < _configFormat[_contextIndex].size()) {
         directiveValue   newDirective;
 
-        std::cout << line << std::endl;
+        // std::cout << line << std::endl;
         if (_contextIndex == LOCATION
             && _directiveIndex == PATH) {
             // extractDirective(line, newDirective, indentSize);
@@ -133,6 +133,7 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
         }
         else {
             std::getline(file, line);
+            _lineNbr++;
             if (directiveFormatValid(line, indentSize))
                 extractDirective(line, newDirective, indentSize);
         }
@@ -149,13 +150,15 @@ bool    Config::contextFormatValid(const std::string& line)
         indentSize = 4;
     if (_contextIndex == LOCATION) {
         if (line.length() <= LOCATION_STRING_LENGTH + indentSize)
-            manageConfigError(line, EXPECTED_CONTEXT, "location context format not valid.");
+            manageConfigError(line, EXPECTED_CONTEXT,
+                "location context format not valid.", _lineNbr);
         else
             return true;
     } else if (line.empty()
         || std::strlen(_contextNameList[_contextIndex]) + indentSize != line.length()
         || _contextNameList[_contextIndex] != line.substr(indentSize, line.length() - indentSize))
-        manageConfigError(line, EXPECTED_CONTEXT, "context format not valid.");
+        manageConfigError(line, EXPECTED_CONTEXT,
+            "context format not valid.", _lineNbr);
     return true;
 }
 
@@ -165,18 +168,22 @@ void    Config::extractServer(std::ifstream& file, std::string& line, server& se
     _contextIndex = SERVER;
     while (_contextIndex < _configFormat.size()) {
         std::getline(file, line);
+        _lineNbr++;
         if (file.eof())
             break;
-        if (_contextIndex == LOCATION && contextFormatValid(line))
+        if (_contextIndex == LOCATION && contextFormatValid(line)) {
+            std::ifstream::pos_type streamPos;
             while (contextFormatValid(line)) {
-                if (line.substr(4, 9) != "location:")
+                if (line.substr(4, 9) != "location:") {
+                    file.seekg(streamPos);
                     break;
+                }
                 extractContext(file, line, server);
-                _locationNbr++;
-                std::ifstream::pos_type streamPos = file.tellg();
+                streamPos = file.tellg();
                 std::getline(file, line);
-                file.seekg(streamPos);
+                _locationNbr++;
             }
+        }
         else if (contextFormatValid(line))
             extractContext(file, line, server);
         _contextIndex++;
@@ -184,12 +191,12 @@ void    Config::extractServer(std::ifstream& file, std::string& line, server& se
     std::getline(file, line);
 }
 
-bool    gotAnotherServer(std::ifstream& file, std::string& line)
+bool    Config::gotAnotherServer(std::ifstream& file, std::string& line)
 {
     if (file.eof())
         return false;
     else if (!line.empty())
-        manageConfigError(line, "", "config file not well formated.");
+        manageConfigError(line, "", "config file not well formated.", _lineNbr);
     std::ifstream::pos_type streamPos = file.tellg();
     std::getline(file, line);
     file.seekg(streamPos);
@@ -202,7 +209,7 @@ void    Config::parseConfigFile(void)
     std::ifstream file(_configFilePath);
 
     if (!file)
-        manageConfigError(line, "", "can't open config file");
+        manageConfigError(line, "", "can't open config file", _lineNbr);
     while (GETTING_ALL_SERVERS) {
         server  server;
 
@@ -265,7 +272,7 @@ void    Config::initConfigParser(void)
 }
 
 Config::Config(const char*& configFilePath)
-    : _configFilePath(configFilePath)
+    : _lineNbr(0), _locationNbr(0), _configFilePath(configFilePath)
 {
     initConfigParser();
     // printConfigFormat();

@@ -84,6 +84,7 @@ public:
     const char*& getConfigFilePath(void) const;
 
     bool contextFormatValid(const std::string& line);
+    bool gotAnotherServer(std::ifstream& file, std::string& line);
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
     bool directiveFormatValid(const std::string& line, int indentSize);
 
@@ -98,6 +99,7 @@ public:
     ~Config();
 
 private:
+    size_t          _lineNbr;
     size_t          _locationNbr;
     unsigned int    _contextIndex;
     unsigned int    _directiveIndex;
