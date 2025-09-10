@@ -28,6 +28,7 @@ static bool    gotConfigFilePath(const int argc, const char* argv)
             else if (access(config_file.c_str(), R_OK) != 0)
                 manageConfigError(argv, "", "can't read config file.");
             return true;
+
         } catch (std::exception& e) {
             std::cerr << BOLD RED << e.what() << DEFAULT << std::endl;
             exit(EXIT_FAILURE);
@@ -60,6 +61,7 @@ int main(int argc, char **argv)
             runSpecificMultiplexer(config, argv[argc - 1]);
         else
             WebServ<Epoll> server(config, "epoll");
+
     } catch (std::exception& e) {
         std::cerr << BOLD RED << e.what() << DEFAULT << "\n";
         return EXIT_FAILURE;

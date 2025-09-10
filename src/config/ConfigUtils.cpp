@@ -17,7 +17,9 @@ void    Config::printServer(const server& srv) const {
     for (contextIterator it = srv.begin(); it != srv.end(); ++it) {
         for (directiveIterator it2 = it->second.begin();
                              it2 != it->second.end(); ++it2) {
-            std::cout << it2->second << "\n";
+            for (directiveValueIterator it3 = it2->second.begin();
+                                        it3 != it2->second.end(); ++it3)
+                std::cout << *it3 << "\n";
         }
     }
 }
@@ -48,10 +50,13 @@ void    Config::printConfigFormat(void) const
             << BOLD WHITE << contextNameList[i] << DEFAULT << "\n";
         for (directiveIterator it2 = it->second.begin();
                              it2 != it->second.end(); ++it2) {
-                if (i == 0)
-                    std::cout << "    " << it2->second << "\n";
-                else
-                    std::cout << "        " << it2->second << "\n";
+                for (directiveValueIterator it3 = it2->second.begin();
+                                           it3 != it2->second.end(); ++it3) {
+                    if (i == 0)
+                        std::cout << "    " << *it3 << "\n";
+                    else
+                        std::cout << "        " << *it3 << "\n";
+                }
         }
         ++i;
     }

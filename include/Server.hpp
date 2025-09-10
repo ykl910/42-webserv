@@ -30,15 +30,15 @@ typedef struct s_error_page {
 }t_error_page;
 
 typedef struct s_serv_attr {
-    std::string         host;
-    std::string         port;
-    std::string         server_name;
-    int                 client_max_body_size;
-    bool                autoindex;
-    t_location          location;
-    t_error_page        error_page;
-    t_redirection       redirection;
-    std::vector<t_cgi>  cgi;
+    std::string             host;
+    std::string             port;
+    std::string             server_name;
+    int                     client_max_body_size;
+    bool                    autoindex;
+    std::vector<t_location> location;
+    t_error_page            error_page;
+    t_redirection           redirection;
+    std::vector<t_cgi>      cgi;
 }t_serv_attr;
 
 class HttpManager;
