@@ -14,14 +14,6 @@ std::string getBoundary(std::string &line)
     return NULL;
 }
 
-std::string getContentType(std::string &line)
-{
-    size_t typeEnd = line.find(";");
-    if(typeEnd != std::string::npos)
-        return line.substr(0, typeEnd);
-    return NULL;
-}
-
 int createFile(std::string dir, std::string filename)
 {
     std::string fullpath = dir + filename;
@@ -157,27 +149,28 @@ void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg
 
 }
 
+inline bool HttpResponse::isFormData(std::string &contentType) const
+{
+    return (!contentType.empty() && contentType == "multipart/form-data");
+}
+
 void HttpResponse::handlePOST(HttpRequest& request)
 {
-    if (_request.path.find(".cgi") != std::string::npos)
-        Cgi cgi(request, *this);
-    else {
-        std::map<std::string, std::string> headers = request.getHeaders();
-        std::string contentType = getContentType(headers["Content-Type"]);
+    std::map<std::string, std::string> headers = request.getHeaders();
+
+    if (_request.path == "www/post42.net/upload" && (isFormData(headers["Content-Type"])))
+    {
         std::string boundary = getBoundary(headers["Content-Type"]);
-        if (_request.path == "www/post42.net/upload"
-            && (!contentType.empty() && contentType == "multipart/form-data")
-            && !boundary.empty()) {
-            if (storeThread(request, boundary) == -1)
-                buildResponse(request, 500, "Internal error");
-            else
-                buildResponse(request, 201, "Created");
-        } else if ((_request.path == "www/post42.net/login"
-                    || _request.path == "www/post42.net/register")
-                && (!contentType.empty() && contentType == "multipart/form-data")
-                    && !boundary.empty()) {
-            Cookies cookie(request, *this, boundary);
-        } else
-            buildResponse(request, 400, "Bad Request");
+        if (storeThread(request, boundary) == -1)
+            buildResponse(request, 500, "Internal error");
+        else
+            buildResponse(request, 201, "Created");
     }
+    else if ((_request.path == "www/post42.net/login" || _request.path == "www/post42.net/register") && (isFormData(headers["Content-Type"])))
+    {
+        std::string boundary = getBoundary(headers["Content-Type"]);
+        Cookies cookie(request, *this, boundary);
+    }
+    else
+        buildResponse(request, 400, "Bad Request");
 }

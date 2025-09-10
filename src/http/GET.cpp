@@ -116,28 +116,20 @@ int HttpResponse::handleImage(HttpRequest& request)
 
 void HttpResponse::handleGET(HttpRequest& request)
 {
-    if (_request.path.find(".cgi") != std::string::npos || _request.path.find(".py") != std::string::npos)
-        Cgi cgi(request, *this);
-
-    else {
-        int state = 0;
-        std::stringstream buffer;
-        if (_extension == "html" || _extension == "htm" || _extension == "") {
-            state = handleHtml(request, &buffer);
-            if (state != 200)
-                handleError(&buffer, state, "html");
-
-        } else if (_extension == "css") {
-            state = handleCss(request, &buffer);
-            if (state != 200)
-                handleError(&buffer, state, "img");
-
-        } else if (isImage()) {
-            state = handleImage(request);
-            if (state != 200)
-                handleError(&buffer, state, "img");
-
-        } else
-            handleError(&buffer, 500, "html");
-    }
+    int state = 0;
+    std::stringstream buffer;
+    if (_extension == "html" || _extension == "htm" || _extension == "") {
+        state = handleHtml(request, &buffer);
+        if (state != 200)
+            handleError(&buffer, state, "html");
+    } else if (_extension == "css") {
+        state = handleCss(request, &buffer);
+        if (state != 200)
+            handleError(&buffer, state, "img");
+    } else if (isImage()) {
+        state = handleImage(request);
+        if (state != 200)
+            handleError(&buffer, state, "img");
+    } else
+        handleError(&buffer, 500, "html");
 }
