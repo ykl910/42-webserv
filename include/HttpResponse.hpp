@@ -26,33 +26,30 @@ public:
     std::string& getResponseHeader();
     std::string getStatusLine() const;
     t_serv_attr getServerAttr() const;
+    const std::string getFileExtention(const std::string &requestPath) const;
 
     void setBody(const std::string &body);
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
-
     void buildResponse(HttpRequest& request, int code, std::string msg);
-
-    int handleImage(HttpRequest& request);
     void handleThread(HttpRequest& request);
-    int handleCss(HttpRequest& request, std::stringstream *buffer);
-    int handleHtml(HttpRequest& request, std::stringstream *buffer);
     void handleError(std::stringstream *buffer, int success, std::string type);
-
     void handleGET(HttpRequest& request);
     void handlePOST(HttpRequest& request);
     void handleDELETE(HttpRequest& request);
+    void solveMimeType();
+    void solvePath();
+
+    int handleImage(HttpRequest& request);
+    int handleCss(HttpRequest& request, std::stringstream *buffer);
+    int handleHtml(HttpRequest& request, std::stringstream *buffer);
 
     bool isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const;
     bool isAudio();
     bool isImage();
-
-    const std::string getFileExtention(const std::string &requestPath) const;
     bool isCgi(std::string &Requestpath);
-
-    void solveMimeType();
-    void solvePath();
     bool canAccessFile(std::string& file);
+    inline bool isFormData(std::string &contentType) const;
 
     HttpResponse() {}
     HttpResponse(HttpRequest& request, t_serv_attr &serverAttr);
