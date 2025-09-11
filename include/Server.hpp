@@ -19,7 +19,6 @@ typedef struct s_location {
 }t_location;
 
 typedef struct s_redirection {
-    std::vector<std::string> redir_300;
     std::vector<std::string> redir_301;
     std::vector<std::string> redir_302;
 }t_redirection;
