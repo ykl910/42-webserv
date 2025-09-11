@@ -20,7 +20,12 @@ if grep nginx outfile > /dev/null; then
 fi
 
 if [ $# -gt 0 ] && [ $1 == "run" ]; then
-    docker run -p 9090:80 -d nginx
+    docker run \
+        -p 4241:4241 \
+        -d nginx \
+        -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf:ro \
+        -v /media/algadea/extreme-ssd/dev/42/webserv/www/webserv.net:/media/algadea/extreme-ssd/dev/42/webserv/www/webserv.net:ro \
+        nginx
 fi
 
 rm outfile

@@ -24,8 +24,9 @@ void Server::storeErrorPage(server& config, size_t locationNbr) {
     _attribute.error_page.err_500 = root + "/" + config[ERROR + locationNbr][E_500][0];
 }
 
-void Server::storeRedirection(server& config) {
-    (void)config;
+void Server::storeRedirection(server& config, size_t locationNbr) {
+    _attribute.redirection.redir_300.push_back(config[REDIRECTION + locationNbr][R_300][0]);
+    _attribute.redirection.redir_301.push_back(config[REDIRECTION + locationNbr][R_301][0]);
 }
 
 #define GET 0
@@ -66,9 +67,10 @@ void Server::storeLocation(server& config, size_t locationNbr)
     }
 }
 
-void Server::storeCgi(server& config, size_t cgiNbr) {
+void Server::storeCgi(server& config, size_t locationNbr, size_t cgiNbr) {
     (void)config;
     (void)cgiNbr;
+    (void)locationNbr;
 }
 
 void    Server::initSocket(void)
@@ -102,8 +104,8 @@ Server::Server(server& config, size_t locationNbr, size_t cgiNbr) : _socket()
     getClientMaxBodySize(config[SERVER][CLIENT_MAX_BODY_SIZE][0]);
     storeLocation(config, locationNbr);
     storeErrorPage(config, locationNbr);
-    storeRedirection(config);
-    storeCgi(config, cgiNbr);
+    storeRedirection(config, locationNbr);
+    storeCgi(config, locationNbr, cgiNbr);
 }
 
 Server::~Server() {}

@@ -19,8 +19,8 @@ typedef struct s_location {
 }t_location;
 
 typedef struct s_redirection {
-    std::string redir_300;
-    std::string redir_301;
+    std::vector<std::string> redir_300;
+    std::vector<std::string> redir_301;
 }t_redirection;
 
 typedef struct s_error_page {
@@ -48,10 +48,10 @@ class Server {
 public:
     void initSocket(void);
 
-    void storeCgi(server& config, size_t cgiNbr);
+    void storeCgi(server& config, size_t locationNbr, size_t cgiNbr);
     void storeLocation(server& config, size_t locationNbr);
     void storeErrorPage(server& config, size_t locationNbr);
-    void storeRedirection(server& config);
+    void storeRedirection(server& config, size_t locationNbr);
 
     bool methodAlreadyDefined(uint8_t mask, size_t method);
 
