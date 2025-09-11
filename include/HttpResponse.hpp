@@ -32,18 +32,18 @@ public:
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
     void buildResponse(HttpRequest& request, int code, std::string msg);
-    void handleError(std::stringstream *buffer, int success, std::string type, HttpRequest request);
-    void handleGET(HttpRequest& request);
+    void handleError(std::stringstream *buffer, int success, std::string type);
+    void handleGET();
     void handlePOST(HttpRequest& request);
-    void handleDELETE(HttpRequest& request);
+    void handleDELETE();
     void solveMimeType();
     void solvePath();
 
     void buildResponse(void);
-
-    int handleImage(HttpRequest& request);
-    int handleCss(HttpRequest& request, std::stringstream *buffer);
-    int handleHtml(HttpRequest& request, std::stringstream *buffer);
+    int handleImage();
+    int handleRedirect();
+    int handleCss(std::stringstream *buffer);
+    int handleHtml(std::stringstream *buffer);
 
     bool isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const;
     bool isAudio();

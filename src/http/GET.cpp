@@ -2,9 +2,8 @@
 #include "../../include/HttpResponse.hpp"
 #include "../../include/WebServ.hpp"
 
-void HttpResponse::handleError(std::stringstream *buffer, int success, std::string type, HttpRequest request)
+void HttpResponse::handleError(std::stringstream *buffer, int success, std::string type)
 {
-    (void)request;
     std::string fullPath;
     std::string body;
     if (type == "html") {
@@ -37,12 +36,31 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
     setBody(body);    
 }
 
-int HttpResponse::handleHtml(HttpRequest& request, std::stringstream *buffer)
+int HttpResponse::handleRedirect()
 {
     std::cout << BOLD BLUE << _request.path << DEFAULT << std::endl;
     std::ifstream file(_request.path.c_str());
 
-    (void)request;
+    std::cout << _request.path << std::endl;
+    std::cout << _server.redirection.redir_300[0] << std::endl;
+    // std::cout << _server.redirection.redir_300[1] << std::endl;
+    if (_request.path == _server.redirection.redir_300[0])
+    {
+        setStatusLine(_request.httpVersion, 301, "Moved Permanently");
+        // setHeaders("Location", "http://www.youtube.com");
+        // setHeaders("Location", _server.redirection.redir_300[1]);
+        setHeaders("Content-Length", "0");
+        setBody("");
+        return 0;
+    }
+    return 1;
+}
+
+int HttpResponse::handleHtml(std::stringstream *buffer)
+{
+    std::cout << BOLD BLUE << _request.path << DEFAULT << std::endl;
+    std::ifstream file(_request.path.c_str());
+
     if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
     else if (access(_request.path.c_str(), R_OK) != 0)
@@ -59,11 +77,10 @@ int HttpResponse::handleHtml(HttpRequest& request, std::stringstream *buffer)
     return 200;
 }
 
-int HttpResponse::handleCss(HttpRequest& request, std::stringstream *buffer)
+int HttpResponse::handleCss(std::stringstream *buffer)
 {
     std::ifstream file(_request.path.c_str());
 
-    (void)request;
     if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
     else if (access(_request.path.c_str(), R_OK) != 0)
@@ -81,11 +98,10 @@ int HttpResponse::handleCss(HttpRequest& request, std::stringstream *buffer)
     return 200;
 }
 
-int HttpResponse::handleImage(HttpRequest& request)
+int HttpResponse::handleImage()
 {
     std::ifstream file(_request.path.c_str(), std::ios::in | std::ios::binary);
 
-    (void)request;
     if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
     else if (access(_request.path.c_str(), R_OK) != 0)
@@ -115,22 +131,24 @@ int HttpResponse::handleImage(HttpRequest& request)
     return 200;
 }
 
-void HttpResponse::handleGET(HttpRequest& request)
+void HttpResponse::handleGET()
 {
     int state = 0;
     std::stringstream buffer;
+    if (!handleRedirect())
+        return;
     if (_extension == "html" || _extension == "htm" || _extension == "") {
-        state = handleHtml(request, &buffer);
+        state = handleHtml(&buffer);
         if (state != 200)
-            handleError(&buffer, state, "html", request);
+            handleError(&buffer, state, "html");
     } else if (_extension == "css") {
-        state = handleCss(request, &buffer);
+        state = handleCss(&buffer);
         if (state != 200)
-            handleError(&buffer, state, "css", request);
+            handleError(&buffer, state, "css");
     } else if (isImage()) {
-        state = handleImage(request);
+        state = handleImage();
         if (state != 200)
-            handleError(&buffer, state, "img", request);
+            handleError(&buffer, state, "img");
     } else
-        handleError(&buffer, 500, "html", request);
+        handleError(&buffer, 500, "html");
 }

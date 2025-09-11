@@ -2,9 +2,8 @@
 #include "../../include/HttpResponse.hpp"
 #include "../../include/WebServ.hpp"
 
-void HttpResponse::handleDELETE(HttpRequest& request)
+void HttpResponse::handleDELETE()
 {
-    (void)request;
     std::string body;
     if (access(_request.path.c_str(), F_OK) != 0) {
         body = "Not Found";
