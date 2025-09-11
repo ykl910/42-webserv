@@ -82,7 +82,6 @@ void    HttpResponse::solvePath()
         }
     }
     _request.path = fullPath;
-    std::cout << BOLD BLUE << _request.path << std::endl << DEFAULT;
 }
 
 void    HttpResponse::buildResponse(void)

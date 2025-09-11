@@ -51,7 +51,6 @@ enum e_error_directive {
 };
 
 enum e_redirection_directive {
-    R_300,
     R_301,
     R_302
 };
