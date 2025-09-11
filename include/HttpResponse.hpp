@@ -32,8 +32,7 @@ public:
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
     void buildResponse(HttpRequest& request, int code, std::string msg);
-    void handleThread(HttpRequest& request);
-    void handleError(std::stringstream *buffer, int success, std::string type);
+    void handleError(std::stringstream *buffer, int success, std::string type, HttpRequest request);
     void handleGET(HttpRequest& request);
     void handlePOST(HttpRequest& request);
     void handleDELETE(HttpRequest& request);

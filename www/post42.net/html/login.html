@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="stylesheet" href="../css/style.css">
+   <link rel="stylesheet" href="/css/style.css">
    <script>
       // Check for login cookie on page load
       document.addEventListener('DOMContentLoaded', function() {
@@ -16,22 +16,22 @@
          }
       });
     </script>
-   <link rel="icon" href="../assets/icon.png" type="image/png">
+   <link rel="icon" href="/assets/icon.png" type="image/png">
    <title>Upload</title>
 </head>
 <body>
     <nav class="navbar">
         <div class="left-side">
-            <img src="../images/post42logo.png" alt="logo" class="logo" />
-            <a href="../html/about.html">about us</a>
-            <a href="../html/index.html">latest posts</a>
+            <img src="/images/post42logo.png" alt="logo" class="logo" />
+            <a href="/html/about.html">about us</a>
+            <a href="/html/index.html">latest posts</a>
         </div>
         <div class="site-name">post42_</div>
         <div class="right-side">
-            <a href="../html/upload.html" class="upload">upload</a>
-            <a href="../html/remove.html" class="upload">remove</a>
-            <a href="../html/game.html" class="upload">wtf</a>
-            <a href="../html/login.html" class="upload">login</a>
+            <a href="/html/upload.html" class="upload">upload</a>
+            <a href="/html/remove.html" class="upload">remove</a>
+            <a href="/html/game.html" class="upload">wtf</a>
+            <a href="/html/login.html" class="upload">login</a>
         </div>
     </nav>
    <main>
@@ -58,7 +58,7 @@
       window.addEventListener("DOMContentLoaded", function () {
          document.getElementById("loginForm").addEventListener("submit", async function (e) {
             e.preventDefault();
-            console.log("Submitting with JS fetch...");
+            console.log("Submitting with JS fetch.");
 
             const form = e.target;
             const formData = new FormData(form);
