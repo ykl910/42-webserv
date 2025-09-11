@@ -280,6 +280,7 @@ void    Config::initConfigParser(void)
     _configFormat[ERROR][E_400].push_back("400");
     _configFormat[ERROR][E_403].push_back("403");
     _configFormat[ERROR][E_404].push_back("404");
+    _configFormat[ERROR][E_405].push_back("405");
     _configFormat[ERROR][E_500].push_back("500");
     _configFormat[ERROR][E_501].push_back("501");
 
