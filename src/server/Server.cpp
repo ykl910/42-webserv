@@ -21,6 +21,7 @@ void Server::storeErrorPage(server& config, size_t locationNbr) {
 
     _attribute.error_page.err_400 = root + "/" + config[ERROR + locationNbr][E_400][0];
     _attribute.error_page.err_404 = root + "/" + config[ERROR + locationNbr][E_404][0];
+    _attribute.error_page.err_405 = root + "/" + config[ERROR + locationNbr][E_405][0];
     _attribute.error_page.err_500 = root + "/" + config[ERROR + locationNbr][E_500][0];
 }
 

@@ -64,6 +64,7 @@ void    HttpResponse::solvePath()
         // std::cout << "Server location path: " << i << _server.location[i].path << "\n";
         if (_request.path.find(_server.location[i].path) == 0)
         {
+            _allowedMethod = _server.location[i].method;
             // std::cout << "Request PATH: " << _request.path << "\n";
             // std::cout << "Server location path: " <<  _server.location[i].path << "\n";
             // std::cout << "Server location root: " <<  _server.location[i].root << "\n";
