@@ -1,4 +1,5 @@
 #!/usr/bin/php-cgi
+
 <?php
 echo "Content-type: text/html\n\n";
 ?>

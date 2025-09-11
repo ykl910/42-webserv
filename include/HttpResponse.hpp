@@ -40,6 +40,8 @@ public:
     void solveMimeType();
     void solvePath();
 
+    void buildResponse(void);
+
     int handleImage(HttpRequest& request);
     int handleCss(HttpRequest& request, std::stringstream *buffer);
     int handleHtml(HttpRequest& request, std::stringstream *buffer);

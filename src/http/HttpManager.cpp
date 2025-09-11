@@ -165,7 +165,7 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
 
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance)
 {
-    if(clientState == PENDING)
+    if (clientState == PENDING)
         getRequest(clientFd, serverAttr, clientState, persistance);
 
     if (clientState == RECEIVED || clientState == RESPONSE_TRUNCATE)

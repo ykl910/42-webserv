@@ -15,8 +15,8 @@ void manageConfigError(const std::string& line, const std::string& expected,
         std::cerr
         << BOLD WHITE << "line "
         << BOLD YELLOW << lineNbr
-        << BOLD WHITE << " got\n" << DEFAULT << line << "\n"
-        << BOLD WHITE << "expected\n" <<  DEFAULT << expected << "\n";
+        << BOLD WHITE << " got:\n" << DEFAULT << line << "\n"
+        << BOLD WHITE << "expected:\n" <<  DEFAULT << expected << "\n";
     }
     throw std::runtime_error("");
 }

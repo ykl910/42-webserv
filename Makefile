@@ -40,6 +40,7 @@ SRC                 := config/Config.cpp \
                     http/HttpRequest.cpp \
                     http/HttpResponse.cpp \
                     http/POST.cpp \
+                    http/Resolution.cpp \
                     multiplexer/Epoll.cpp \
                     multiplexer/Poll.cpp \
                     multiplexer/Select.cpp \
