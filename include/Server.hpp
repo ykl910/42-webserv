@@ -3,6 +3,7 @@
 // #include "HttpManager.hpp"
 #include "Config.hpp"
 #include "Socket.hpp"
+#include <algorithm>
 #include <iostream>
 
 typedef struct s_cgi {
@@ -41,7 +42,8 @@ typedef struct s_serv_attr {
     std::vector<t_location> location;
     t_error_page            error_page;
     t_redirection           redirection;
-    std::vector<t_cgi>      cgi;
+    // std::vector<t_cgi>      cgi;
+    cgiMap                  cgi;
 }t_serv_attr;
 
 class HttpManager;
@@ -50,10 +52,10 @@ class Server {
 public:
     void initSocket(void);
 
-    void storeCgi(server& config, size_t locationNbr, size_t cgiNbr);
     void storeLocation(server& config, size_t locationNbr);
     void storeErrorPage(server& config, size_t locationNbr);
     void storeRedirection(server& config, size_t locationNbr);
+    void storeCgi(server& config, size_t locationNbr, size_t cgiNbr, size_t cgiTotal);
 
     bool methodAlreadyDefined(uint8_t mask, size_t method);
     void getRedirectionValue(server& config, size_t locationNbr, std::vector<std::string>& redir, int i);
@@ -64,11 +66,11 @@ public:
     int getClientMaxBodySize(const std::string& input);
 
     Server() {}
-    Server(server& config, size_t locationNbr, size_t cgiNbr);
+    Server(server& config, size_t locationNbr, size_t cgiNbr, size_t cgiTotal);
     Server& operator=(Server& other);
     ~Server();
 
 private:
-    t_serv_attr         _attribute;
-    Socket              _socket;
+    t_serv_attr _attribute;
+    Socket      _socket;
 };

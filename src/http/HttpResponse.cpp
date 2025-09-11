@@ -95,7 +95,7 @@ bool HttpResponse::isCgi(std::string &requestPath)
 
     for(size_t i = 0; i < _server.cgi.size(); i++)
     {
-        if(!_server.cgi[i].extension.empty() && _server.cgi[i].extension == fileExtention)
+        if (!_server.cgi[i].extension.empty() && _server.cgi[i].extension == fileExtention)
            return true;
     }
     return false;

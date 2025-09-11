@@ -117,7 +117,7 @@ void Epoll::eventManager(epoll_ev &event)
                 enableWriteEvent(event.data.fd);
             if( _clientState[event.data.fd] == SENT)
             {
-                if(!_persistance[event.data.fd])
+                if (!_persistance[event.data.fd])
                     eraseClientToEpoll(event.data.fd);
                 else
                     _clientState[event.data.fd] = PENDING;
@@ -131,7 +131,7 @@ void Epoll::eventManager(epoll_ev &event)
 
         if (_clientState[event.data.fd] == SENT)
         {
-            if(!_persistance[event.data.fd])
+            if (!_persistance[event.data.fd])
                 eraseClientToEpoll(event.data.fd);
             else
             {
@@ -163,9 +163,9 @@ void    Epoll::initServer(Config& config)
     configParser parser = config.getConfigParser();
     for (configParserIterator it = parser.begin();
                               it != parser.end(); ++it) {
-        server servConfig = *it;
-        _server.push_back(Server(servConfig,
-            config.getLocationNbr(i), config.getCgiNbr(i)));
+        server serverConfig = *it;
+        _server.push_back(Server(serverConfig,
+            config.getLocationNbr(i), config.getCgiNbr(i), config.getCgiTotal()));
         _server[i].initSocket();
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
