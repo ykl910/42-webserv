@@ -22,17 +22,11 @@ project_dir=$(cd .. && pwd)
 test_dir="$project_dir/test"
 log_dir="$test_dir/log"
 
-# host:port
-domains=(
-    "post42.net"
-    "webserv.net"
-)
-
 host="localhost"
 
 ports=(
     "8080"
-    "4040"
+    "7070"
 )
 
 multiplexers=(
@@ -43,8 +37,7 @@ multiplexers=(
 
 main()
 {
-    echo -e "$BOLD$BLUE$header$DEFAULT\n"
-
+    print_header
     if [ $# -eq 1 ]; then
         case $1 in
             "subject")
@@ -61,7 +54,6 @@ main()
             ;;
         esac
     elif [ $# -eq 0 ]; then
-        setup_test
         run_all_test
     else
         print_usage
@@ -69,23 +61,25 @@ main()
     exit 0
 }
 
+print_header()
+{
+    for ((i=0; i<${#header}; i++)); do
+        echo -en "$BOLD$BLUE${header:$i:1}$DEFAULT"
+        sleep 0.020
+    done
+    echo -e "\n"
+}
+
 print_usage()
 {
     echo -e "$BOLD${WHITE}usage: ${DEFAULT}./script.sh [test name]"
 }
 
-setup_test()
-{
-    # TMUX
-    # SIEGE
-    return;
-}
-
 run_all_test()
 {
-    run_subject_test
-    run_siege_test
     run_curl_test
+    # run_subject_test
+    # run_siege_test
 }
 
 run_subject_test()
@@ -106,7 +100,8 @@ run_subject_test()
     # THIS TEST IS NOT MEANT TO BE THE ONLY TEST IN THE EVALUATION!!!
     # press enter to continue
 
-    # Before starting please follow the next few steps (files content can be anything and will be shown to you by the test):
+    # Before starting please follow the next few steps (files content can be
+    # anything and will be shown to you by the test):
     # - Download the cgi_test executable on the host
     # - Create a directory YoupiBanane with:
     #         -a file name youpi.bad_extension
@@ -130,10 +125,14 @@ run_subject_test()
 
     # Setup the configuration file as follow:
     # - / must answer to GET request ONLY
-    # - /put_test/* must answer to PUT request and save files to a directory of your choice
-    # - any file with .bla as extension must answer to POST request by calling the cgi_test executable
+    # - /put_test/* must answer to PUT request and save files to a directory of
+    #   your choice
+    # - any file with .bla as extension must answer to POST request by calling
+    #   the cgi_test executable
     # - /post_body must answer anything to POST request with a maxBody of 100
-    # - /directory/ must answer to GET request and the root of it would be the repository YoupiBanane and if no file are requested, it should search for youpi.bad_extension files
+    # - /directory/ must answer to GET request and the root of it would be the
+    #   repository YoupiBanane and if no file are requested, it should search
+    #   for youpi.bad_extension files
     echo \
 "server:
     listen 8080
@@ -178,7 +177,7 @@ run_siege_test()
 run_curl_test()
 {
     local webserv_pid
-    echo -e "${BOLD}${ITALIC}${YELLOW}cURL test${DEFAULT}"
+    echo -e "$BOLD$ITALIC${YELLOW}cURL test$DEFAULT"
     tests=(
         " "
 
@@ -192,7 +191,7 @@ run_curl_test()
         " -X DELETE"
     )
 
-    mkdir -p ../log
+    mkdir -p $log_dir/curl
     pushd .. > /dev/null
     for multiplexer in "${multiplexers[@]}";
     do

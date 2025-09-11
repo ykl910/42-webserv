@@ -84,7 +84,7 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
     if (lineLength == 0)
         manageConfigError(line, EXPECTED_DIRECTIVE,
-            "line empty while excepting a directive.", _lineNbr);
+            "line empty when expecting a directive.", _lineNbr);
 
     else if (lineLength < indentSize
           || lineLength < indentSize + static_cast<int>(DIRECTIVE_NAME_LENGTH))
@@ -239,14 +239,14 @@ void    Config::initConfigParser(void)
     context server;
     context location;
     context error;
-    // context redirection;
-    // context cgi;
+    context redirection;
+    context cgi;
 
     _configFormat[SERVER] = server;
     _configFormat[LOCATION] = location;
     _configFormat[ERROR] = error;
-    // _configFormat[REDIRECTION] = redirection;
-    // _configFormat[CGI] = cgi;
+    _configFormat[REDIRECTION] = redirection;
+    _configFormat[CGI] = cgi;
 
     // serverDirective
     _configFormat[SERVER][LISTEN].push_back("listen");
@@ -263,25 +263,23 @@ void    Config::initConfigParser(void)
 
     // errorDirective
     _configFormat[ERROR][E_400].push_back("400");
-    //_configFormat[ERROR][E_401] = "401";
-    //_configFormat[ERROR][E_402] = "402";
     _configFormat[ERROR][E_403].push_back("403");
     _configFormat[ERROR][E_404].push_back("404");
 
     _configFormat[ERROR][E_500].push_back("500");
-    //_configFormat[ERROR][E_501] = "501";
-    //_configFormat[ERROR][E_502] = "502";
+    // _configFormat[ERROR][E_501].push_back("501");
+    // _configFormat[ERROR][E_502].push_back("502");
 
     // redirectionDirective
-    // _configFormat[REDIRECTION][R_300] = "300";
-    // _configFormat[REDIRECTION][R_301] = "301";
-    // _configFormat[REDIRECTION][R_302] = "302";
+    _configFormat[REDIRECTION][R_300].push_back("300");
+    // _configFormat[REDIRECTION][R_301].push_back("301");
+    // _configFormat[REDIRECTION][R_302].push_back("302");
 
     // cgiDirective
-    // _configFormat[CGI][0] = ".php";
-    // _configFormat[CGI][1] = ".perl";
-    // _configFormat[CGI][2] = ".py";
-    // _configFormat[CGI][3] = ".c";
+    // _configFormat[CGI][0].push_back(".php");
+    // _configFormat[CGI][1].push_back(".perl");
+    // _configFormat[CGI][2].push_back(".py");
+    // _configFormat[CGI][3].push_back(".c");
 }
 
 Config::Config(const char*& configFilePath)

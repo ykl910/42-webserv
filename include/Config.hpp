@@ -101,14 +101,14 @@ public:
     ~Config();
 
 private:
-    size_t          _lineNbr;
-    size_t          _locationNbr;
-    size_t          _serverIndex;
-    std::map<int, int> _locationNbrMap;
-    std::map<int, int> _cgiNbrMap;
-    unsigned int    _contextIndex;
-    unsigned int    _directiveIndex;
-    configParser    _configParser;
-    configFormat    _configFormat;
-    const char*&    _configFilePath;
+    size_t              _lineNbr;
+    size_t              _locationNbr;
+    size_t              _serverIndex;
+    std::map<int, int>  _locationNbrMap;
+    std::map<int, int>  _cgiNbrMap;
+    unsigned int        _contextIndex;
+    unsigned int        _directiveIndex;
+    configParser        _configParser;
+    configFormat        _configFormat;
+    const char*&        _configFilePath;
 };

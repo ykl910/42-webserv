@@ -10,8 +10,8 @@
             <h1><a href="../index.html">Back</a></h1>
             <h2>POST</h2>
             <p>
-                The POST HTTP method sends data to the server. The type of the body
-                of the request is indicated by the Content-Type header.
+                The POST HTTP method sends data to the server. The type of the
+                body of the request is indicated by the Content-Type header.
             </p>
             <h2>Syntax:</h2>
             <h3>Request</h3>
@@ -21,11 +21,12 @@
             <br><br><br>
             <p>HTML forms typically send data using POST and this usually
                 results in a change on the server.</p>
-            <form>
+            <form action="../cgi/cgi.php" method="POST">
                 <br>
                 <p>button</p>
                 <input type="button" name="button" placeholder="text">
-
+            </form>
+            <form>
                 <br>
                 <p>checkbox</p>
                 <input type="checkbox" name="checkbox" placeholder="text">

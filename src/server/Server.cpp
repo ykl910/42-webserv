@@ -19,10 +19,9 @@ int Server::getClientMaxBodySize(const std::string& input) {
 void Server::storeErrorPage(server& config, size_t locationNbr) {
     std::string root(_attribute.location[0].root);
 
-    _attribute.error_page.err_400 = root + "/" + config[ERROR + locationNbr][E_400][VALUE];
-    _attribute.error_page.err_403 = root + "/" + config[ERROR + locationNbr][E_403][VALUE];
-    _attribute.error_page.err_404 = root + "/" + config[ERROR + locationNbr][E_404][VALUE];
-    _attribute.error_page.err_500 = root + "/" + config[ERROR + locationNbr][E_500][VALUE];
+    _attribute.error_page.err_400 = root + "/" + config[ERROR + locationNbr][E_400][0];
+    _attribute.error_page.err_404 = root + "/" + config[ERROR + locationNbr][E_404][0];
+    _attribute.error_page.err_500 = root + "/" + config[ERROR + locationNbr][E_500][0];
 }
 
 void Server::storeRedirection(server& config) {
