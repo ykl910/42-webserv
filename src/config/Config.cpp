@@ -284,7 +284,6 @@ void    Config::initConfigParser(void)
     _configFormat[ERROR][E_501].push_back("501");
 
     // redirectionDirective
-    _configFormat[REDIRECTION][R_300].push_back("300");
     _configFormat[REDIRECTION][R_301].push_back("301");
     _configFormat[REDIRECTION][R_302].push_back("302");
 
