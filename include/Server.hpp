@@ -7,7 +7,7 @@
 
 typedef struct s_cgi {
     std::string extension;
-    std::string path;
+    std::vector<std::string> path;
 }t_cgi;
 
 typedef struct s_location {
@@ -21,6 +21,7 @@ typedef struct s_location {
 typedef struct s_redirection {
     std::vector<std::string> redir_300;
     std::vector<std::string> redir_301;
+    std::vector<std::string> redir_302;
 }t_redirection;
 
 typedef struct s_error_page {
@@ -29,6 +30,8 @@ typedef struct s_error_page {
     std::string err_404;
     std::string err_500;
 }t_error_page;
+
+typedef std::map<std::string, std::vector<std::string> > cgiMap;
 
 typedef struct s_serv_attr {
     std::string             host;
@@ -54,6 +57,7 @@ public:
     void storeRedirection(server& config, size_t locationNbr);
 
     bool methodAlreadyDefined(uint8_t mask, size_t method);
+    void getRedirectionValue(server& config, size_t locationNbr, std::vector<std::string>& redir, int i);
 
     Socket& getSocket(void);
     int getSocketFd(void) const;

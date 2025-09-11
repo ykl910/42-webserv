@@ -24,9 +24,25 @@ void Server::storeErrorPage(server& config, size_t locationNbr) {
     _attribute.error_page.err_500 = root + "/" + config[ERROR + locationNbr][E_500][0];
 }
 
+#define REDIRECTION_DIRECTIVE_NUMBER 2
+
+void Server::getRedirectionValue(server& config, size_t locationNbr, std::vector<std::string>& redir, int i)
+{
+    std::stringstream redirectionValue(config[REDIRECTION + locationNbr][i][0]);
+    std::string value;
+    size_t j = 0;
+    while (redirectionValue >> value) {
+        if (j > 2)
+            throw std::runtime_error("Error: redirection got too much arguments");
+        redir.push_back(value);
+        ++j;
+    }
+}
+
 void Server::storeRedirection(server& config, size_t locationNbr) {
-    _attribute.redirection.redir_300.push_back(config[REDIRECTION + locationNbr][R_300][0]);
-    _attribute.redirection.redir_301.push_back(config[REDIRECTION + locationNbr][R_301][0]);
+    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_300, 0);
+    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_301, 1);
+    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_302, 2);
 }
 
 #define GET 0
