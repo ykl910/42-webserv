@@ -2,13 +2,15 @@
 #include "../../include/HttpResponse.hpp"
 #include "../../include/WebServ.hpp"
 
-void HttpResponse::handleError(std::stringstream *buffer, int success, std::string type)
+void HttpResponse::handleError(std::stringstream *buffer, int success, std::string type, HttpRequest request)
 {
+    (void)request;
     std::string fullPath;
     std::string body;
     if (type == "html") {
         if (success == 404) {
             fullPath = _server.error_page.err_404;
+            std::cout << "full error page: " << fullPath << std::endl;
             setStatusLine(_request.httpVersion, 404, "Not Found");
         } else if (success == 403) {
             fullPath = _server.error_page.err_403;
@@ -21,7 +23,6 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
         *buffer << file.rdbuf();
         body = buffer->str();
         setHeaders("Content-Type", "text/html");
-        setBody(body);
     } else if (type == "img") {
         if (success == 404)
             body = "Not Found";
@@ -31,9 +32,9 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
             body = "Internal error";
         setStatusLine(_request.httpVersion, success, body);
         setHeaders("Content-Type", "text/plain");
-        setHeaders("Content-Length", itos(body.length()));
-        setBody(body);
     }
+    setHeaders("Content-Length", itos(body.length()));
+    setBody(body);    
 }
 
 int HttpResponse::handleHtml(HttpRequest& request, std::stringstream *buffer)
@@ -121,15 +122,15 @@ void HttpResponse::handleGET(HttpRequest& request)
     if (_extension == "html" || _extension == "htm" || _extension == "") {
         state = handleHtml(request, &buffer);
         if (state != 200)
-            handleError(&buffer, state, "html");
+            handleError(&buffer, state, "html", request);
     } else if (_extension == "css") {
         state = handleCss(request, &buffer);
         if (state != 200)
-            handleError(&buffer, state, "img");
+            handleError(&buffer, state, "css", request);
     } else if (isImage()) {
         state = handleImage(request);
         if (state != 200)
-            handleError(&buffer, state, "img");
+            handleError(&buffer, state, "img", request);
     } else
-        handleError(&buffer, 500, "html");
+        handleError(&buffer, 500, "html", request);
 }
