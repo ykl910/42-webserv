@@ -46,7 +46,7 @@ enum e_error_directive {
     // ...
 
     E_500,
-   // E_501,
+    E_501
    // E_502
 };
 

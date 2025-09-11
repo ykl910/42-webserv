@@ -131,22 +131,36 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
     else
         indentSize = 8;
     _directiveIndex = 0;
-    while (_directiveIndex < _configFormat[_contextIndex].size()) {
+    while (_directiveIndex < _configFormat[_contextIndex].size() || _contextIndex == CGI) {
         directiveValue   newDirective;
 
-        // std::cout << line << std::endl;
         if (_contextIndex == LOCATION
             && _directiveIndex == PATH) {
-            // extractDirective(line, newDirective, indentSize);
             newDirective.push_back(line.substr(4 + 10,
                                     line.length() - 4 - 10));
-        }
-        else {
+
+        } else if (_contextIndex == CGI) {
+            while (true) {
+                newDirective.push_back(line);
+                std::ifstream::pos_type streamPos;
+
+                streamPos = file.tellg();
+                std::getline(file, line);
+                if (line.length() == 0) {
+                    file.seekg(streamPos);
+                    return;
+                }
+                server[_contextIndex + _locationNbr][_directiveIndex] = newDirective;
+                _lineNbr++;
+            }
+
+        } else {
             std::getline(file, line);
-            _lineNbr++;
+            std::cout << line << std::endl;
             if (directiveFormatValid(line, indentSize))
                 extractDirective(line, newDirective, indentSize);
         }
+        _lineNbr++;
         server[_contextIndex + _locationNbr][_directiveIndex] = newDirective;
         _directiveIndex++;
     }
@@ -181,6 +195,7 @@ void    Config::extractServer(std::ifstream& file, std::string& line, server& se
         _lineNbr++;
         if (file.eof())
             break;
+
         if (_contextIndex == LOCATION && contextFormatValid(line)) {
             std::ifstream::pos_type streamPos;
             while (contextFormatValid(line)) {
@@ -193,8 +208,8 @@ void    Config::extractServer(std::ifstream& file, std::string& line, server& se
                 std::getline(file, line);
                 _locationNbr++;
             }
-        }
-        else if (contextFormatValid(line))
+
+        } else if (contextFormatValid(line))
             extractContext(file, line, server);
         _contextIndex++;
     }
@@ -208,6 +223,7 @@ bool    Config::gotAnotherServer(std::ifstream& file, std::string& line)
         return false;
     else if (!line.empty())
         manageConfigError(line, "", "config file not well formated.", _lineNbr);
+
     std::ifstream::pos_type streamPos = file.tellg();
     std::getline(file, line);
     file.seekg(streamPos);
@@ -265,30 +281,20 @@ void    Config::initConfigParser(void)
     _configFormat[ERROR][E_400].push_back("400");
     _configFormat[ERROR][E_403].push_back("403");
     _configFormat[ERROR][E_404].push_back("404");
-
     _configFormat[ERROR][E_500].push_back("500");
-    // _configFormat[ERROR][E_501].push_back("501");
-    // _configFormat[ERROR][E_502].push_back("502");
+    _configFormat[ERROR][E_501].push_back("501");
 
     // redirectionDirective
     _configFormat[REDIRECTION][R_300].push_back("300");
-    // _configFormat[REDIRECTION][R_301].push_back("301");
-    // _configFormat[REDIRECTION][R_302].push_back("302");
+    _configFormat[REDIRECTION][R_301].push_back("301");
 
-    // cgiDirective
-    // _configFormat[CGI][0].push_back(".php");
-    // _configFormat[CGI][1].push_back(".perl");
-    // _configFormat[CGI][2].push_back(".py");
-    // _configFormat[CGI][3].push_back(".c");
 }
 
 Config::Config(const char*& configFilePath)
     : _lineNbr(0), _locationNbr(0), _configFilePath(configFilePath)
 {
     initConfigParser();
-    // printConfigFormat();
     parseConfigFile();
-    // printConfig();
 }
 
 Config::~Config() {}
