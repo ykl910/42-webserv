@@ -38,17 +38,18 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
 
 int HttpResponse::handleRedirect()
 {
-    std::cout << BOLD BLUE << _request.path << DEFAULT << std::endl;
     std::ifstream file(_request.path.c_str());
-
-    std::cout << _request.path << std::endl;
-    std::cout << _server.redirection.redir_300[0] << std::endl;
-    // std::cout << _server.redirection.redir_300[1] << std::endl;
-    if (_request.path == _server.redirection.redir_300[0])
+    if (_request.path == _server.redirection.redir_301[0])
     {
         setStatusLine(_request.httpVersion, 301, "Moved Permanently");
-        // setHeaders("Location", "http://www.youtube.com");
-        // setHeaders("Location", _server.redirection.redir_300[1]);
+        setHeaders("Location", _server.redirection.redir_301[1]);
+        setHeaders("Content-Length", "0");
+        setBody("");
+        return 0;
+    } else if (_request.path == _server.redirection.redir_302[0])
+    {
+        setStatusLine(_request.httpVersion, 302, "Moved Temporarily");
+        setHeaders("Location", _server.redirection.redir_302[1]);
         setHeaders("Content-Length", "0");
         setBody("");
         return 0;

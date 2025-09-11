@@ -40,9 +40,8 @@ void Server::getRedirectionValue(server& config, size_t locationNbr, std::vector
 }
 
 void Server::storeRedirection(server& config, size_t locationNbr) {
-    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_300, 0);
-    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_301, 1);
-    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_302, 2);
+    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_301, 0);
+    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_302, 1);
 }
 
 #define GET 0
