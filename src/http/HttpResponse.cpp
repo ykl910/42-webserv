@@ -114,6 +114,10 @@ bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr
     }
 }
 
+#define GET 0
+#define POST 1
+#define DELETE 2
+
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     : _server(serverAttr), _request(request.getRequestAttr())
 {
@@ -123,14 +127,25 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     buildResponse();
     if (isCgi(_request.path))
         Cgi cgi(request, *this);
-    else if (_request.method == "GET")
+    else if (_request.method == "GET" && (_allowedMethod & (1 << GET)))
         handleGET();
-    else if (_request.method == "POST")
+    else if (_request.method == "POST" && (_allowedMethod & (1 << POST)))
         handlePOST(request);
-    else if (_request.method == "DELETE")
+    else if (_request.method == "DELETE" && (_allowedMethod & (1 << DELETE)))
         handleDELETE();
     else
+    {
+        std::stringstream buffer;
+        std::string body;
+        std::ifstream file(_server.error_page.err_405.c_str());
+        buffer << file.rdbuf();
+        body = buffer.str();
+        setBody(body);
+        setHeaders("Content-Type", "text/html");
+        setHeaders("Content-Length", itos(body.length()));
         setStatusLine(_request.httpVersion, 405, "Method not allowed");
+    }
+        
 }
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response)

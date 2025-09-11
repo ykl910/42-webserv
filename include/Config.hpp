@@ -43,6 +43,7 @@ enum e_error_directive {
    // E_402,
     E_403,
     E_404,
+    E_405,
     // ...
 
     E_500,

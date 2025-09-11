@@ -64,6 +64,8 @@ private:
     headerMap       _headers;
     t_serv_attr     _server;
     t_request_attr  _request;
+    uint8_t         _allowedMethod;
+
 };
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response);
