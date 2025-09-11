@@ -124,11 +124,11 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     if (isCgi(_request.path))
         Cgi cgi(request, *this);
     else if (_request.method == "GET")
-        handleGET(request);
+        handleGET();
     else if (_request.method == "POST")
         handlePOST(request);
     else if (_request.method == "DELETE")
-        handleDELETE(request);
+        handleDELETE();
     else
         setStatusLine(_request.httpVersion, 405, "Method not allowed");
 }
