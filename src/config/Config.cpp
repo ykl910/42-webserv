@@ -156,7 +156,6 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
 
         } else {
             std::getline(file, line);
-            std::cout << line << std::endl;
             if (directiveFormatValid(line, indentSize))
                 extractDirective(line, newDirective, indentSize);
         }
@@ -287,6 +286,7 @@ void    Config::initConfigParser(void)
     // redirectionDirective
     _configFormat[REDIRECTION][R_300].push_back("300");
     _configFormat[REDIRECTION][R_301].push_back("301");
+    _configFormat[REDIRECTION][R_302].push_back("302");
 
 }
 
