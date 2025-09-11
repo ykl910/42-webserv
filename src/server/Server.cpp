@@ -82,10 +82,31 @@ void Server::storeLocation(server& config, size_t locationNbr)
     }
 }
 
-void Server::storeCgi(server& config, size_t locationNbr, size_t cgiNbr) {
-    (void)config;
-    (void)cgiNbr;
-    (void)locationNbr;
+bool isValidCgiExtension(void)
+{
+    return true;
+}
+
+typedef cgiMap::iterator cgiIterator;
+
+void Server::storeCgi(server& config, size_t locationNbr,
+                        size_t cgiNbr, size_t cgiTotal)
+{
+    static size_t total;
+
+    (void)cgiTotal;
+    for (size_t i = 0; i < cgiNbr; ++i) {
+        std::cout << config[CGI + locationNbr + total][i][0] << std::endl;
+        if (!_attribute.cgi.empty()) {
+            cgiIterator it = _attribute.cgi.find(config[CGI + locationNbr + total][i][0]);
+
+            if (it != _attribute.cgi.end())
+                throw std::runtime_error("Error: cgi extension already used");
+        }
+        // _attribute.cgi.insert(config[CGI + locationNbr + total][i][0]);
+    }
+    total += cgiNbr;
+    exit(0);
 }
 
 void    Server::initSocket(void)
@@ -110,7 +131,7 @@ Server& Server::operator=(Server& other)
     return *this;
 }
 
-Server::Server(server& config, size_t locationNbr, size_t cgiNbr) : _socket()
+Server::Server(server& config, size_t locationNbr, size_t cgiNbr, size_t cgiTotal) : _socket()
 {
     _attribute.port = config[SERVER][LISTEN][0];
     _attribute.host = config[SERVER][HOST][0];
@@ -120,7 +141,7 @@ Server::Server(server& config, size_t locationNbr, size_t cgiNbr) : _socket()
     storeLocation(config, locationNbr);
     storeErrorPage(config, locationNbr);
     storeRedirection(config, locationNbr);
-    storeCgi(config, locationNbr, cgiNbr);
+    storeCgi(config, locationNbr, cgiNbr, cgiTotal);
 }
 
 Server::~Server() {}

@@ -68,6 +68,11 @@ size_t  Config::getCgiNbr(size_t i)
     return _cgiNbrMap[i];
 }
 
+size_t Config::getCgiTotal(void)
+{
+    return _cgiTotal;
+}
+
 bool    rightIndentation(const std::string& line, uint32_t indentSize) {
     return line.length() > indentSize
         && line.substr(0, indentSize).find_first_not_of(" ");
@@ -140,8 +145,9 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
                                     line.length() - 4 - 10));
 
         } else if (_contextIndex == CGI) {
+            _cgiNbr = 0;
             while (true) {
-                newDirective.push_back(line);
+                directiveValue newCgi;
                 std::ifstream::pos_type streamPos;
 
                 streamPos = file.tellg();
@@ -150,9 +156,14 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
                     file.seekg(streamPos);
                     return;
                 }
-                server[_contextIndex + _locationNbr][_directiveIndex] = newDirective;
+                newCgi.push_back(line.substr(indentSize, line.length() - indentSize));
+                server[_contextIndex + _locationNbr + _cgiTotal][_directiveIndex] = newCgi;
+                _directiveIndex++;
                 _lineNbr++;
+                _cgiNbr++;
             }
+            _cgiTotal += _cgiNbr;
+            return;
 
         } else {
             std::getline(file, line);
@@ -213,6 +224,7 @@ void    Config::extractServer(std::ifstream& file, std::string& line, server& se
         _contextIndex++;
     }
     _locationNbrMap[_serverIndex] = _locationNbr;
+    _cgiNbrMap[_serverIndex] = _cgiNbr;
     std::getline(file, line);
 }
 
@@ -290,7 +302,7 @@ void    Config::initConfigParser(void)
 }
 
 Config::Config(const char*& configFilePath)
-    : _lineNbr(0), _locationNbr(0), _configFilePath(configFilePath)
+    : _cgiNbr(0), _cgiTotal(0), _lineNbr(0), _locationNbr(0), _configFilePath(configFilePath)
 {
     initConfigParser();
     parseConfigFile();

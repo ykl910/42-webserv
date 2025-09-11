@@ -93,7 +93,7 @@ void    Select::initServer(Config& config)
         server serverConfig = *it;
 
         _server.push_back(Server(serverConfig,
-            config.getLocationNbr(i), config.getCgiNbr(i)));
+            config.getLocationNbr(i), config.getCgiNbr(i), config.getCgiTotal()));
         _server[i].initSocket();
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));

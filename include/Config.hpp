@@ -79,10 +79,11 @@ public:
     void printConfigFormat(void) const;
     void printServer(const server& srv) const;
 
+    size_t getCgiTotal(void);
+    size_t getCgiNbr(size_t i);
+    size_t getLocationNbr(size_t i);
     configParser& getConfigParser(void);
     const char*& getConfigFilePath(void) const;
-    size_t getLocationNbr(size_t i);
-    size_t getCgiNbr(size_t i);
 
     bool contextFormatValid(const std::string& line);
     bool gotAnotherServer(std::ifstream& file, std::string& line);
@@ -100,6 +101,8 @@ public:
     ~Config();
 
 private:
+    size_t              _cgiNbr;
+    size_t              _cgiTotal;
     size_t              _lineNbr;
     size_t              _locationNbr;
     size_t              _serverIndex;
