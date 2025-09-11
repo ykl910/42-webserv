@@ -71,7 +71,7 @@ void    Poll::run()
 
                 bool persistance = false;
                 HttpManager(it->fd, serv.getServerAttribute(), _state, persistance);
-                if(!persistance)
+                if (!persistance)
                 {
                     _clientMap.erase(it->fd);
                     close(it->fd);
