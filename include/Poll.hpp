@@ -22,15 +22,21 @@ public:
     std::vector<Server> getServer(void) const;
 
     void initServer(Config& config);
+    void enableWriteEvent(int clientFd);
+    void disableWriteEvent(int clientFd);
+    void removeClientFromPoll(pollIterator& it);
     void addClientToPoll(int clientFd, int serverFd);
 
     Poll(Config& config);
     ~Poll();
 
 private:
-    int                         _state;
-    int                         _activity;
-    std::vector<struct pollfd>  _pollFd;
+    int                             _activity;
+    std::vector<struct pollfd>      _pollFd;
+    std::map<int, struct pollfd>    _pollFdMap;
+
+    std::map<int, bool>         _persistance;
+    std::map<int, int>          _clientState;
 
     std::vector<Server>         _server;
     std::vector<int>            _listenFd;

@@ -42,26 +42,32 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
         _clientMap.insert(
             std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
 
-        std::cout << BOLD YELLOW << "Epoll: new client accepted with fd " << BOLD WHITE << newClient.data.fd << DEFAULT << std::endl;
+        std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
+        << BOLD BLUE << newClient.data.fd << DEFAULT << std::endl;
         _clientState[clientFd] = PENDING;
         _persistance[clientFd] = false;
     }
 }
 
-void Epoll::eraseClientToEpoll(int clientFd)
+void Epoll::removeClientFromEpoll(int clientFd)
 {
-    std::cout << RED << "client [" << clientFd << "]: Connection closed" << DEFAULT << '\n';
+    std::cout
+    << RED << "client [" << clientFd << "]: Connection closed"
+    << DEFAULT << '\n';
+
     epoll_ctl(_epollFd, EPOLL_CTL_DEL, clientFd, NULL);
     close(clientFd);
     _persistance.erase(clientFd);
     _clientState.erase(clientFd);
-    _buffers.erase(clientFd);
 }
 
 
 void Epoll::enableWriteEvent(int clientFd)
 {
-    std::cout << GREEN << "client [" << clientFd << "]: Write event enabled" << DEFAULT << std::endl;
+    std::cout
+    << GREEN << "client [" << clientFd << "]: Write event enabled"
+    << DEFAULT << '\n';
+
     epoll_ev ev;
     ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLOUT;
     ev.data.fd = clientFd;
@@ -71,7 +77,10 @@ void Epoll::enableWriteEvent(int clientFd)
 
 void Epoll::disableWriteEvent(int clientFd)
 {
-    std::cout << GREEN << "client [" << clientFd << "]: Write event disabled" << DEFAULT << std::endl;
+    std::cout
+    << GREEN << "client [" << clientFd << "]: Write event disabled"
+    << DEFAULT << '\n';
+
     epoll_ev ev;
     ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR;
     ev.data.fd = clientFd;
@@ -93,15 +102,14 @@ void Epoll::eventManager(epoll_ev &event)
     if (event.events & EPOLLERR)
     {
         printFdError(event.data.fd);
-        eraseClientToEpoll(event.data.fd);
+        removeClientFromEpoll(event.data.fd);
     }
     else if (event.events & EPOLLHUP || event.events & EPOLLRDHUP)
     {
-        eraseClientToEpoll(event.data.fd);
+        removeClientFromEpoll(event.data.fd);
     }
-    else if (event.events & EPOLLIN || event.events & EPOLLOUT)
+    else if (event.events & EPOLLIN)
     {
-
         if (isSocketFd(event.data.fd))
         {
             int clientFd = _serverMap[event.data.fd].getSocket().acceptClient();
@@ -111,14 +119,17 @@ void Epoll::eventManager(epoll_ev &event)
         else
         {
             Server serv = _serverMap[_clientMap[event.data.fd]];
-            HttpManager(event.data.fd, serv.getServerAttribute(), _clientState[event.data.fd], _persistance[event.data.fd]);
+            HttpManager(event.data.fd,
+                        serv.getServerAttribute(),
+                        _clientState[event.data.fd],
+                        _persistance[event.data.fd]);
 
             if (_clientState[event.data.fd] == RESPONSE_TRUNCATE)
                 enableWriteEvent(event.data.fd);
-            if( _clientState[event.data.fd] == SENT)
+            if (_clientState[event.data.fd] == SENT)
             {
                 if (!_persistance[event.data.fd])
-                    eraseClientToEpoll(event.data.fd);
+                    removeClientFromEpoll(event.data.fd);
                 else
                     _clientState[event.data.fd] = PENDING;
             }
@@ -127,12 +138,15 @@ void Epoll::eventManager(epoll_ev &event)
     else if (event.events & EPOLLOUT)
     {
         Server serv = _serverMap[_clientMap[event.data.fd]];
-        HttpManager(event.data.fd, serv.getServerAttribute(), _clientState[event.data.fd], _persistance[event.data.fd]);
+        HttpManager(event.data.fd,
+                    serv.getServerAttribute(),
+                    _clientState[event.data.fd],
+                    _persistance[event.data.fd]);
 
         if (_clientState[event.data.fd] == SENT)
         {
             if (!_persistance[event.data.fd])
-                eraseClientToEpoll(event.data.fd);
+                removeClientFromEpoll(event.data.fd);
             else
             {
                 disableWriteEvent(event.data.fd);
@@ -146,9 +160,7 @@ void Epoll::run()
 {
     while (g_signal != SIGINT) {
         _nbEvents = epoll_wait(_epollFd, _eventsQueue.data(), MAXEVENTS, 0);
-        if (g_signal == SIGINT)
-            return;
-        else if (_nbEvents == -1)
+        if (_nbEvents == -1)
             printErrorAndThrow("epoll_wait");
         for (int i = 0; i < _nbEvents; ++i)
             eventManager(_eventsQueue[i]);
@@ -178,7 +190,9 @@ void    Epoll::initServer(Config& config)
 Epoll::Epoll(Config& config) : _eventsQueue(MAXEVENTS)
 {
     _epollFd = epoll_create(1);
-    if (_epollFd == -1)
+    if (g_signal == SIGINT)
+        return;
+    else if (_epollFd == -1)
         printErrorAndThrow("epoll_create");
 
     initServer(config);
@@ -195,8 +209,4 @@ Epoll::~Epoll()
 {
     if (_epollFd)
         close(_epollFd);
-    for (buffersIt it = _buffers.begin(); it != _buffers.end(); ++it) {
-        if (it->first)
-            close(it->first);
-    }
 }

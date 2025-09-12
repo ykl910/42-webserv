@@ -11,69 +11,70 @@ std::vector<Server> Select::getServer(void) const {
     return _server;
 }
 
+void    Select::addClientToSelect(int clientFd, int serverFd)
+{
+    _clientFd.push_back(clientFd);
+    _clientMap.insert(
+        std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
+    std::cout
+    << BOLD WHITE << "Select: new client accepted with fd "
+    << BOLD BLUE << clientFd << DEFAULT << "\n";
+    _clientState[clientFd] = PENDING;
+    _persistance[clientFd] = false;
+}
+
+void    Select::removeClientFromSelect(int clientFd, selectIterator& it)
+{
+    close(clientFd);
+    _clientMap.erase(clientFd);
+    _persistance.erase(clientFd);
+    _clientState.erase(clientFd);
+    it = _selectFd.erase(it);
+}
+
 void    Select::run()
 {
     while (g_signal != SIGINT) {
         FD_ZERO(&_readFds);
-        /*
-            This  macro  clears  (removes all file descriptors from) set.
-            It should be employed as the first step in initializing a file
-            descriptor set.
-        */
-       for (size_t i = 0; i < _selectFd.size(); ++i) {
+
+        for (size_t i = 0; i < _selectFd.size(); ++i) {
             FD_SET(_selectFd[i], &_readFds);
             if (_selectFd[i] > _maxFd)
                 _maxFd = _selectFd[i];
-       }
-        /*
-            This macro adds the file descriptor fd to set. Adding a file
-            descriptor that is already present in the set is a no-op, and does
-            not produce an error.
-        */
+        }
 
         //* wait for event in a socket
         errno = 0;
         _activity = select(_maxFd + 1, &_readFds, NULL, NULL, &_tv);
         if (g_signal == SIGINT)
             return;
-        else if (_activity == -1) {
+        else if (_activity == -1)
             printError();
-        } else if (_activity == 0) {
-            continue;
-        }
 
         for (selectIterator it = _selectFd.begin(); it != _selectFd.end();) {
             if (FD_ISSET(*it, &_readFds)) {
                 if (isSocketFd(*it)) {
-                /*
-                    select() modifies the contents of the sets according to the rules
-                    described below. After  calling  select(),  the FD_ISSET() macro
-                    can be used to test if a file descriptor is still present in a set.
-                    FD_ISSET() returns nonzero  if  the file descriptor fd is present
-                    in set, and zero if it is not.
-                */
+
                     //* new connexion -> accept connexion and add client to the list
                     int clientFd = _serverMap[*it].getSocket().acceptClient();
-                    if (clientFd) {
-                        _clientFd.push_back(clientFd);
-                        _clientMap.insert(
-                            std::pair<int, int>(clientFd, _serverMap[*it].getSocketFd()));
-                        std::cout
-                        << BOLD WHITE << "Select: new client accepted with fd "
-                        << BOLD BLUE << clientFd << DEFAULT << "\n";
-                    }
+                    if (clientFd)
+                        addClientToSelect(clientFd, *it);
                     ++it;
                 } else { //* read request and send response
                     int serverFd = _clientMap[*it];
-                    bool persistance = false;
-                    HttpManager(int(*it), _serverMap[serverFd].getServerAttribute(), _state, persistance);
-                    if(!persistance)
-                    {
-                        close(*it);
-                        _clientMap.erase(*it);
-                        it = _selectFd.erase(it);
-                    }
+                    HttpManager(int(*it),
+                                _serverMap[serverFd].getServerAttribute(),
+                                _clientState[*it],
+                                _persistance[*it]);
+
+                    if (!_persistance[*it])
+                        removeClientFromSelect(*it, it);
+                    else
+                        _clientState[*it] = PENDING;
                 }
+            } else if (FD_ISSET(*it, &_writeFds)) {
+                continue;
+
             } else
                 ++it;
         }
@@ -107,7 +108,6 @@ void    Select::initServer(Config& config)
 
 Select::Select(Config& config)
 {
-    _state = -1;
     _activity = 0;
     _tv.tv_sec = 12;
     _tv.tv_usec = 0;
