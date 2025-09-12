@@ -128,7 +128,8 @@ int storeThread(HttpRequest &request, std::string boundary)
 
 void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg)
 {
-    setStatusLine(request.getHttpVersion(), code, msg);
+    (void)request;
+    setStatusLine(getRequestAttr().httpVersion, code, msg);
     setHeaders("Content-Type", "text/html");
     std::string path;
     if (code == 201)
@@ -150,25 +151,21 @@ void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg
 
 inline bool HttpResponse::isFormData(std::string &contentType) const
 {
-    return (!contentType.empty() && contentType == "multipart/form-data");
+    return (contentType.find("multipart/form-data") != std::string::npos);
 }
 
 void HttpResponse::handlePOST(HttpRequest& request)
 {
     std::map<std::string, std::string> headers = request.getHeaders();
 
-    if (_request.path == "www/post42.net/upload" && (isFormData(headers["Content-Type"])))
+
+    if ((isFormData(headers["Content-Type"])))
     {
         std::string boundary = getBoundary(headers["Content-Type"]);
         if (storeThread(request, boundary) == -1)
             buildResponse(request, 500, "Internal error");
         else
             buildResponse(request, 201, "Created");
-    }
-    else if ((_request.path == "www/post42.net/login" || _request.path == "www/post42.net/register") && (isFormData(headers["Content-Type"])))
-    {
-        std::string boundary = getBoundary(headers["Content-Type"]);
-        Cookies cookie(request, *this, boundary);
     }
     else
         buildResponse(request, 404, "Not found");

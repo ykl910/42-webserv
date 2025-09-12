@@ -28,8 +28,8 @@ private:
     void createArgvStr(std::vector<char*>&argv);
     std::string extractQuery(HttpResponse &response);
     void extractOutput(int *fd);
-    void generateErrorMsg(HttpRequest &request, HttpResponse &response);
-    void generateResponse(HttpRequest &request, HttpResponse &response);
+    void generateErrorMsg(HttpResponse &response);
+    void generateResponse(HttpResponse &response);
     void watchdog(pid_t pid, int &status);
     long getTimeStamp(void);
     std::string _stdout;
