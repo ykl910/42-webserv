@@ -107,7 +107,7 @@ void Server::storeCgi(server& config, size_t locationNbr,
         // _attribute.cgi.insert(config[CGI + locationNbr + total][i][0]);
     }
     total += cgiNbr;
-    exit(0);
+    //exit(0);
 }
 
 void    Server::initSocket(void)
