@@ -9,17 +9,18 @@
 #include <unistd.h>
 #include <vector>
 #include <string>
+#include <time.h>
 
 class HttpResponse;
 
 class Cgi {
 public:
-    Cgi(HttpRequest &request, HttpResponse &response);
+    Cgi(HttpRequest &request, HttpResponse &response, t_serv_attr &serverAttr);
     ~Cgi();
 
 private:
     void createEnvp(HttpRequest &request);
-    void createArgv(HttpRequest &request);
+    void createArgv(HttpRequest request);
     void execute(HttpRequest &request, HttpResponse &response);
     int execFromGet();
     int execFromPost(HttpRequest &request);
@@ -29,6 +30,7 @@ private:
     void extractOutput(int *fd);
     void generateErrorMsg(HttpRequest &request, HttpResponse &response);
     void generateResponse(HttpRequest &request, HttpResponse &response);
+    void watchdog(pid_t pid, int &status);
 
     std::string _stdout;
     std::vector<std::string>_envp;

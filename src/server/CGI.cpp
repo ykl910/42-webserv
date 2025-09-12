@@ -12,16 +12,10 @@ void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response)
 void Cgi::generateResponse(HttpRequest &request, HttpResponse &response)
 {
     (void) request;
-    response.setStatusLine(response.getReqAttr().httpVersion, 200, "OK");
+    response.setStatusLine(response.getRequestAttr().httpVersion, 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(_stdout.size()));
-    if (_stdout.find("Set-Cookie") != std::string::npos)
-    {
-        response.setHeaders("Set-Cookie", _stdout.substr(11));
-        response.setBody("");        
-    }
-    else
-        response.setBody(_stdout);
+    response.setBody(_stdout);
 }
 
 std::string Cgi::extractQuery(HttpRequest &request)
@@ -30,7 +24,6 @@ std::string Cgi::extractQuery(HttpRequest &request)
     size_t varStart = header.find('?') + 1;
     size_t varEnd = header.size();
     std::string var = header.substr(varStart, varEnd - varStart);
-    std::cout << "extract var: " << var << std::endl;
 
     return var;
 }
@@ -52,15 +45,9 @@ void Cgi::createEnvp(HttpRequest &request)
     }
 }
 
-void Cgi::createArgv(HttpRequest &request)
+void Cgi::createArgv(HttpRequest request)
 {
-    //TODO: recup le path du .cgi via le config file, Harcode pour l'instant
-    (void)request;
-
-    if(request.getMethod() == "GET")
-        _argv.push_back("./www/post42.net/cgi/bin/roulette.cgi");
-    else
-        _argv.push_back("./www/post42.net/cgi/bin/magicBall.cgi");
+    _argv.push_back(request.getRequestAttr().path);
 }
 
 void Cgi::createEnvpStr(std::vector<char*> &envp)
@@ -86,6 +73,11 @@ void Cgi::extractOutput(int *fd)
     while((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0)
         _stdout.append(buffer, bytesRead);
     close(fd[0]);
+}
+
+void Cgi::watchdog(pid_t pid, int &status)
+{
+    waitpid(pid, &status, 0);
 }
 
 int Cgi::execFromGet()
@@ -114,13 +106,12 @@ int Cgi::execFromGet()
 
         close(fds[0]);
         close(fds[1]);
-        execve("./www/post42.net/cgi/bin/threads.py", argvStr.data(), envpStr.data());
-        //execve("./www/post42.net/cgi/bin/roulette.cgi", argvStr.data(), envpStr.data());
+        execve(argvStr.front(), argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     } else {
         int status;
-        waitpid(pid, &status, 0);
+        watchdog(pid, status);
         extractOutput(fds);
         return WEXITSTATUS(status);
     }
@@ -157,7 +148,8 @@ int Cgi::execFromPost(HttpRequest &request)
         close(inputPipe[1]);
         close(outputPipe[0]);
         close(outputPipe[1]);
-        execve("./www/post42.net/cgi/bin/cookies.py", argvStr.data(), envpStr.data());
+
+        execve(argvStr.front(), argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     } else {
@@ -168,9 +160,8 @@ int Cgi::execFromPost(HttpRequest &request)
         close(inputPipe[1]);
 
         int status;
-        waitpid(pid, &status, 0);
+        watchdog(pid, status);
         extractOutput(outputPipe);
-
         return WEXITSTATUS(status);
     }
 }
@@ -193,7 +184,7 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response)
     }
 }
 
-Cgi::Cgi(HttpRequest &request, HttpResponse &response)
+Cgi::Cgi(HttpRequest &request, HttpResponse &response, t_serv_attr &serverAttr)
 {
     createEnvp(request);
     createArgv(request);
