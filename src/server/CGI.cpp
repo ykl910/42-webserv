@@ -18,24 +18,23 @@ void Cgi::generateResponse(HttpRequest &request, HttpResponse &response)
     response.setBody(_stdout);
 }
 
-std::string Cgi::extractQuery(HttpRequest &request)
+std::string Cgi::extractQuery(HttpResponse &response)
 {
-    std::string header = request.getPath();
-    size_t varStart = header.find('?') + 1;
-    size_t varEnd = header.size();
-    std::string var = header.substr(varStart, varEnd - varStart);
+    std::string header = response.getRequestAttr().path;
+    size_t start = header.rfind('?') + 1;
+    std::string var = header.substr(start, header.size() - start);
 
     return var;
 }
 
-void Cgi::createEnvp(HttpRequest &request)
+void Cgi::createEnvp(HttpRequest &request, HttpResponse &response)
 {
-    std::string method = request.getMethod();
+    std::string method = response.getRequestAttr().method;
 
     _envp.push_back("REQUEST_METHOD=" + method);
-    _envp.push_back("SCRIPT_NAME=" + request.getPath());
+    _envp.push_back("SCRIPT_NAME=" + response.getRequestAttr().path);
     if(method == "GET")
-        _envp.push_back("QUERY_STRING=" + extractQuery(request));
+        _envp.push_back("QUERY_STRING=" + extractQuery(response));
     else
     {
         std::map<std::string, std::string> header = request.getHeaders();
@@ -45,9 +44,16 @@ void Cgi::createEnvp(HttpRequest &request)
     }
 }
 
-void Cgi::createArgv(HttpRequest request)
+void Cgi::createArgv(HttpResponse &response)
 {
-    _argv.push_back(request.getRequestAttr().path);
+    std::string path = response.getRequestAttr().path;
+    size_t questionMarkPos = path.rfind("?");
+    size_t extentionDotPos = path.rfind(".");
+
+    if(questionMarkPos == std::string::npos || questionMarkPos < extentionDotPos)
+        _argv.push_back(path);
+    else
+        _argv.push_back(path.substr(0, questionMarkPos));
 }
 
 void Cgi::createEnvpStr(std::vector<char*> &envp)
@@ -75,11 +81,37 @@ void Cgi::extractOutput(int *fd)
     close(fd[0]);
 }
 
-void Cgi::watchdog(pid_t pid, int &status)
+long Cgi::getTimeStamp()
 {
-    waitpid(pid, &status, 0);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+
+    return (tv.tv_sec * 1000LL + tv.tv_usec / 1000);
 }
 
+void Cgi::watchdog(pid_t pid, int &status)
+{
+    long startTime = getTimeStamp();
+
+    while(true)
+    {
+        pid_t r = waitpid(pid, &status, WNOHANG);
+        if(r == pid)
+            return;
+        else if (r == -1)
+        {
+            printError();
+            return;
+        }
+        if(getTimeStamp() - startTime >= 3000)
+        {
+            kill(pid, SIGKILL);
+            waitpid(pid, &status, 0);
+            return;
+        }
+        usleep(10 * 1000);
+    }
+}
 int Cgi::execFromGet()
 {
     int fds[2];
@@ -168,15 +200,13 @@ int Cgi::execFromPost(HttpRequest &request)
 
 void Cgi::execute(HttpRequest &request, HttpResponse &response)
 {
-    std::cout << "method"<<response.getReqAttr().method << std::endl;
-
-    if (response.getReqAttr().method== "GET") {
+    if (response.getRequestAttr().method == "GET") {
         if(execFromGet() == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
             generateResponse(request, response);
     }
-    if (response.getReqAttr().method == "POST") {
+    if (response.getRequestAttr().method == "POST") {
         if(execFromPost(request) == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
@@ -184,10 +214,10 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response)
     }
 }
 
-Cgi::Cgi(HttpRequest &request, HttpResponse &response, t_serv_attr &serverAttr)
+Cgi::Cgi(HttpRequest &request, HttpResponse &response)
 {
-    createEnvp(request);
-    createArgv(request);
+    createEnvp(request, response);
+    createArgv(response);
     execute(request, response);
 }
 
