@@ -25,6 +25,7 @@ public:
     std::string getResponse();
     std::string& getResponseHeader();
     std::string getStatusLine() const;
+    std::string getRoot() const;
     t_serv_attr getServerAttr() const;
     t_request_attr getRequestAttr() const;
 
@@ -67,6 +68,7 @@ private:
     t_serv_attr     _server;
     t_request_attr  _request;
     uint8_t         _allowedMethod;
+    std::string     _root;
 
 };
 
