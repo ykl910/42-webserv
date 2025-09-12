@@ -60,14 +60,14 @@ void    HttpResponse::solvePath()
 
     for (size_t i = 0; i < _server.location.size(); ++i)
     {
-        // std::cout << "Request PATH: " << _request.path << "\n";
-        // std::cout << "Server location path: " << i << _server.location[i].path << "\n";
+         std::cout << "Request PATH: " << _request.path << "\n";
+         std::cout << "Server location path: " << i << _server.location[i].path << "\n";
         if (_request.path.find(_server.location[i].path) == 0)
         {
             _allowedMethod = _server.location[i].method;
-            // std::cout << "Request PATH: " << _request.path << "\n";
-            // std::cout << "Server location path: " <<  _server.location[i].path << "\n";
-            // std::cout << "Server location root: " <<  _server.location[i].root << "\n";
+            std::cout << "Request PATH: " << _request.path << "\n";
+            std::cout << "Server location path: " <<  _server.location[i].path << "\n";
+            std::cout << "Server location root: " <<  _server.location[i].root << "\n";
             if (_request.path == "" || _request.path == _server.location[i].path
                 || _request.path == _server.location[i].path + "/")
                 fullPath = _server.location[i].root + "/" + _server.location[i].index;
@@ -82,6 +82,7 @@ void    HttpResponse::solvePath()
             }
         }
     }
+    std::cout << BOLD YELLOW << "full path: " << fullPath << DEFAULT << std::endl;
     _request.path = fullPath;
 }
 
