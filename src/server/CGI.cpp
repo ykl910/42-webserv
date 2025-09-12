@@ -11,10 +11,17 @@ void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response)
 
 void Cgi::generateResponse(HttpRequest &request, HttpResponse &response)
 {
-    response.setStatusLine(request.getHttpVersion(), 200, "OK");
+    (void) request;
+    response.setStatusLine(response.getReqAttr().httpVersion, 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(_stdout.size()));
-    response.setBody(_stdout);
+    if (_stdout.find("Set-Cookie") != std::string::npos)
+    {
+        response.setHeaders("Set-Cookie", _stdout.substr(11));
+        response.setBody("");        
+    }
+    else
+        response.setBody(_stdout);
 }
 
 std::string Cgi::extractQuery(HttpRequest &request)
@@ -138,7 +145,6 @@ int Cgi::execFromPost(HttpRequest &request)
 
         createEnvpStr(envpStr);
         createArgvStr(argvStr);
-
         if(dup2(inputPipe[0], STDIN_FILENO) == -1) {
             printError();
             exit(EXIT_FAILURE);
@@ -151,8 +157,7 @@ int Cgi::execFromPost(HttpRequest &request)
         close(inputPipe[1]);
         close(outputPipe[0]);
         close(outputPipe[1]);
-
-        execve("./www/post42.net/cgi/bin/magicBall.cgi", argvStr.data(), envpStr.data());
+        execve("./www/post42.net/cgi/bin/cookies.py", argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
     } else {
@@ -172,13 +177,15 @@ int Cgi::execFromPost(HttpRequest &request)
 
 void Cgi::execute(HttpRequest &request, HttpResponse &response)
 {
-    if (request.getMethod() == "GET") {
+    std::cout << "method"<<response.getReqAttr().method << std::endl;
+
+    if (response.getReqAttr().method== "GET") {
         if(execFromGet() == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else
             generateResponse(request, response);
     }
-    if (request.getMethod() == "POST") {
+    if (response.getReqAttr().method == "POST") {
         if(execFromPost(request) == EXIT_FAILURE)
             generateErrorMsg(request, response);
         else

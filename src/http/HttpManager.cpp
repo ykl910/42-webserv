@@ -20,7 +20,7 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
     for (mapit = request.getHeaders().begin();
         mapit != request.getHeaders().end(); ++mapit) {
         if (mapit->first == "Cookie") {
-            size_t sesStartPos = mapit->second.find("session=");
+            size_t sesStartPos = mapit->second.find("sessionid=");
             if (sesStartPos != std::string::npos) {
                 sessionId = mapit->second.substr(sesStartPos + 8, 18);
                 break;
@@ -29,7 +29,7 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
     }
 
     if (!sessionId.empty()) {
-        std::string fullpath = "www/post42.net/users/sessionLog_" + sessionId;
+        std::string fullpath = "www/post42.net/sessions/sessionLog_" + sessionId + ".txt";
         int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
         if (fd == -1) {
             printError();
