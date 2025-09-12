@@ -78,6 +78,11 @@ t_serv_attr HttpResponse::getServerAttr() const
     return _server;
 }
 
+t_request_attr HttpResponse::getReqAttr() const
+{
+    return _request;
+}
+
 const std::string HttpResponse::getFileExtention(const std::string &path) const
 {
     size_t questionMarkPos = path.rfind("?");
@@ -110,7 +115,7 @@ bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr
     else
     {
         int bodySize =  std::atoi(header["Content-Length"].c_str());
-        return bodySize > serverAttr.client_max_body_size;
+        return bodySize < serverAttr.client_max_body_size;
     }
 }
 
@@ -125,8 +130,11 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
 
     buildResponse();
-    if (isCgi(_request.path))
+    if (isCgi(_request.path) || (_request.path == "www/post42.net/cookies.py"))
+    {
         Cgi cgi(request, *this);
+    }
+        
     else if (_request.method == "GET" && (_allowedMethod & (1 << GET)))
         handleGET();
     else if (_request.method == "POST" && (_allowedMethod & (1 << POST)))
