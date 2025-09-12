@@ -26,7 +26,8 @@ public:
     std::string& getResponseHeader();
     std::string getStatusLine() const;
     t_serv_attr getServerAttr() const;
-    t_request_attr getReqAttr() const;
+    t_request_attr getRequestAttr() const;
+
     const std::string getFileExtention(const std::string &requestPath) const;
 
     void setBody(const std::string &body);

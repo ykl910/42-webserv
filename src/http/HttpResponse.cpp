@@ -78,7 +78,7 @@ t_serv_attr HttpResponse::getServerAttr() const
     return _server;
 }
 
-t_request_attr HttpResponse::getReqAttr() const
+t_request_attr HttpResponse::getRequestAttr() const
 {
     return _request;
 }
@@ -98,12 +98,7 @@ bool HttpResponse::isCgi(std::string &requestPath)
 {
     std::string fileExtention = getFileExtention(requestPath);
 
-    for(size_t i = 0; i < _server.cgi.size(); i++)
-    {
-        ;;
-     //   if (!_server.cgi[i].extension.empty() && _server.cgi[i].extension == fileExtention)
-    }
-    return false;
+   return _server.cgi.find(fileExtention) != _server.cgi.end();
 }
 
 bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const
@@ -130,11 +125,8 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
 
     buildResponse();
-    if (isCgi(_request.path) || (_request.path == "www/post42.net/cookies.py"))
-    {
-        Cgi cgi(request, *this);
-    }
-        
+    if (isCgi(_request.path))
+        Cgi cgi(request, *this, serverAttr);
     else if (_request.method == "GET" && (_allowedMethod & (1 << GET)))
         handleGET();
     else if (_request.method == "POST" && (_allowedMethod & (1 << POST)))
