@@ -93,21 +93,28 @@ typedef cgiMap::iterator cgiIterator;
 void Server::storeCgi(server& config, size_t locationNbr,
                         size_t cgiNbr, size_t cgiTotal)
 {
-    static size_t total;
+    static size_t               total;
+    std::string                 extension;
+    std::string                 path;
+    std::vector<std::string>    cgiPath;
 
     (void)cgiTotal;
     for (size_t i = 0; i < cgiNbr; ++i) {
-        std::cout << config[CGI + locationNbr + total][i][0] << std::endl;
+        std::stringstream cgiDirectiveSplitter(config[CGI + locationNbr + total][i][0]);
+
+        cgiDirectiveSplitter >> extension;
+        while (cgiDirectiveSplitter >> path) {
+            cgiPath.push_back(path);
+        }
         if (!_attribute.cgi.empty()) {
-            cgiIterator it = _attribute.cgi.find(config[CGI + locationNbr + total][i][0]);
+            cgiIterator it = _attribute.cgi.find(extension);
 
             if (it != _attribute.cgi.end())
                 throw std::runtime_error("Error: cgi extension already used");
         }
-        // _attribute.cgi.insert(config[CGI + locationNbr + total][i][0]);
+        _attribute.cgi.insert(std::pair<std::string, std::vector<std::string> >(extension, cgiPath));
     }
     total += cgiNbr;
-    //exit(0);
 }
 
 void    Server::initSocket(void)
@@ -123,8 +130,6 @@ Server& Server::operator=(Server& other)
         _attribute.host = attr.host;
         _attribute.server_name = attr.server_name;
         _attribute.client_max_body_size = attr.client_max_body_size;
-        _attribute.location[0].root = attr.location[0].root;
-        _attribute.location[0].index = attr.location[0].index;
         _attribute.location = attr.location;
         _attribute.error_page = attr.error_page;
         _attribute.cgi = attr.cgi;
