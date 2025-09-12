@@ -49,9 +49,9 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
         for (mapit = request.getHeaders().begin();
             mapit != request.getHeaders().end(); ++mapit) {
             if (mapit->first == "Cookie") {
-                std::string req = response.getRequestAttr().method + " " + request.getPath() + "\n";
+                std::string req = response.getRequestAttr().method + " " + response.getRequestAttr().path + "\n";
                 std::string res = response.getStatusLine() + "\n";
-                std::string tot = "request:" + req + "response:" + res;
+                std::string tot = "request: " + req + "response: " + res;
                 write(fd, tot.c_str(), tot.length());
                 break;
             }
