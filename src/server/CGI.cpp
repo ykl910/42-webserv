@@ -14,7 +14,11 @@ void Cgi::generateResponse(HttpResponse &response)
     response.setStatusLine(response.getRequestAttr().httpVersion, 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(_stdout.size()));
-    response.setBody(_stdout);
+    std::cout << response.getRequestAttr().path << std::endl;
+    if (response.getRequestAttr().path.find("cookies") != std::string::npos)
+        response.setHeaders("Set-Cookie", _stdout.substr(11));
+    else
+        response.setBody(_stdout);
 }
 
 std::string Cgi::extractQuery(HttpResponse &response)
@@ -161,7 +165,9 @@ int Cgi::execFromPost(HttpRequest &request)
     if(pid == -1) {
         printError();
         return EXIT_FAILURE;
+
     } else if (pid == 0) {
+
         std::vector<char*> envpStr;
         std::vector<char*> argvStr;
 

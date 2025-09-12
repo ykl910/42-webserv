@@ -97,7 +97,6 @@ const std::string HttpResponse::getFileExtention(const std::string &path) const
 bool HttpResponse::isCgi(std::string &requestPath)
 {
     std::string fileExtention = getFileExtention(requestPath);
-
    return _server.cgi.find(fileExtention) != _server.cgi.end();
 }
 
@@ -126,7 +125,10 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
 
     buildResponse();
     if (isCgi(_request.path))
+    {
         Cgi cgi(request, *this);
+    }
+        
     else if (_request.method == "GET" && (_allowedMethod & (1 << GET)))
         handleGET();
     else if (_request.method == "POST" && (_allowedMethod & (1 << POST)))

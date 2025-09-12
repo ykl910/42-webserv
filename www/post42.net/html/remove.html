@@ -38,7 +38,7 @@
 
       <script>
          // Fetch the list of files from your server
-         fetch('/threads.py')
+         fetch('/cgi/bin/threads.py')
             .then(res => res.json()) // Expecting JSON array: ["file1.txt", "file2.txt"]
             .then(files => {
             const select = document.getElementById('fileSelect');
@@ -63,7 +63,7 @@
                .then(res => {
                   if (res.status >= 200 && res.status < 300) {
                      alert(`${file} deleted.`);
-                     location.href = '/remove.html';
+                     location.href = '/html/remove.html';
                   } else if (res.status == 404) {
                      alert('No file selected: 404');
                   }
