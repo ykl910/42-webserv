@@ -133,24 +133,25 @@ void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg
     setHeaders("Content-Type", "text/html");
     std::string path;
     if (code == 201)
-        path = POST42dotNET"html/uploadSucces.html";
+        setStatusLine(_request.httpVersion, 201, "ok");
     else if (code == 400)
-        path = POST42dotNET"html/400.html";
+        path = _server.error_page.err_400;
     else if (code == 500)
-        path = POST42dotNET"html/500.html";
+        path = _server.error_page.err_500;
     else
-        path = POST42dotNET"html/404.html";
+        path = _server.error_page.err_404;
     std::ifstream file(path.c_str());
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string body = buffer.str();
     setHeaders("Content-Length", itos(body.size()));
     setBody(body);
-
 }
 
 inline bool HttpResponse::isFormData(std::string &contentType) const
 {
+    std::cout << BOLD RED << "CONTENT TYPE: " << contentType << DEFAULT << std::endl;
+
     return (contentType.find("multipart/form-data") != std::string::npos);
 }
 
@@ -161,11 +162,17 @@ void HttpResponse::handlePOST(HttpRequest& request)
 
     if ((isFormData(headers["Content-Type"])))
     {
+        std::cout << BOLD GREEN << "IS FORM DATA" << DEFAULT << std::endl;
         std::string boundary = getBoundary(headers["Content-Type"]);
         if (storeThread(request, boundary) == -1)
             buildResponse(request, 500, "Internal error");
         else
             buildResponse(request, 201, "Created");
+    }
+    else if ((_request.path == "www/post42.net/login" || _request.path == "www/post42.net/register") && (isFormData(headers["Content-Type"])))
+    {
+        std::string boundary = getBoundary(headers["Content-Type"]);
+        Cookies cookie(request, *this, boundary);
     }
     else
         buildResponse(request, 404, "Not found");
