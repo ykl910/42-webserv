@@ -95,8 +95,8 @@ bool HttpResponse::isCgi(std::string &requestPath)
 
     for(size_t i = 0; i < _server.cgi.size(); i++)
     {
-        if (!_server.cgi[i].extension.empty() && _server.cgi[i].extension == fileExtention)
-           return true;
+        ;;
+     //   if (!_server.cgi[i].extension.empty() && _server.cgi[i].extension == fileExtention)
     }
     return false;
 }
@@ -145,7 +145,7 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setHeaders("Content-Length", itos(body.length()));
         setStatusLine(_request.httpVersion, 405, "Method not allowed");
     }
-        
+
 }
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response)
