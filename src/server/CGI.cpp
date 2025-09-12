@@ -11,7 +11,7 @@ void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response)
 
 void Cgi::generateResponse(HttpRequest &request, HttpResponse &response)
 {
-    (void) request;
+    (void)request;
     response.setStatusLine(response.getRequestAttr().httpVersion, 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(_stdout.size()));

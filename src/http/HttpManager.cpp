@@ -94,7 +94,7 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     else
     {
         std::cout << BLUE << "client [" << clientFd << "]: Response Sent" DEFAULT << std::endl;
-        std::cout << BLUE << "client [" << clientFd << "]: Response: \n" << "------------------------------\n " << ITALIC GREEN << response.substr(0,500) << BLUE << "\n------------------------------\n" << DEFAULT << std::endl;
+        std::cout << BLUE << "client [" << clientFd << "]: Response: \n" << "------------------------------\n " << ITALIC GREEN << response.substr(0,1000) << BLUE << "\n------------------------------\n" << DEFAULT << std::endl;
 
         _request.erase(clientFd);
         _pendingResponse.erase(clientFd);
@@ -152,7 +152,7 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
     if (receivedCompleteRequest(_buffers[clientFd], serverAttr)) {
 
         std::cout << CYAN << "client [" << clientFd << "]: Request received" << DEFAULT << std::endl;
-        std::cout << CYAN << "client [" << clientFd << "]: Request:\n" << "------------------------------\n " << ITALIC GREEN << _buffers[clientFd]/*.substr(0, 500)*/ << CYAN << "\n------------------------------\n" << DEFAULT << std::endl;
+        std::cout << CYAN << "client [" << clientFd << "]: Request:\n" << "------------------------------\n " << ITALIC GREEN << _buffers[clientFd].substr(0, 500) << CYAN << "\n------------------------------\n" << DEFAULT << std::endl;
 
         persistance = checkPersistance(_buffers[clientFd]);
         clientState = RECEIVED;
