@@ -72,6 +72,10 @@ std::string& HttpResponse::getResponseHeader()
 {
     return _response;
 }
+std::string HttpResponse::getRoot() const
+{
+    return _root;
+}
 
 t_serv_attr HttpResponse::getServerAttr() const
 {

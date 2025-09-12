@@ -29,7 +29,17 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
     }
 
     if (!sessionId.empty()) {
-        std::string fullpath = "www/post42.net/sessions/sessionLog_" + sessionId + ".txt";
+        
+        std::string server_path = response.getRoot() + "/sessions";
+        struct stat st;
+        memset(&st, 0, sizeof(st));
+        if (stat(server_path.c_str(), &st) == -1) {
+            if (mkdir(server_path.c_str(), 0755) == -1) {
+                printError();
+                return;
+            }
+        }
+        std::string fullpath = server_path + "/sessionLog_" + sessionId + ".txt";
         int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
         if (fd == -1) {
             printError();
@@ -39,7 +49,7 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
         for (mapit = request.getHeaders().begin();
             mapit != request.getHeaders().end(); ++mapit) {
             if (mapit->first == "Cookie") {
-                std::string req = request.getMethod() + " " + request.getPath() + "\n";
+                std::string req = response.getRequestAttr().method + " " + request.getPath() + "\n";
                 std::string res = response.getStatusLine() + "\n";
                 std::string tot = "request:" + req + "response:" + res;
                 write(fd, tot.c_str(), tot.length());

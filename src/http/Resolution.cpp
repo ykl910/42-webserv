@@ -64,5 +64,7 @@ void    HttpResponse::solvePath()
             }
         }
     }
+    std::cout << BOLD YELLOW << "full path: " << fullPath << DEFAULT << std::endl;
+    _root = _server.location[0].root;
     _request.path = fullPath;
 }
