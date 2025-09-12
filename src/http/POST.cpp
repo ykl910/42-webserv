@@ -159,7 +159,6 @@ void HttpResponse::handlePOST(HttpRequest& request)
 {
     std::map<std::string, std::string> headers = request.getHeaders();
 
-
     if ((isFormData(headers["Content-Type"])))
     {
         std::cout << BOLD GREEN << "IS FORM DATA" << DEFAULT << std::endl;
@@ -168,11 +167,6 @@ void HttpResponse::handlePOST(HttpRequest& request)
             buildResponse(request, 500, "Internal error");
         else
             buildResponse(request, 201, "Created");
-    }
-    else if ((_request.path == "www/post42.net/login" || _request.path == "www/post42.net/register") && (isFormData(headers["Content-Type"])))
-    {
-        std::string boundary = getBoundary(headers["Content-Type"]);
-        Cookies cookie(request, *this, boundary);
     }
     else
         buildResponse(request, 404, "Not found");
