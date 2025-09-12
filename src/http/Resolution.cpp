@@ -10,24 +10,11 @@ bool    HttpResponse::isImage()
         || _extension == "heic" || _extension == "heif";
 }
 
-bool    HttpResponse::isAudio()
-{
-    return _extension == "mp3" || _extension == "wav" || _extension == "ogg"
-        || _extension == "oga" || _extension == "m4a" || _extension == "aac"
-        || _extension == "flac" || _extension == "opus";
-}
-
 bool    hostFound(std::string& input)
 {
     (void)input;
     return true;
 }
-
-// stat
-// opendir
-// chdir
-// readdir
-// closedir
 
 bool    HttpResponse::canAccessFile(std::string& fullPath)
 {
@@ -46,10 +33,10 @@ bool    HttpResponse::canAccessFile(std::string& fullPath)
     return true;
 }
 
-void    HttpResponse::solveMimeType()
-{
-    return;
-}
+// bool    HttpResponse::isAutoIndex(const std::string& fullPath)
+// {
+//     return
+// }
 
 void    HttpResponse::solvePath()
 {
@@ -60,14 +47,9 @@ void    HttpResponse::solvePath()
 
     for (size_t i = 0; i < _server.location.size(); ++i)
     {
-        // std::cout << "Request PATH: " << _request.path << "\n";
-        // std::cout << "Server location path: " << i << _server.location[i].path << "\n";
         if (_request.path.find(_server.location[i].path) == 0)
         {
             _allowedMethod = _server.location[i].method;
-            // std::cout << "Request PATH: " << _request.path << "\n";
-            // std::cout << "Server location path: " <<  _server.location[i].path << "\n";
-            // std::cout << "Server location root: " <<  _server.location[i].root << "\n";
             if (_request.path == "" || _request.path == _server.location[i].path
                 || _request.path == _server.location[i].path + "/")
                 fullPath = _server.location[i].root + "/" + _server.location[i].index;
@@ -83,10 +65,4 @@ void    HttpResponse::solvePath()
         }
     }
     _request.path = fullPath;
-}
-
-void    HttpResponse::buildResponse(void)
-{
-    solvePath();
-    solveMimeType();
 }

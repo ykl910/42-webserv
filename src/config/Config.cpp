@@ -136,7 +136,8 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
     else
         indentSize = 8;
     _directiveIndex = 0;
-    while (_directiveIndex < _configFormat[_contextIndex].size() || _contextIndex == CGI) {
+    while (_directiveIndex < _configFormat[_contextIndex].size()
+        || _contextIndex == CGI) {
         directiveValue   newDirective;
 
         if (_contextIndex == LOCATION
@@ -280,6 +281,7 @@ void    Config::initConfigParser(void)
     _configFormat[SERVER][HOST].push_back("host");
     _configFormat[SERVER][SERVER_NAME].push_back("server_name");
     _configFormat[SERVER][CLIENT_MAX_BODY_SIZE].push_back("client_max_body_size");
+    _configFormat[SERVER][ROOT_LOCATION].push_back("root");
 
     // locationDirective
     _configFormat[LOCATION][PATH].push_back("");

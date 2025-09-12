@@ -7,8 +7,8 @@
 #include <iostream>
 
 typedef struct s_cgi {
-    std::string extension;
-    std::vector<std::string> path;
+    std::string                 extension;
+    std::vector<std::string>    path;
 }t_cgi;
 
 typedef struct s_location {
@@ -38,12 +38,12 @@ typedef struct s_serv_attr {
     std::string             host;
     std::string             port;
     std::string             server_name;
+    std::string             rootLocation;
     int                     client_max_body_size;
     bool                    autoindex;
     std::vector<t_location> location;
     t_error_page            error_page;
     t_redirection           redirection;
-    // std::vector<t_cgi>      cgi;
     cgiMap                  cgi;
 }t_serv_attr;
 

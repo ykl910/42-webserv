@@ -88,7 +88,7 @@ const std::string HttpResponse::getFileExtention(const std::string &path) const
     size_t questionMarkPos = path.rfind("?");
     size_t extentionDotPos = path.rfind(".");
 
-    if(questionMarkPos == std::string::npos || questionMarkPos < extentionDotPos)
+    if (questionMarkPos == std::string::npos || questionMarkPos < extentionDotPos)
         return path.substr(extentionDotPos, path.size() - extentionDotPos);
     else
         return path.substr(extentionDotPos, questionMarkPos - extentionDotPos);
@@ -113,22 +113,38 @@ bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr
     }
 }
 
-#define GET 0
-#define POST 1
-#define DELETE 2
+bool HttpResponse::isDirectory()
+{
+    return true;
+}
+
+bool    HttpResponse::isAutoIndex()
+{
+    return true;
+}
+
+void    HttpResponse::buildIndex()
+{
+    // std::vector<std::string>
+
+    // DIR *dirRoot = opendir(_request.path.c_str());
+    // if (!dirRoot)
+        return ;
+
+}
 
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     : _server(serverAttr), _request(request.getRequestAttr())
 {
-    if(!isValidBodySize(request, serverAttr))
+    if (!isValidBodySize(request, serverAttr))
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
 
-    buildResponse();
+    solvePath();
+    // if (isAutoIndex())
+    //     buildIndex();
     if (isCgi(_request.path))
-    {
         Cgi cgi(request, *this);
-    }
-        
+
     else if (_request.method == "GET" && (_allowedMethod & (1 << GET)))
         handleGET();
     else if (_request.method == "POST" && (_allowedMethod & (1 << POST)))

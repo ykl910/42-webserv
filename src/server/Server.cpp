@@ -144,6 +144,7 @@ Server::Server(server& config, size_t locationNbr, size_t cgiNbr, size_t cgiTota
     _attribute.server_name = config[SERVER][SERVER_NAME][0];
     _attribute.client_max_body_size =
     getClientMaxBodySize(config[SERVER][CLIENT_MAX_BODY_SIZE][0]);
+    _attribute.rootLocation = config[SERVER][ROOT_LOCATION][0];
     storeLocation(config, locationNbr);
     storeErrorPage(config, locationNbr);
     storeRedirection(config, locationNbr);

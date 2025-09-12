@@ -151,8 +151,13 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
 
     if (receivedCompleteRequest(_buffers[clientFd], serverAttr)) {
 
-        std::cout << CYAN << "client [" << clientFd << "]: Request received" << DEFAULT << std::endl;
-        std::cout << CYAN << "client [" << clientFd << "]: Request:\n" << "------------------------------\n " << ITALIC GREEN << _buffers[clientFd].substr(0, 500) << CYAN << "\n------------------------------\n" << DEFAULT << std::endl;
+        std::cout
+        << CYAN << "client [" << clientFd << "]: Request received"
+        << DEFAULT << '\n'
+        << CYAN << "client [" << clientFd << "]: Request:\n"
+        << "------------------------------\n "
+        << ITALIC GREEN << _buffers[clientFd].substr(0, 500)
+        << CYAN << "\n------------------------------\n" << DEFAULT << '\n';
 
         persistance = checkPersistance(_buffers[clientFd]);
         clientState = RECEIVED;

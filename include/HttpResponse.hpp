@@ -18,6 +18,10 @@
 #include <vector>
 #include <map>
 
+#define GET 0
+#define POST 1
+#define DELETE 2
+
 typedef struct s_request_attr t_request_attr;
 
 class HttpResponse {
@@ -35,24 +39,26 @@ public:
     void setStatusLine(const std::string version, int code, const std::string &reason);
     void buildResponse(HttpRequest& request, int code, std::string msg);
     void handleError(std::stringstream *buffer, int success, std::string type);
+
+    void solvePath();
+
     void handleGET();
     void handlePOST(HttpRequest& request);
     void handleDELETE();
-    void solveMimeType();
-    void solvePath();
 
-    void buildResponse(void);
     int handleImage();
     int handleRedirect();
     int handleCss(std::stringstream *buffer);
     int handleHtml(std::stringstream *buffer);
 
-    bool isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const;
-    bool isAudio();
     bool isImage();
+    void buildIndex();
+    bool isAutoIndex();
+    bool isDirectory();
     bool isCgi(std::string &Requestpath);
     bool canAccessFile(std::string& file);
     inline bool isFormData(std::string &contentType) const;
+    bool isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const;
 
     HttpResponse() {}
     HttpResponse(HttpRequest& request, t_serv_attr &serverAttr);
@@ -60,6 +66,7 @@ public:
 
 private:
     std::string     _body;
+    bool            _isAutoIndex;
     std::string     _statusLine;
     std::string     _response;
     std::string     _extension;
