@@ -1,17 +1,16 @@
 #include "../../include/CGI.hpp"
 
-void Cgi::generateErrorMsg(HttpRequest &request, HttpResponse &response)
+void Cgi::generateErrorMsg(HttpResponse &response)
 {
     std::string msg = "Oops, something went wrong :(";
-    response.setStatusLine(request.getHttpVersion(), 500, "Internal error");
+    response.setStatusLine(response.getRequestAttr().httpVersion, 500, "Internal error");
     response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(msg.size()));
     response.setBody(msg);
 }
 
-void Cgi::generateResponse(HttpRequest &request, HttpResponse &response)
+void Cgi::generateResponse(HttpResponse &response)
 {
-    (void)request;
     response.setStatusLine(response.getRequestAttr().httpVersion, 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
     response.setHeaders("Content-Length", itos(_stdout.size()));
@@ -202,15 +201,15 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response)
 {
     if (response.getRequestAttr().method == "GET") {
         if(execFromGet() == EXIT_FAILURE)
-            generateErrorMsg(request, response);
+            generateErrorMsg(response);
         else
-            generateResponse(request, response);
+            generateResponse(response);
     }
     if (response.getRequestAttr().method == "POST") {
         if(execFromPost(request) == EXIT_FAILURE)
-            generateErrorMsg(request, response);
+            generateErrorMsg(response);
         else
-            generateResponse(request, response);
+            generateResponse(response);
     }
 }
 
