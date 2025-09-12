@@ -63,7 +63,7 @@
             e.preventDefault();
             const number = rouletteForm.number.value;
 
-            fetch("/cgi-bin/roulette.cgi?number=" + encodeURIComponent(number))
+            fetch("/cgi/bin/roulette.cgi?number=" + encodeURIComponent(number))
                 .then(response => response.text())
                 .then(text => {
                     rouletteResult.innerText = text;
@@ -85,7 +85,7 @@
                 params.append(pair[0], pair[1]);
             }
 
-            fetch("/cgi-bin/8ball.cgi", {
+            fetch("/cgi/bin/magicBall.cgi", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"

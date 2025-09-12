@@ -126,7 +126,7 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
 
     buildResponse();
     if (isCgi(_request.path))
-        Cgi cgi(request, *this, serverAttr);
+        Cgi cgi(request, *this);
     else if (_request.method == "GET" && (_allowedMethod & (1 << GET)))
         handleGET();
     else if (_request.method == "POST" && (_allowedMethod & (1 << POST)))
