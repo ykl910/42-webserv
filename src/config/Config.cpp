@@ -154,7 +154,7 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
                 std::getline(file, line);
                 if (line.length() == 0) {
                     file.seekg(streamPos);
-                    return;
+                    break;
                 }
                 newCgi.push_back(line.substr(indentSize, line.length() - indentSize));
                 server[_contextIndex + _locationNbr + _cgiTotal][_directiveIndex] = newCgi;

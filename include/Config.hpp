@@ -80,6 +80,7 @@ public:
     void printConfigFormat(void) const;
     void printServer(const server& srv) const;
 
+    void splitCgiDirective();
     size_t getCgiTotal(void);
     size_t getCgiNbr(size_t i);
     size_t getLocationNbr(size_t i);
