@@ -18,21 +18,25 @@ class WebServ;
 
 class Select {
 public:
-    void run();
+    typedef std::vector<int>::iterator selectIterator;
+
     std::vector<Server> getServer(void) const;
+
+    void run();
     void initServer(Config& config);
+    void addClientToSelect(int clientFd, int serverFd);
+    void removeClientFromSelect(int client, selectIterator& it);
     inline bool isSocketFd(int fd) const;
 
     Select(Config& config);
     ~Select();
 
 private:
-    typedef std::vector<int>::iterator selectIterator;
 
-    int                     _state;
     int                     _maxFd;
     int                     _activity;
     fd_set                  _readFds;
+    fd_set                  _writeFds;
     struct timeval          _tv;
 
     std::vector<int>        _listenFd;
@@ -40,6 +44,8 @@ private:
     std::vector<int>        _selectFd;
 
     std::vector<Server>     _server;
+    std::map<int, int>      _clientState;
+    std::map<int, bool>     _persistance;
     std::map<int, int>      _clientMap;
     std::map<int, Server>   _serverMap;
 };
