@@ -19,18 +19,22 @@ int Server::getClientMaxBodySize(const std::string& input) {
 void Server::storeErrorPage(server& config, size_t locationNbr) {
     std::string root(_attribute.location[0].root);
 
-    _attribute.error_page.err_400 = root + "/" + config[ERROR + locationNbr][E_400][0];
-    _attribute.error_page.err_404 = root + "/" + config[ERROR + locationNbr][E_404][0];
-    _attribute.error_page.err_405 = root + "/" + config[ERROR + locationNbr][E_405][0];
-    _attribute.error_page.err_500 = root + "/" + config[ERROR + locationNbr][E_500][0];
+    _attribute.error_page.err_400 =
+        root + "/" + config[ERROR + locationNbr][E_400][0];
+    _attribute.error_page.err_404 =
+        root + "/" + config[ERROR + locationNbr][E_404][0];
+    _attribute.error_page.err_405 =
+        root + "/" + config[ERROR + locationNbr][E_405][0];
+    _attribute.error_page.err_500 =
+        root + "/" + config[ERROR + locationNbr][E_500][0];
 }
 
-#define REDIRECTION_DIRECTIVE_NUMBER 2
-
-void Server::getRedirectionValue(server& config, size_t locationNbr, std::vector<std::string>& redir, int i)
+void Server::getRedirectionValue(server& config, size_t locationNbr,
+                                 std::vector<std::string>& redir, int i)
 {
-    std::stringstream redirectionValue(config[REDIRECTION + locationNbr][i][0]);
     std::string value;
+    std::stringstream redirectionValue(config[REDIRECTION + locationNbr][i][0]);
+
     size_t j = 0;
     while (redirectionValue >> value) {
         if (j > 2)
@@ -40,14 +44,13 @@ void Server::getRedirectionValue(server& config, size_t locationNbr, std::vector
     }
 }
 
-void Server::storeRedirection(server& config, size_t locationNbr) {
-    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_301, 0);
-    getRedirectionValue(config, locationNbr, _attribute.redirection.redir_302, 1);
+void Server::storeRedirection(server& config, size_t locationNbr)
+{
+    getRedirectionValue(config, locationNbr,
+                                _attribute.redirection.redir_301, 0);
+    getRedirectionValue(config, locationNbr,
+                                _attribute.redirection.redir_302, 1);
 }
-
-#define GET 0
-#define POST 1
-#define DELETE 2
 
 bool Server::methodAlreadyDefined(uint8_t mask, size_t method)
 {
@@ -68,15 +71,19 @@ void Server::storeLocation(server& config, size_t locationNbr)
         else if (config[LOCATION + i][AUTOINDEX][0] == "off")
             newLocation.autoindex = false;
 
-        std::stringstream methodDirective(config[LOCATION + i][METHOD][0]);
         std::string method;
+        std::stringstream methodDirective(config[LOCATION + i][METHOD][0]);
+
         newLocation.method = 0;
         while (methodDirective >> method) {
-            if (method == "GET" && !methodAlreadyDefined(newLocation.method, GET))
+            if (method == "GET"
+                && !methodAlreadyDefined(newLocation.method, GET))
                 newLocation.method |= 1 << GET;
-            else if (method == "POST" && !methodAlreadyDefined(newLocation.method, POST))
+            else if (method == "POST"
+                && !methodAlreadyDefined(newLocation.method, POST))
                 newLocation.method |= 1 << POST;
-            else if (method == "DELETE" && !methodAlreadyDefined(newLocation.method, DELETE))
+            else if (method == "DELETE"
+                && !methodAlreadyDefined(newLocation.method, DELETE))
                 newLocation.method |= 1 << DELETE;
         }
         _attribute.location.push_back(newLocation);
@@ -112,7 +119,8 @@ void Server::storeCgi(server& config, size_t locationNbr,
             if (it != _attribute.cgi.end())
                 throw std::runtime_error("Error: cgi extension already used");
         }
-        _attribute.cgi.insert(std::pair<std::string, std::vector<std::string> >(extension, cgiPath));
+        _attribute.cgi.insert(std::pair<std::string,
+                              std::vector<std::string> >(extension, cgiPath));
     }
     total += cgiNbr;
 }
@@ -137,7 +145,8 @@ Server& Server::operator=(Server& other)
     return *this;
 }
 
-Server::Server(server& config, size_t locationNbr, size_t cgiNbr, size_t cgiTotal) : _socket()
+Server::Server(server& config, size_t locationNbr,
+               size_t cgiNbr, size_t cgiTotal) : _socket()
 {
     _attribute.port = config[SERVER][LISTEN][0];
     _attribute.host = config[SERVER][HOST][0];

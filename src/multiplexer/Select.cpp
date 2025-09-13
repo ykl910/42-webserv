@@ -58,7 +58,7 @@ void    Select::run()
 
         //* wait for event in a socket
         errno = 0;
-        _activity = select(_maxFd + 1, &_readFds, &_writeFds, &_exceptFds, &_tv);
+        _activity = select(_maxFd + 1, &_readFds, &_writeFds, &_exceptFds, NULL);
         if (g_signal == SIGINT)
             return;
         else if (_activity == -1)
@@ -82,16 +82,19 @@ void    Select::run()
                                 _clientState[_clientFd[i]],
                                 _persistance[_clientFd[i]]);
 
-                    if (!_persistance[_clientFd[i]])
-                        removeClientFromSelect(_clientFd[i], i);
-                    else {
-                        _clientState[_clientFd[i]] = PENDING;
-                        // ++i;
-                    }
-                    continue;
+                    if (_clientState[_clientFd[i]] == SENT)
+                    {
+                        if (!_persistance[_clientFd[i]])
+                            removeClientFromSelect(_clientFd[i], i);
+                        else {
+                            _clientState[_clientFd[i]] = PENDING;
+                            ++i;
+                        }
+                    } else
+                        ++i;
             }
 
-            if (FD_ISSET(_clientFd[i], &_writeFds)) {
+            else if (FD_ISSET(_clientFd[i], &_writeFds)) {
                 HttpManager(_clientFd[i],
                             _serverMap[_clientMap[_clientFd[i]]].getServerAttribute(),
                             _clientState[_clientFd[i]],
@@ -104,20 +107,19 @@ void    Select::run()
                     else
                     {
                         _clientState[_clientFd[i]] = PENDING;
-                        // ++i;
+                        ++i;
                     }
-                }
-                continue;
+                } else
+                    ++i;
             }
 
-            if (FD_ISSET(_clientFd[i], &_exceptFds)) {
+            else if (FD_ISSET(_clientFd[i], &_exceptFds)) {
                 std::cout << "Select: error catched for client fd "
                 << _clientFd[i] << "\n";
                 removeClientFromSelect(_clientFd[i], i);
-                continue;
             }
-
-            ++i;
+            else
+                ++i;
         }
 
         if (!_newClientFd.empty()) {
@@ -149,11 +151,8 @@ void    Select::initServer(Config& config)
     }
 }
 
-Select::Select(Config& config)
+Select::Select(Config& config) : _activity(0)
 {
-    _activity = 0;
-    _tv.tv_sec = 12;
-    _tv.tv_usec = 0;
     _newClientFd.clear();
 
     initServer(config);

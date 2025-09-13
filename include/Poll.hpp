@@ -33,13 +33,13 @@ public:
 private:
     int                             _activity;
     std::vector<struct pollfd>      _pollFd;
-    std::vector<struct pollfd>      _newClientFd;
     std::map<int, struct pollfd>    _pollFdMap;
+    std::vector<struct pollfd>      _newClientFd;
 
-    std::map<int, bool>         _persistance;
-    std::map<int, int>          _clientState;
+    std::map<int, bool>             _persistance;
+    std::map<int, int>              _clientState;
 
-    std::vector<Server>         _server;
-    std::map<int, int>          _clientMap;
-    std::map<int, Server>       _serverMap;
+    std::vector<Server>             _server;
+    std::map<int, int>              _clientMap;
+    std::map<int, Server>           _serverMap;
 };
