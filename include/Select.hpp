@@ -25,7 +25,7 @@ public:
     void run();
     void initServer(Config& config);
     void addClientToSelect(int clientFd, int serverFd);
-    void removeClientFromSelect(int client, selectIterator& it);
+    void removeClientFromSelect(int client, size_t& i);
     inline bool isSocketFd(int fd) const;
 
     Select(Config& config);
@@ -37,11 +37,12 @@ private:
     int                     _activity;
     fd_set                  _readFds;
     fd_set                  _writeFds;
+    fd_set                  _exceptFds;
     struct timeval          _tv;
 
     std::vector<int>        _listenFd;
+    std::vector<int>        _newClientFd;
     std::vector<int>        _clientFd;
-    std::vector<int>        _selectFd;
 
     std::vector<Server>     _server;
     std::map<int, int>      _clientState;

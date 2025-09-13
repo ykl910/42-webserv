@@ -149,11 +149,11 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     if (isCgi(_request.path))
         Cgi cgi(request, *this);
 
-    else if (_request.method == "GET" && (_allowedMethod & (1 << GET)))
+    else if (_request.method == "GET" && _allowedMethod & (1 << GET))
         handleGET();
-    else if (_request.method == "POST" && (_allowedMethod & (1 << POST)))
+    else if (_request.method == "POST" && _allowedMethod & (1 << POST))
         handlePOST(request);
-    else if (_request.method == "DELETE" && (_allowedMethod & (1 << DELETE)))
+    else if (_request.method == "DELETE" && _allowedMethod & (1 << DELETE))
         handleDELETE();
     else
     {
