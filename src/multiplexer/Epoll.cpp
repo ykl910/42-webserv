@@ -85,7 +85,7 @@ void Epoll::disableWriteEvent(int clientFd)
     ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR;
     ev.data.fd = clientFd;
     if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
-        printErrorAndThrow("epoll_ctl(enableWriteEvent)");
+        printErrorAndThrow("epoll_ctl(disableWriteEvent)");
 }
 
 inline bool Epoll::isSocketFd(int fd) const

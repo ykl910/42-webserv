@@ -179,8 +179,8 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
         << bytes << DEFAULT << std::endl;
 
         if (bytes > 0)
-        _buffers[clientFd].append(buffer, bytes);
-        if (bytes == -1)
+            _buffers[clientFd].append(buffer, bytes);
+        if (bytes == 0 || bytes == -1)
         {
             clientState = SENT;
             persistance = false;
@@ -214,7 +214,6 @@ HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState
 
     if (clientState == RECEIVED || clientState == RESPONSE_TRUNCATE)
         sendResponse(clientFd, _request[clientFd], serverAttr, clientState);
-    // exit(0);
 }
 
 HttpManager::~HttpManager() {}

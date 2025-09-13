@@ -77,13 +77,13 @@ void    Poll::run()
     while (g_signal != SIGINT) {
 
         errno = 0;
-        _activity = poll(&_pollFd[0], _pollFd.size(), -1); // 10 ms timeout
+        _activity = poll(&_pollFd[0], _pollFd.size(), -1);
         if (g_signal == SIGINT)
             return;
         else if (_activity == -1)
             printError();
 
-        for (pollIterator it = _pollFd.begin(); // skip socket fd
+        for (pollIterator it = _pollFd.begin();
                           it != _pollFd.end();) {
             if (it->revents & POLLIN) {
                 if (isSocketFd(it->fd)) {
@@ -104,14 +104,14 @@ void    Poll::run()
                         enableWriteEvent(it->fd);
                     if (_clientState[it->fd] == SENT)
                     {
-                        if (!_persistance[it->fd])
+                        if (!_persistance[it->fd]) {
                             removeClientFromPoll(it);
-                        else {
-                            _clientState[it->fd] = PENDING;
-                            ++it;
+                            continue;
                         }
-                    } else
-                        ++it;
+                        else
+                            _clientState[it->fd] = PENDING;
+                    }
+                    ++it;
                 }
 
             } else if (it->revents & POLLOUT) {
@@ -138,11 +138,13 @@ void    Poll::run()
                 std::cout << "Poll: error catched for client "
                 << it->fd << "\n";
                 removeClientFromPoll(it);
+                continue;
 
             } else if (it->revents & POLLHUP) {
                 std::cout << "Poll: connexion closed for client "
                 << it->fd << "\n";
                 removeClientFromPoll(it);
+                continue;
 
             } else
                 ++it;
@@ -175,7 +177,7 @@ void    Poll::initServer(Config& config)
     }
 }
 
-Poll::Poll(Config& config)
+Poll::Poll(Config& config) : _activity(0)
 {
     _newClientFd.clear();
     initServer(config);
