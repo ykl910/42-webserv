@@ -33,8 +33,8 @@ bool    HttpResponse::isAutoIndex()
     if (!isDirectory())
         return false;
 
-    locationMapIterator it =  _server.locationMap.find(_request.path);
-    if (it != _server.locationMap.end()) {
+    locationMapIterator it =  _server.locMap.find(_request.path);
+    if (it != _server.locMap.end()) {
         if (it->second.autoindex == ON)
             return true;
     }

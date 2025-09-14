@@ -126,9 +126,9 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
 
     solvePath();
-    if (isAutoIndex())
-        buildIndex();
-    else if (isCgi())
+    // if (isAutoIndex())
+    //     buildIndex();
+    if (isCgi())
         Cgi cgi(request, *this);
     else if (_request.method == "GET" && _allowedMethod & (1 << GET))
         handleGET();
