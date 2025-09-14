@@ -155,8 +155,6 @@ run_subject_test()
 
 run_siege_test()
 {
-    local client_number=100
-
     echo -e "$BOLD$ITALIC${YELLOW}Siege test$DEFAULT"
     mkdir -p $log_dir/siege
     pushd .. > /dev/null

@@ -23,42 +23,10 @@ int createFile(std::string dir, std::string filename)
     return fd;
 }
 
-int storeTitle(std::string title, int threadNb)
-{
-    std::string filename = itos(threadNb) + "_title.txt";
-    int fd = createFile(DIRPATH, filename);
-    if(fd == -1)
-        return -1;
-    size_t startPos = title.find("\r\n\r\n") + 4;
-    size_t endPos = title.size() - 2;
-
-    std::string txt = title.substr(startPos, endPos - startPos);
-
-    write(fd, txt.c_str(), txt.size());
-    close(fd);
-    return 0;
-}
-
-int storeText(std::string body, int threadNb)
-{
-    std::string filename = itos(threadNb) + "_body.txt";
-    int fd = createFile(DIRPATH, filename);
-    if(fd == -1)
-        return -1;
-    size_t startPos = body.find("\r\n\r\n") + 4;
-    size_t endPos = body.size() - 2;
-
-    std::string txt = body.substr(startPos, endPos - startPos);
-
-    write(fd, txt.c_str(), txt.size());
-    close(fd);
-    return 0;
-}
-
-int storeImg(std::string img, int threadNb)
+int setThread(std::string img, int threadNb, const std::string& threadType)
 {
     std::string filename;
-    filename = itos(threadNb) + "_img.jpg";
+    filename = itos(threadNb) + threadType;
     int fd = createFile(DIRPATH, filename);
     if(fd == -1)
         return -1;
@@ -104,18 +72,18 @@ int storeThread(HttpRequest &request, std::string boundary)
     std::vector<std::string> tokens = split(request.getBody(), boundary);
     std::vector<std::string>::iterator tokenIt;
 
-    for(tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt) {
+    for (tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt) {
         std::string line = *tokenIt;
         if (line.find("Content-Disposition: form-data; name=\"title\"") != std::string::npos) {
-            if(storeTitle(line, threadNb) == -1)
+            if (setThread(line, threadNb, "_title.txt") == -1)
                 return -1;
         }
         if (line.find("Content-Disposition: form-data; name=\"body\"") != std::string::npos) {
-            if(storeText(line, threadNb) == -1)
+            if (setThread(line, threadNb, "_body.txt") == -1)
                 return -1;
         }
         if (line.find("Content-Disposition: form-data; name=\"uploadFile\"") != std::string::npos) {
-            if(storeImg(line, threadNb) == -1)
+            if (setThread(line, threadNb, "_img.jpg") == -1)
                 return -1;
         }
     }
@@ -126,9 +94,8 @@ int storeThread(HttpRequest &request, std::string boundary)
     return 0;
 }
 
-void HttpResponse::buildResponse(HttpRequest& request, int code, std::string msg)
+void HttpResponse::buildResponse(int code, std::string msg)
 {
-    (void)request;
     setStatusLine(getRequestAttr().httpVersion, code, msg);
     setHeaders("Content-Type", "text/html");
     std::string path;
@@ -164,10 +131,10 @@ void HttpResponse::handlePOST(HttpRequest& request)
         std::cout << BOLD GREEN << "IS FORM DATA" << DEFAULT << std::endl;
         std::string boundary = getBoundary(headers["Content-Type"]);
         if (storeThread(request, boundary) == -1)
-            buildResponse(request, 500, "Internal error");
+            buildResponse(500, "Internal error");
         else
-            buildResponse(request, 201, "Created");
+            buildResponse(201, "Created");
     }
     else
-        buildResponse(request, 404, "Not found");
+        buildResponse(404, "Not found");
 }

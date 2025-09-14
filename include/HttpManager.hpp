@@ -8,21 +8,10 @@
 #include <sys/epoll.h>
 #include <iostream>
 
+#define CONTENT_LENGTH_SIZE 16
+
 #define OUT 0
 #define IN 1
-
-// Request include an define
-// #include <netinet/in.h>
-// #include <unistd.h>
-// #include <iostream>
-// #include <cstdlib>
-// #include <sstream>
-// #include <cstring>
-// #include <cerrno>
-// #include <string>
-// #include <cstdio>
-// #include <vector>
-// #include <map>
 
 #define FAILURE 0
 #define SUCCESS 1
@@ -42,10 +31,12 @@ enum e_state {
     SENT
 };
 
+class HttpResponse;
+
 class HttpManager {
 public:
-    void getRequest(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance);
-    bool receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const;
+    void getRequest(int clientFd, int &clientState, bool &persistance);
+    bool receivedCompleteRequest(std::string &rawData) const;
     void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr, int &clientState);
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
     static bool hasCompletedResponse(int clientFd);

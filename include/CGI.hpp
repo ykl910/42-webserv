@@ -12,6 +12,7 @@
 #include <sys/time.h>
 
 class HttpResponse;
+class HttpManager;
 
 class Cgi {
 public:

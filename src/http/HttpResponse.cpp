@@ -33,11 +33,12 @@ Warning
 WWW-Authenticate
 */
 
-void HttpResponse::setStatusLine(const std::string version, int code, const std::string &reason)
+void HttpResponse::setStatusLine(const std::string version, int code, const std::string& reason)
 {
     std::ostringstream oss;
     oss << code;
     _statusLine = version + " " + oss.str() + " " + reason + "\r\n";
+    // _response = _statusLine;
 }
 
 void HttpResponse::setHeaders(const std::string &key, const std::string &value)
@@ -48,6 +49,8 @@ void HttpResponse::setHeaders(const std::string &key, const std::string &value)
 void HttpResponse::setBody(const std::string &body)
 {
     _body = body;
+    _responseHead = _response;
+    // _response += body;
 }
 
 std::string HttpResponse::getStatusLine() const
@@ -63,14 +66,13 @@ std::string HttpResponse::getResponse()
                                    it != _headers.end(); ++it)
         fullResponse += it->first + ": " + it->second + "\r\n";
     fullResponse += "\r\n";
-    _response = fullResponse;
     fullResponse += _body;
     return fullResponse;
 }
 
-std::string& HttpResponse::getResponseHeader()
+std::string& HttpResponse::getResponseHead()
 {
-    return _response;
+    return _responseHead;
 }
 std::string HttpResponse::getRoot() const
 {
@@ -98,9 +100,9 @@ const std::string HttpResponse::getFileExtention(const std::string &path) const
         return path.substr(extentionDotPos, questionMarkPos - extentionDotPos);
 }
 
-bool HttpResponse::isCgi(std::string &requestPath)
+bool HttpResponse::isCgi()
 {
-    std::string fileExtention = getFileExtention(requestPath);
+    std::string fileExtention = getFileExtention(_request.path);
    return _server.cgi.find(fileExtention) != _server.cgi.end();
 }
 
@@ -108,33 +110,13 @@ bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr
 {
     std::map<std::string, std::string>header = request.getHeaders();
     std::map<std::string, std::string>::iterator it = header.find("Content-Length");
-    if(it->second.empty())
+    if (it->second.empty())
         return true;
     else
     {
         int bodySize =  std::atoi(header["Content-Length"].c_str());
         return bodySize < serverAttr.client_max_body_size;
     }
-}
-
-bool HttpResponse::isDirectory()
-{
-    return true;
-}
-
-bool    HttpResponse::isAutoIndex()
-{
-    return true;
-}
-
-void    HttpResponse::buildIndex()
-{
-    // std::vector<std::string>
-
-    // DIR *dirRoot = opendir(_request.path.c_str());
-    // if (!dirRoot)
-        return ;
-
 }
 
 HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
@@ -144,11 +126,10 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
 
     solvePath();
-    // if (isAutoIndex())
-    //     buildIndex();
-    if (isCgi(_request.path))
+    if (isAutoIndex())
+        buildIndex();
+    else if (isCgi())
         Cgi cgi(request, *this);
-
     else if (_request.method == "GET" && _allowedMethod & (1 << GET))
         handleGET();
     else if (_request.method == "POST" && _allowedMethod & (1 << POST))
@@ -166,12 +147,12 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setHeaders("Content-Type", "text/html");
         setHeaders("Content-Length", itos(body.length()));
         setStatusLine(_request.httpVersion, 405, "Method not allowed");
+        // buildResponse();
     }
-
 }
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response)
 {
-    os << response.getResponseHeader();
+    os << response.getResponseHead();
     return os;
 }

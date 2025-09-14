@@ -73,7 +73,7 @@ size_t Config::getCgiTotal(void)
     return _cgiTotal;
 }
 
-bool    rightIndentation(const std::string& line, uint32_t indentSize) {
+bool    Config::rightIndentation(const std::string& line, uint32_t indentSize) {
     return line.length() > indentSize
         && line.substr(0, indentSize).find_first_not_of(" ");
 }
@@ -93,10 +93,12 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 
     else if (lineLength < indentSize
           || lineLength < indentSize + static_cast<int>(DIRECTIVE_NAME_LENGTH))
-        manageConfigError(line, EXPECTED_DIRECTIVE, "config not well formatted.", _lineNbr);
+        manageConfigError(line, EXPECTED_DIRECTIVE,
+            "config not well formatted.", _lineNbr);
 
     else if (!rightIndentation(line, indentSize))
-        manageConfigError(line, EXPECTED_DIRECTIVE, "wrong indentation.", _lineNbr);
+        manageConfigError(line, EXPECTED_DIRECTIVE,
+            "wrong indentation.", _lineNbr);
 
     // is directive name format valid
     else if (_configFormat[_contextIndex][_directiveIndex][NAME]
@@ -121,7 +123,8 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
     return true;
 }
 
-void    Config::extractDirective(std::string& line, directiveValue& newDirective, int indentSize)
+void    Config::extractDirective(std::string& line,
+                                 directiveValue& newDirective, int indentSize)
 {
     newDirective.push_back(line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
         line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1));
@@ -190,8 +193,10 @@ bool    Config::contextFormatValid(const std::string& line)
         else
             return true;
     } else if (line.empty()
-        || std::strlen(_contextNameList[_contextIndex]) + indentSize != line.length()
-        || _contextNameList[_contextIndex] != line.substr(indentSize, line.length() - indentSize))
+        || std::strlen(_contextNameList[_contextIndex]) + indentSize
+                != line.length()
+        || _contextNameList[_contextIndex] != line.substr(indentSize,
+                                                  line.length() - indentSize))
         manageConfigError(line, EXPECTED_CONTEXT,
             "context format not valid.", _lineNbr);
     return true;
@@ -305,7 +310,8 @@ void    Config::initConfigParser(void)
 }
 
 Config::Config(const char*& configFilePath)
-    : _cgiNbr(0), _cgiTotal(0), _lineNbr(0), _locationNbr(0), _configFilePath(configFilePath)
+    : _cgiNbr(0), _cgiTotal(0), _lineNbr(0),
+    _locationNbr(0), _configFilePath(configFilePath)
 {
     initConfigParser();
     parseConfigFile();
