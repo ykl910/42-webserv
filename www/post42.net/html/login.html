@@ -7,7 +7,7 @@
    <script>
       // Check for login cookie on page load
       document.addEventListener('DOMContentLoaded', function() {
-         
+
          console.log("Raw cookie string:", document.cookie);
          if (document.cookie.includes('session=')) {
             console.log("Session cookie found by direct check!");
@@ -16,13 +16,13 @@
          }
       });
     </script>
-   <link rel="icon" href="/assets/icon.png" type="image/png">
+   <link rel="icon" href="/asset/image/icon.png" type="image/png">
    <title>Upload</title>
 </head>
 <body>
     <nav class="navbar">
         <div class="left-side">
-            <img src="/images/post42logo.png" alt="logo" class="logo" />
+            <img src="/asset/image/post42logo.png" alt="logo" class="logo" />
             <a href="/html/about.html">about us</a>
             <a href="/html/index.html">latest posts</a>
         </div>
@@ -48,7 +48,7 @@
          </div>
          <div class="form-group button-group">
          <button type="submit" class="upload-btn">Login</button>
-         <a href="register.html" class="upload-btn">Register</a>
+         <a href="/html/register.html" class="upload-btn">Register</a>
          </div>
       </form>
    </div>
@@ -82,7 +82,7 @@
             }
          });
       });
-      
+
    </script>
 </body>
 </html>

@@ -22,6 +22,7 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
         *buffer << file.rdbuf();
         body = buffer->str();
         setHeaders("Content-Type", "text/html");
+
     } else if (type == "img") {
         if (success == 404)
             body = "Not Found";
@@ -33,7 +34,7 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
         setHeaders("Content-Type", "text/plain");
     }
     setHeaders("Content-Length", itos(body.length()));
-    setBody(body);    
+    setBody(body);
 }
 
 int HttpResponse::handleRedirect()
@@ -118,13 +119,7 @@ int HttpResponse::handleImage()
         data.insert(data.end(), temp, temp + file.gcount());
 
     setStatusLine(_request.httpVersion, 200, "OK");
-    if (_extension == "png")
-        setHeaders("Content-Type", "image/png");
-    else if (_extension == "gif")
-        setHeaders("Content-Type", "image/gif");
-    else if (_extension == "webp")
-        setHeaders("Content-Type", "image/webp");
-
+    setHeaders("Content-Type", "image/" + _extension);
     setHeaders("Content-Length", itos(data.size()));
     setBody(std::string(&data[0], data.size()));
     file.close();

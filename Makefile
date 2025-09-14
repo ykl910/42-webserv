@@ -31,8 +31,10 @@ INCLUDE             := $(addprefix $(INCLUDE_DIR)/, $(INCLUDE))
 ###########################          SOURCE         ###########################
 
 SRC_DIR             := src
-SRC                 := config/Config.cpp \
-                    config/ConfigUtils.cpp \
+SRC                 := config/Config-bool.cpp \
+                    config/Config-print.cpp \
+                    config/Config.cpp \
+                    http/autoindex.cpp \
                     http/CGI.cpp \
                     http/Cookies.cpp \
                     http/DELETE.cpp \

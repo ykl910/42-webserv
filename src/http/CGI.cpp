@@ -1,5 +1,54 @@
 #include "../../include/CGI.hpp"
 
+/*
+# Request-related
+REQUEST_METHOD
+QUERY_STRING
+CONTENT_TYPE
+CONTENT_LENGTH
+PATH_INFO
+PATH_TRANSLATED
+SCRIPT_NAME
+SCRIPT_FILENAME
+REQUEST_URI
+AUTH_TYPE
+REMOTE_USER
+REMOTE_IDENT
+
+# Server-related
+SERVER_SOFTWARE
+SERVER_NAME
+SERVER_ADDR
+SERVER_PORT
+SERVER_PROTOCOL
+GATEWAY_INTERFACE
+
+# Client-related
+REMOTE_ADDR
+REMOTE_PORT
+
+# HTTP header variables (converted to environment variables)
+HTTP_ACCEPT
+HTTP_ACCEPT_CHARSET
+HTTP_ACCEPT_ENCODING
+HTTP_ACCEPT_LANGUAGE
+HTTP_AUTHORIZATION
+HTTP_COOKIE
+HTTP_CONNECTION
+HTTP_HOST
+HTTP_REFERER
+HTTP_USER_AGENT
+HTTP_UPGRADE_INSECURE_REQUESTS
+HTTP_CACHE_CONTROL
+HTTP_PRAGMA
+HTTP_X_FORWARDED_FOR
+HTTP_X_FORWARDED_PROTO
+
+# Misc / Non-standard / Common extensions
+HTTPS
+REDIRECT_STATUS
+*/
+
 void Cgi::generateErrorMsg(HttpResponse &response)
 {
     std::string msg = "Oops, something went wrong :(";
@@ -13,12 +62,15 @@ void Cgi::generateResponse(HttpResponse &response)
 {
     response.setStatusLine(response.getRequestAttr().httpVersion, 200, "OK");
     response.setHeaders("Content-Type", "text/plain");
-    response.setHeaders("Content-Length", itos(_stdout.size()));
     std::cout << response.getRequestAttr().path << std::endl;
-    if (response.getRequestAttr().path.find("cookies") != std::string::npos)
+    if (response.getRequestAttr().path.find("cookies") != std::string::npos) {
+        response.setHeaders("Content-Length", itos(_stdout.size()));
         response.setHeaders("Set-Cookie", _stdout.substr(11));
-    else
+    }
+    else {
+        response.setHeaders("Content-Length", itos(_stdout.size()));
         response.setBody(_stdout);
+    }
 }
 
 std::string Cgi::extractQuery(HttpResponse &response)

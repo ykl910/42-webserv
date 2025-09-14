@@ -1,6 +1,5 @@
 #include "../../include/HttpManager.hpp"
 
-#define CONTENT_LENGTH_SIZE 16
 
 std::map<int, std::string>   HttpManager::_buffers;
 std::map<int, HttpRequest>   HttpManager::_request;
@@ -100,7 +99,8 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
 
     while (totalBytesSent < responseLen)
     {
-        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent, responseLen - totalBytesSent, 0);
+        ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent,
+                                 responseLen - totalBytesSent, 0);
         std::cout
         << BLUE << "client [" << clientFd << "]: "
         << "bytesSent inside loop = " << bytesSent
@@ -128,8 +128,10 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
         << DEFAULT << std::endl;
 
         std::cout
-        << BLUE << "client [" << clientFd << "]: Response: \n" << "------------------------------\n "
-        << ITALIC GREEN << response.substr(0,1000) << BLUE << "\n------------------------------\n"
+        << BLUE << "client [" << clientFd << "]: Response: \n"
+        << "------------------------------\n "
+        << ITALIC GREEN << response.substr(0,1000)
+        << BLUE << "\n------------------------------\n"
         << DEFAULT << std::endl;
 
         _request.erase(clientFd);
@@ -140,8 +142,8 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     }
 }
 
-bool    HttpManager::receivedCompleteRequest(std::string &rawData, t_serv_attr &serverAttr) const {
-
+bool    HttpManager::receivedCompleteRequest(std::string &rawData) const
+{
     size_t headerEnd = rawData.find("\r\n\r\n");
     if (headerEnd == std::string::npos)
         return false;
@@ -158,7 +160,6 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData, t_serv_attr &
     int contentLength = std::atoi(valueStr.c_str());
 
     size_t bodyLengh = rawData.size() - bodyStart;
-    (void)serverAttr;
     return bodyLengh >= static_cast<size_t>(contentLength);
 
 }
@@ -168,7 +169,7 @@ inline bool    HttpManager::checkPersistance(std::string &rawData)
     return (rawData.find("Connection: keep-alive") != std::string::npos);
 }
 
-void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clientState, bool &persistance) {
+void    HttpManager::getRequest(int clientFd, int &clientState, bool &persistance) {
 
     char buffer[4096];
 
@@ -180,7 +181,7 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
 
         if (bytes > 0)
             _buffers[clientFd].append(buffer, bytes);
-        if (bytes == 0 || bytes == -1)
+        else if (bytes == -1)
         {
             clientState = SENT;
             persistance = false;
@@ -188,7 +189,7 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
         }
     }
 
-    if (receivedCompleteRequest(_buffers[clientFd], serverAttr)) {
+    if (receivedCompleteRequest(_buffers[clientFd])) {
 
         std::cout
         << CYAN << "client [" << clientFd << "]: Request received"
@@ -210,7 +211,7 @@ void    HttpManager::getRequest(int clientFd,t_serv_attr &serverAttr, int &clien
 HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance)
 {
     if (clientState == PENDING)
-        getRequest(clientFd, serverAttr, clientState, persistance);
+        getRequest(clientFd, clientState, persistance);
 
     if (clientState == RECEIVED || clientState == RESPONSE_TRUNCATE)
         sendResponse(clientFd, _request[clientFd], serverAttr, clientState);

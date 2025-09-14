@@ -90,6 +90,7 @@ public:
     bool contextFormatValid(const std::string& line);
     bool gotAnotherServer(std::ifstream& file, std::string& line);
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
+    bool rightIndentation(const std::string& line, uint32_t indentSize);
     bool directiveFormatValid(const std::string& line, int indentSize);
 
     void extractServer(std::ifstream& file, std::string& line, server& server);

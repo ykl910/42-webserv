@@ -28,6 +28,8 @@ typedef struct s_request_attr
     std::string prefix;
 }t_request_attr;
 
+class HttpManager;
+
 class HttpRequest {
 public:
     const bool &getState() const;

@@ -87,6 +87,8 @@ void Server::storeLocation(server& config, size_t locationNbr)
                 newLocation.method |= 1 << DELETE;
         }
         _attribute.location.push_back(newLocation);
+        _attribute.locationMap.insert(
+            std::pair<std::string, t_location>(newLocation.path, newLocation));
     }
 }
 
@@ -95,17 +97,13 @@ bool isValidCgiExtension(void)
     return true;
 }
 
-typedef cgiMap::iterator cgiIterator;
-
-void Server::storeCgi(server& config, size_t locationNbr,
-                        size_t cgiNbr, size_t cgiTotal)
+void Server::storeCgi(server& config, size_t locationNbr, size_t cgiNbr)
 {
     static size_t               total;
     std::string                 extension;
     std::string                 path;
     std::vector<std::string>    cgiPath;
 
-    (void)cgiTotal;
     for (size_t i = 0; i < cgiNbr; ++i) {
         std::stringstream cgiDirectiveSplitter(config[CGI + locationNbr + total][i][0]);
 
@@ -114,7 +112,7 @@ void Server::storeCgi(server& config, size_t locationNbr,
             cgiPath.push_back(path);
         }
         if (!_attribute.cgi.empty()) {
-            cgiIterator it = _attribute.cgi.find(extension);
+            cgiMapIterator it = _attribute.cgi.find(extension);
 
             if (it != _attribute.cgi.end())
                 throw std::runtime_error("Error: cgi extension already used");
@@ -130,23 +128,22 @@ void    Server::initSocket(void)
     _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
 }
 
-Server& Server::operator=(Server& other)
-{
-    if (this != &other) {
-        t_serv_attr attr = other.getServerAttribute();
-        _attribute.port = attr.port;
-        _attribute.host = attr.host;
-        _attribute.server_name = attr.server_name;
-        _attribute.client_max_body_size = attr.client_max_body_size;
-        _attribute.location = attr.location;
-        _attribute.error_page = attr.error_page;
-        _attribute.cgi = attr.cgi;
-    }
-    return *this;
-}
+// Server& Server::operator=(Server& other)
+// {
+//     if (this != &other) {
+//         t_serv_attr attr = other.getServerAttribute();
+//         _attribute.port = attr.port;
+//         _attribute.host = attr.host;
+//         _attribute.server_name = attr.server_name;
+//         _attribute.client_max_body_size = attr.client_max_body_size;
+//         _attribute.location = attr.location;
+//         _attribute.error_page = attr.error_page;
+//         _attribute.cgi = attr.cgi;
+//     }
+//     return *this;
+// }
 
-Server::Server(server& config, size_t locationNbr,
-               size_t cgiNbr, size_t cgiTotal) : _socket()
+Server::Server(server& config, size_t locationNbr, size_t cgiNbr) : _socket()
 {
     _attribute.port = config[SERVER][LISTEN][0];
     _attribute.host = config[SERVER][HOST][0];
@@ -157,7 +154,7 @@ Server::Server(server& config, size_t locationNbr,
     storeLocation(config, locationNbr);
     storeErrorPage(config, locationNbr);
     storeRedirection(config, locationNbr);
-    storeCgi(config, locationNbr, cgiNbr, cgiTotal);
+    storeCgi(config, locationNbr, cgiNbr);
 }
 
 Server::~Server() {}

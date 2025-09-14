@@ -164,7 +164,6 @@ void Cookies::buildCookieResponse(HttpRequest& request, HttpResponse& response, 
     response.setBody(msg);
 }
 
-
 Cookies::Cookies(HttpRequest &request, HttpResponse &response, std::string boundary) {
 
 

@@ -24,10 +24,12 @@
 
 typedef struct s_request_attr t_request_attr;
 
+class HttpManager;
+
 class HttpResponse {
 public:
     std::string getResponse();
-    std::string& getResponseHeader();
+    std::string& getResponseHead();
     std::string getStatusLine() const;
     std::string getRoot() const;
     t_serv_attr getServerAttr() const;
@@ -38,7 +40,7 @@ public:
     void setBody(const std::string &body);
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLine(const std::string version, int code, const std::string &reason);
-    void buildResponse(HttpRequest& request, int code, std::string msg);
+    void buildResponse(int code, std::string msg);
     void handleError(std::stringstream *buffer, int success, std::string type);
 
     void solvePath();
@@ -52,11 +54,13 @@ public:
     int handleCss(std::stringstream *buffer);
     int handleHtml(std::stringstream *buffer);
 
-    bool isImage();
     void buildIndex();
-    bool isAutoIndex();
+
+    bool isCgi();
+    bool isImage();
     bool isDirectory();
-    bool isCgi(std::string &Requestpath);
+    bool isAutoIndex();
+
     bool canAccessFile(std::string& file);
     inline bool isFormData(std::string &contentType) const;
     bool isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const;
@@ -69,14 +73,14 @@ private:
     std::string     _body;
     bool            _isAutoIndex;
     std::string     _statusLine;
-    std::string     _response;
+    std::string     _responseHead;
     std::string     _extension;
+    std::string     _response;
     headerMap       _headers;
     t_serv_attr     _server;
     t_request_attr  _request;
     uint8_t         _allowedMethod;
     std::string     _root;
-
 };
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response);
