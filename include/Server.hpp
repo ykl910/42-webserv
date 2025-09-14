@@ -50,13 +50,11 @@ typedef struct s_serv_attr {
     int                     client_max_body_size;
     bool                    autoindex;
     std::vector<t_location> location;
-    locationMap             locationMap;
+    locationMap             locMap;
     t_error_page            error_page;
     t_redirection           redirection;
     cgiMap                  cgi;
 }t_serv_attr;
-
-class HttpManager;
 
 class Server {
 public:
@@ -76,7 +74,6 @@ public:
 
     Server() {}
     Server(server& config, size_t locationNbr, size_t cgiNbr);
-    // Server& operator=(Server& other);
     ~Server();
 
 private:

@@ -1,6 +1,5 @@
 #include "../../include/HttpManager.hpp"
 
-
 std::map<int, std::string>   HttpManager::_buffers;
 std::map<int, HttpRequest>   HttpManager::_request;
 std::map<int, bool>          HttpManager::_gotResponse;
@@ -208,7 +207,8 @@ void    HttpManager::getRequest(int clientFd, int &clientState, bool &persistanc
     }
 }
 
-HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance)
+HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr,
+                         int &clientState, bool &persistance)
 {
     if (clientState == PENDING)
         getRequest(clientFd, clientState, persistance);

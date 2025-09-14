@@ -87,7 +87,7 @@ void Server::storeLocation(server& config, size_t locationNbr)
                 newLocation.method |= 1 << DELETE;
         }
         _attribute.location.push_back(newLocation);
-        _attribute.locationMap.insert(
+        _attribute.locMap.insert(
             std::pair<std::string, t_location>(newLocation.path, newLocation));
     }
 }
@@ -127,21 +127,6 @@ void    Server::initSocket(void)
 {
     _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
 }
-
-// Server& Server::operator=(Server& other)
-// {
-//     if (this != &other) {
-//         t_serv_attr attr = other.getServerAttribute();
-//         _attribute.port = attr.port;
-//         _attribute.host = attr.host;
-//         _attribute.server_name = attr.server_name;
-//         _attribute.client_max_body_size = attr.client_max_body_size;
-//         _attribute.location = attr.location;
-//         _attribute.error_page = attr.error_page;
-//         _attribute.cgi = attr.cgi;
-//     }
-//     return *this;
-// }
 
 Server::Server(server& config, size_t locationNbr, size_t cgiNbr) : _socket()
 {
