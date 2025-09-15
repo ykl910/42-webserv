@@ -26,7 +26,7 @@ host="localhost"
 
 ports=(
     "8080"
-    "7070"
+    "6060"
 )
 
 multiplexers=(

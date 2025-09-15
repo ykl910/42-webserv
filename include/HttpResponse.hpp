@@ -18,6 +18,9 @@
 #include <vector>
 #include <map>
 
+#define OFF 0
+#define ON 1
+
 #define GET 0
 #define POST 1
 #define DELETE 2

@@ -160,7 +160,6 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData) const
 
     size_t bodyLengh = rawData.size() - bodyStart;
     return bodyLengh >= static_cast<size_t>(contentLength);
-
 }
 
 inline bool    HttpManager::checkPersistance(std::string &rawData)

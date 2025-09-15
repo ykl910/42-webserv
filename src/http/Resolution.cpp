@@ -42,7 +42,11 @@ void    HttpResponse::solvePath()
             }
         }
     }
-    std::cout << BOLD YELLOW << "full path: " << fullPath << DEFAULT << std::endl;
+    if (isAutoIndex())
+        std::cout << BOLD YELLOW << "full path: " << _request.path << DEFAULT << '\n';
+    else {
+        std::cout << BOLD YELLOW << "full path: " << fullPath << DEFAULT << '\n';
+        _request.path = fullPath;
+    }
     _root = _server.rootLocation;
-    _request.path = fullPath;
 }

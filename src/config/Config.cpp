@@ -156,7 +156,9 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
 
                 streamPos = file.tellg();
                 std::getline(file, line);
-                if (line.length() == 0) {
+                if (file.eof())
+                    break;
+                else if (line.length() == 0) {
                     file.seekg(streamPos);
                     break;
                 }
@@ -238,13 +240,22 @@ bool    Config::gotAnotherServer(std::ifstream& file, std::string& line)
 {
     if (file.eof())
         return false;
-    else if (!line.empty())
-        manageConfigError(line, "", "config file not well formated.", _lineNbr);
 
     std::ifstream::pos_type streamPos = file.tellg();
-    std::getline(file, line);
-    file.seekg(streamPos);
-    return !line.empty();
+    size_t i = _lineNbr;
+    while (std::getline(file, line)) {
+        if (line == "server:") {
+            file.seekg(streamPos);
+            return true;
+        } else if (line.length() == 0) {
+            streamPos = file.tellg();
+        } else if (line.length() > 0 && line != "server:")
+            manageConfigError(line, "", "format between servers not valid.", i);
+        ++i;
+    }
+    if (file.eof() || line.length() == 0)
+        return false;
+    return true;
 }
 
 void    Config::parseConfigFile(void)

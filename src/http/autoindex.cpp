@@ -17,10 +17,9 @@ bool    HttpResponse::canAccessFile(std::string& fullPath)
     return true;
 }
 
-#define ON 1
-
 bool    HttpResponse::isDirectory()
 {
+    std::cout << BOLD WHITE << _request.path << DEFAULT << std::endl;
     DIR *dir = opendir(_request.path.c_str());
     if (!dir)
         return false;
@@ -49,7 +48,14 @@ void    HttpResponse::buildIndex()
 
     struct dirent *dirInfo = readdir(indexDir);
     if (!dirInfo) {
-        closedir(indexDir);
         std::cerr << BOLD RED << "ERROR readdir\n" << DEFAULT;
     }
+
+    struct stat fileStat;
+    if (stat(_request.path.c_str(), &fileStat) == -1)
+        std::cerr << BOLD RED << "Can't open file\n" << DEFAULT;
+
+    std::cout
+    << dirInfo->d_name << '\n';
+    closedir(indexDir);
 }
