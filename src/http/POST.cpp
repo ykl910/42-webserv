@@ -5,7 +5,7 @@
 
 # define DIRPATH "www/post42.net/threads/"
 
-std::string getBoundary(std::string &line)
+std::string HttpResponse::getBoundary(std::string &line)
 {
     size_t boundaryStart = line.find("=");
     size_t boundaryEnd = line.length();
@@ -14,35 +14,38 @@ std::string getBoundary(std::string &line)
     return NULL;
 }
 
-int createFile(std::string dir, std::string filename)
+int HttpResponse::createFd(std::string dir, std::string filename)
 {
-    std::string fullpath = dir + filename;
+    std::string fullpath = dir + "/" + filename;
     int fd = open(fullpath.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if(fd == -1)
         printError();
     return fd;
 }
 
-int setThread(std::string img, int threadNb, const std::string& threadType)
+int HttpResponse::createFile(std::string &content, std::string &dirPath)
 {
     std::string filename;
-    filename = itos(threadNb) + threadType;
-    int fd = createFile(DIRPATH, filename);
+    size_t titleStart = content.find("name=") + 6;
+    size_t titleEnd = content.find("\"", titleStart);
+    filename = content.substr(titleStart, titleEnd - titleStart);
+    std::cout << ITALIC RED << "filename: " << filename << DEFAULT << std::endl;
+    int fd = createFd(dirPath, filename);
     if(fd == -1)
         return -1;
-    size_t startPos = img.find("\r\n\r\n") + 4;
-    size_t endPos = img.size() - 2;
 
-    std::string txt = img.substr(startPos, endPos - startPos);
 
+    size_t contentStartPos = content.find("\r\n\r\n") + 4;
+    size_t contentEndPos = content.size() - 2;
+    std::string txt = content.substr(contentStartPos, contentEndPos - contentStartPos);
     write(fd, txt.c_str(), txt.size());
     close(fd);
     return 0;
 }
 
-bool directoryExist()
+bool HttpResponse::directoryExist(std::string dirPath)
 {
-    DIR *directory = opendir(DIRPATH);
+    DIR *directory = opendir(dirPath.c_str());
     if(directory)
     {
         closedir(directory);
@@ -51,21 +54,23 @@ bool directoryExist()
     return false;
 }
 
-int createDirectory()
+int HttpResponse::createDirectory(std::string dirPath)
 {
-    if (mkdir(DIRPATH, 0755) == -1) {
+    if (mkdir(dirPath.c_str(), 0755) == -1) {
         printError();
         return -1;
     }
     return 0;
 }
 
-int storeThread(HttpRequest &request, std::string boundary)
+int HttpResponse::downloadFiles(HttpRequest &request, std::string boundary)
 {
-    static int threadNb = 0;
+    std::string dirPath = _server.rootLocation + "/downloads";
 
-    if (!directoryExist()) {
-        if(createDirectory() == -1)
+    std::cout << BOLD YELLOW << "dirPath: " << dirPath << DEFAULT << std::endl;
+
+    if (!directoryExist(dirPath)) {
+        if(createDirectory(dirPath) == -1)
             return -1;
     }
 
@@ -74,23 +79,12 @@ int storeThread(HttpRequest &request, std::string boundary)
 
     for (tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt) {
         std::string line = *tokenIt;
-        if (line.find("Content-Disposition: form-data; name=\"title\"") != std::string::npos) {
-            if (setThread(line, threadNb, "_title.txt") == -1)
-                return -1;
-        }
-        if (line.find("Content-Disposition: form-data; name=\"body\"") != std::string::npos) {
-            if (setThread(line, threadNb, "_body.txt") == -1)
-                return -1;
-        }
-        if (line.find("Content-Disposition: form-data; name=\"uploadFile\"") != std::string::npos) {
-            if (setThread(line, threadNb, "_img.jpg") == -1)
-                return -1;
+        std::cout << BOLD RED << "LINE: " << line.substr(0,500) << DEFAULT << std::endl;
+        if (line.find("Content-Disposition: form-data") != std::string::npos) {
+            if (createFile(line, dirPath) == -1)
+              return -1;
         }
     }
-    if (threadNb + 1 == 2147483647)
-        threadNb = 0;
-    else
-        threadNb++;
     return 0;
 }
 
@@ -130,7 +124,7 @@ void HttpResponse::handlePOST(HttpRequest& request)
     {
         std::cout << BOLD GREEN << "IS FORM DATA" << DEFAULT << std::endl;
         std::string boundary = getBoundary(headers["Content-Type"]);
-        if (storeThread(request, boundary) == -1)
+        if (downloadFiles(request, boundary) == -1)
             buildResponse(500, "Internal error");
         else
             buildResponse(201, "Created");
