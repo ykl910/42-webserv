@@ -179,7 +179,7 @@ void    HttpManager::getRequest(int clientFd, int &clientState, bool &persistanc
 
         if (bytes > 0)
             _buffers[clientFd].append(buffer, bytes);
-        else if (bytes == -1)
+        else if (bytes <= 0)
         {
             clientState = SENT;
             persistance = false;
