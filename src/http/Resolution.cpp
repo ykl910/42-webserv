@@ -43,7 +43,7 @@ void    HttpResponse::solvePath()
         }
     }
     if (isAutoIndex())
-        std::cout << BOLD YELLOW << "full path: " << _request.path << DEFAULT << '\n';
+        std::cout << BOLD RED << "full path: " << _request.path << DEFAULT << '\n';
     else {
         std::cout << BOLD YELLOW << "full path: " << fullPath << DEFAULT << '\n';
         _request.path = fullPath;

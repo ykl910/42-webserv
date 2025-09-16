@@ -278,7 +278,7 @@ void    Config::parseConfigFile(void)
     file.close();
 }
 
-void    Config::initConfigParser(void)
+void    Config::initConfigFormat(void)
 {
     context server;
     context location;
@@ -324,7 +324,7 @@ Config::Config(const char*& configFilePath)
     : _cgiNbr(0), _cgiTotal(0), _lineNbr(0),
     _locationNbr(0), _configFilePath(configFilePath)
 {
-    initConfigParser();
+    initConfigFormat();
     parseConfigFile();
 }
 

@@ -56,7 +56,6 @@ void    Select::run()
                 _maxFd = _clientFd[i];
         }
 
-        //* wait for event in a socket
         errno = 0;
         _activity = select(_maxFd + 1, &_readFds, &_writeFds, &_exceptFds, NULL);
         if (g_signal == SIGINT)

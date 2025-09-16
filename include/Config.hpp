@@ -98,7 +98,7 @@ public:
     void extractDirective(std::string& line, directiveValue& newDirective, int indentSize);
 
     void parseConfigFile(void);
-    void initConfigParser(void);
+    void initConfigFormat(void);
 
     Config(const char*& configFilePath);
     ~Config();

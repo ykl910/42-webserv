@@ -45,17 +45,21 @@ void    HttpResponse::buildIndex()
     DIR *indexDir= opendir(_request.path.c_str());
     if (!indexDir)
         std::cerr << BOLD RED << "ERROR opendir\n" << DEFAULT;
+    else {
+        while (true) {
+            struct dirent *dirInfo = readdir(indexDir);
+            if (!dirInfo) {
+                std::cerr << BOLD RED << "ERROR readdir\n" << DEFAULT;
+                break;
+            }
 
-    struct dirent *dirInfo = readdir(indexDir);
-    if (!dirInfo) {
-        std::cerr << BOLD RED << "ERROR readdir\n" << DEFAULT;
+            struct stat fileStat;
+            if (stat(_request.path.c_str(), &fileStat) == -1)
+                std::cerr << BOLD RED << "Can't open file\n" << DEFAULT;
+
+            std::cout
+            << dirInfo->d_name << '\n';
+        }
+        closedir(indexDir);
     }
-
-    struct stat fileStat;
-    if (stat(_request.path.c_str(), &fileStat) == -1)
-        std::cerr << BOLD RED << "Can't open file\n" << DEFAULT;
-
-    std::cout
-    << dirInfo->d_name << '\n';
-    closedir(indexDir);
 }
