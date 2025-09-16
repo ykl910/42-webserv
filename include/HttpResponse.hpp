@@ -92,6 +92,7 @@ private:
     t_request_attr  _request;
     uint8_t         _allowedMethod;
     std::string     _root;
+    bool            _isIndex;
 };
 
 std::ostream& operator<<(std::ostream& os, HttpResponse& response);

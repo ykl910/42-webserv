@@ -124,7 +124,7 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
 {
     if (!isValidBodySize(request, serverAttr))
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
-
+    
     solvePath();
     if (isAutoIndex())
         buildIndex();
@@ -147,7 +147,6 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
         setHeaders("Content-Type", "text/html");
         setHeaders("Content-Length", itos(body.length()));
         setStatusLine(_request.httpVersion, 405, "Method not allowed");
-        // buildResponse();
     }
 }
 

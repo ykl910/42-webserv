@@ -9,7 +9,6 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
     if (type == "html") {
         if (success == 404) {
             fullPath = _server.error_page.err_404;
-            std::cout << "full error page: " << fullPath << std::endl;
             setStatusLine(_request.httpVersion, 404, "Not Found");
         } else if (success == 403) {
             fullPath = _server.error_page.err_403;
@@ -63,7 +62,13 @@ int HttpResponse::handleHtml(std::stringstream *buffer)
     std::cout << BOLD BLUE << _request.path << DEFAULT << std::endl;
     std::ifstream file(_request.path.c_str());
 
-    if (access(_request.path.c_str(), F_OK) != 0)
+    struct stat file_stat;
+    bool is_directory = 
+    (stat(_request.path.c_str(), &file_stat) == 0 && S_ISDIR(file_stat.st_mode)) ;
+
+    if (is_directory && _isIndex == true && _isAutoIndex == false)
+        return 403;
+    else if (access(_request.path.c_str(), F_OK) != 0)
         return 404;
     else if (access(_request.path.c_str(), R_OK) != 0)
         return 403;

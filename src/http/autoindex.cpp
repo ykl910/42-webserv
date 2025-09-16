@@ -29,16 +29,11 @@ bool    HttpResponse::isDirectory()
 
 bool    HttpResponse::isAutoIndex()
 {
-    if (!isDirectory())
-        return false;
-
-    locationMapIterator it =  _server.locMap.find(_request.path);
-    if (it != _server.locMap.end()) {
-        if (it->second.autoindex == ON)
-            return true;
-    }
+    if (_isAutoIndex == true)
+        return true;
     return false;
 }
+
 
 void    HttpResponse::buildIndex()
 {
@@ -46,9 +41,18 @@ void    HttpResponse::buildIndex()
     if (!indexDir)
         std::cerr << BOLD RED << "ERROR opendir\n" << DEFAULT;
     else {
+
         std::string         name;
         std::string         fullPath;
         std::ostringstream  output;
+
+        output << "<html>\n"
+               << "<head><title>Index of " << _request.path << "</title></head>\n"
+               << "<body>\n"
+               << "<h1>Index of " << _request.path << "</h1>\n"
+               << "<hr><ul>\n";
+
+        output << "<li><a href=\"../\">../</a></li>\n";
 
         while (true) {
             struct dirent *dirInfo = readdir(indexDir);
@@ -57,15 +61,28 @@ void    HttpResponse::buildIndex()
                 break;
             }
             name = dirInfo->d_name;
-            fullPath = _request.path + "/" + name;
+            std::cout << name << std::endl;
+            if (name != "." && name != "..") {
+                fullPath = _request.path + "/" + name;
+                struct stat fileStat;
+                if (stat(fullPath.c_str(), &fileStat) == -1)
+                    std::cerr << BOLD RED << "Can't open file\n" << DEFAULT;
+                else
+                {
+                    if (S_ISDIR(fileStat.st_mode))
+                        name += "/";
+                    output << "<li><a href=\"" << name << "\">" << name << "</a></li>\n";
+                }
+            }
             std::cout << BOLD WHITE << fullPath << DEFAULT << '\n';
-            struct stat fileStat;
-            if (stat(_request.path.c_str(), &fileStat) == -1)
-                std::cerr << BOLD RED << "Can't open file\n" << DEFAULT;
-
-            std::cout
-            << dirInfo->d_name << '\n';
         }
+        output << "</ul><hr></body></html>";
+        int len = output.str().length();
+        this->setBody(output.str());
+        this->setHeaders("Content-Type", "text/html");
+        this->setHeaders("Content-Length", itos(len));
+        this->setStatusLine(_request.httpVersion, 200, "ok");
         closedir(indexDir);
     }
 }
+

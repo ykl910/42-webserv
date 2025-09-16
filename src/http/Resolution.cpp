@@ -27,30 +27,36 @@ void    HttpResponse::solvePath()
     {
         if (_request.path.find(_server.location[i].path) == 0)
         {
+            _isAutoIndex = false;
+            _isIndex = false;
             _allowedMethod = _server.location[i].method;
             if (_request.path == "" || _request.path == _server.location[i].path
                 || _request.path == _server.location[i].path + "/")
-                fullPath = _server.location[i].root + "/" + _server.location[i].index;
+            {
+                _isIndex = true;
+                if (_server.location[i].index != "n") // todo
+                    fullPath = _server.location[i].root + "/" + _server.location[i].index;
+                else 
+                {
+                    if (_server.location[i].autoindex == ON)
+                        _isAutoIndex = true;
+                    else
+                        _isAutoIndex = false;
+                    fullPath = _server.location[i].root;
+                }
+            }
             else
             {
                 std::string root = "";
                 if (_server.location[i].path == "/")
                     root = "/";
                 std::string locPath = _server.location[i].path;
-                std::cout << BOLD RED << "loc path: " << _server.location[i].path << DEFAULT << '\n';
-
                 std::string relativePath = root + _request.path.substr(locPath.length());
-                std::cout << BOLD RED << "rel path: " << relativePath << DEFAULT << '\n';
-
                 fullPath = _server.location[i].root + relativePath;
             }
         }
     }
-    if (isAutoIndex())
-        std::cout << BOLD RED << "full path: " << _request.path << DEFAULT << '\n';
-    else {
-        std::cout << BOLD YELLOW << "full path: " << fullPath << DEFAULT << '\n';
-        _request.path = fullPath;
-    }
+    std::cout << BOLD YELLOW << "full path: " << fullPath << DEFAULT << '\n';
+    _request.path = fullPath;
     _root = _server.rootLocation;
 }
