@@ -2,7 +2,8 @@
 
 #include "HttpRequest.hpp"
 #include "CGI.hpp"
-#include "Server.hpp"
+#include "ServerTypes.hpp"
+#include "textFormatting.hpp"
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/stat.h>

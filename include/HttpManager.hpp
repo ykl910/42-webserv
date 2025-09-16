@@ -3,7 +3,7 @@
 #include "textFormatting.hpp"
 #include "HttpResponse.hpp"
 #include "HttpRequest.hpp"
-#include "Server.hpp"
+#include "ServerTypes.hpp"
 #include "utils.hpp"
 #include <sys/epoll.h>
 #include <iostream>
@@ -15,8 +15,6 @@
 
 #define FAILURE 0
 #define SUCCESS 1
-
-typedef struct s_serv_attr t_serv_attr;
 
 enum e_success_code {
     OK_200 = 200,

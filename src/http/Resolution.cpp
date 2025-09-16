@@ -37,7 +37,11 @@ void    HttpResponse::solvePath()
                 if (_server.location[i].path == "/")
                     root = "/";
                 std::string locPath = _server.location[i].path;
+                std::cout << BOLD RED << "loc path: " << _server.location[i].path << DEFAULT << '\n';
+
                 std::string relativePath = root + _request.path.substr(locPath.length());
+                std::cout << BOLD RED << "rel path: " << relativePath << DEFAULT << '\n';
+
                 fullPath = _server.location[i].root + relativePath;
             }
         }
