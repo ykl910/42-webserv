@@ -117,8 +117,6 @@ void HttpResponse::buildResponse(int code, std::string msg)
 
 inline bool HttpResponse::isFormData(std::string &contentType) const
 {
-    std::cout << BOLD RED << "CONTENT TYPE: " << contentType << DEFAULT << std::endl;
-
     return (contentType.find("multipart/form-data") != std::string::npos);
 }
 
@@ -128,7 +126,6 @@ void HttpResponse::handlePOST(HttpRequest& request)
 
     if ((isFormData(headers["Content-Type"])))
     {
-        std::cout << BOLD GREEN << "IS FORM DATA" << DEFAULT << std::endl;
         std::string boundary = getBoundary(headers["Content-Type"]);
         if (storeThread(request, boundary) == -1)
             buildResponse(500, "Internal error");
