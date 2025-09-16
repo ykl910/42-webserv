@@ -46,13 +46,19 @@ void    HttpResponse::buildIndex()
     if (!indexDir)
         std::cerr << BOLD RED << "ERROR opendir\n" << DEFAULT;
     else {
+        std::string         name;
+        std::string         fullPath;
+        std::ostringstream  output;
+
         while (true) {
             struct dirent *dirInfo = readdir(indexDir);
             if (!dirInfo) {
                 std::cerr << BOLD RED << "ERROR readdir\n" << DEFAULT;
                 break;
             }
-
+            name = dirInfo->d_name;
+            fullPath = _request.path + "/" + name;
+            std::cout << BOLD WHITE << fullPath << DEFAULT << '\n';
             struct stat fileStat;
             if (stat(_request.path.c_str(), &fileStat) == -1)
                 std::cerr << BOLD RED << "Can't open file\n" << DEFAULT;
