@@ -23,18 +23,19 @@ int HttpResponse::createFd(std::string dir, std::string filename)
     return fd;
 }
 
-int HttpResponse::createFile(std::string &content, std::string &dirPath)
+int HttpResponse::createFile(std::string &content, std::string &dirPath, int id)
 {
     std::string filename;
     size_t titleStart = content.find("name=") + 6;
     size_t titleEnd = content.find("\"", titleStart);
-    filename = content.substr(titleStart, titleEnd - titleStart);
+    if(content.find("Content-Type: image") != std::string::npos)
+        filename = content.substr(titleStart, titleEnd - titleStart) + itos(id) + ".png";
+    else
+        filename = content.substr(titleStart, titleEnd - titleStart) + itos(id) + ".txt";
     std::cout << ITALIC RED << "filename: " << filename << DEFAULT << std::endl;
     int fd = createFd(dirPath, filename);
     if(fd == -1)
         return -1;
-
-
     size_t contentStartPos = content.find("\r\n\r\n") + 4;
     size_t contentEndPos = content.size() - 2;
     std::string txt = content.substr(contentStartPos, contentEndPos - contentStartPos);
@@ -65,9 +66,8 @@ int HttpResponse::createDirectory(std::string dirPath)
 
 int HttpResponse::downloadFiles(HttpRequest &request, std::string boundary)
 {
+    static int id = 0;
     std::string dirPath = _server.rootLocation + "/downloads";
-
-    std::cout << BOLD YELLOW << "dirPath: " << dirPath << DEFAULT << std::endl;
 
     if (!directoryExist(dirPath)) {
         if(createDirectory(dirPath) == -1)
@@ -81,10 +81,13 @@ int HttpResponse::downloadFiles(HttpRequest &request, std::string boundary)
         std::string line = *tokenIt;
         std::cout << BOLD RED << "LINE: " << line.substr(0,500) << DEFAULT << std::endl;
         if (line.find("Content-Disposition: form-data") != std::string::npos) {
-            if (createFile(line, dirPath) == -1)
+            if (createFile(line, dirPath, id) == -1)
               return -1;
         }
     }
+    id++;
+    if(id == INT_MAX)
+        id = 0;
     return 0;
 }
 

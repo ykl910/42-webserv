@@ -17,6 +17,7 @@
 #include <cerrno>
 #include <vector>
 #include <map>
+#include <climits>
 
 #define GET 0
 #define POST 1
@@ -65,7 +66,7 @@ public:
     int createDirectory(std::string dirPath);
     bool directoryExist(std::string dirPath);
     int downloadFiles(HttpRequest &request, std::string boundary);
-    int createFile(std::string &content, std::string &dirPath);
+    int createFile(std::string &content, std::string &dirPath, int id);
     int createFd(std::string dir, std::string filename);
     bool canAccessFile(std::string& file);
     inline bool isFormData(std::string &contentType) const;
