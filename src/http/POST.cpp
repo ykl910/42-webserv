@@ -32,7 +32,6 @@ int HttpResponse::createFile(std::string &content, std::string &dirPath, int id)
         filename = content.substr(titleStart, titleEnd - titleStart) + itos(id) + ".png";
     else
         filename = content.substr(titleStart, titleEnd - titleStart) + itos(id) + ".txt";
-    std::cout << ITALIC RED << "filename: " << filename << DEFAULT << std::endl;
     int fd = createFd(dirPath, filename);
     if(fd == -1)
         return -1;
@@ -79,7 +78,6 @@ int HttpResponse::downloadFiles(HttpRequest &request, std::string boundary)
 
     for (tokenIt = tokens.begin(); tokenIt != tokens.end(); ++tokenIt) {
         std::string line = *tokenIt;
-        std::cout << BOLD RED << "LINE: " << line.substr(0,500) << DEFAULT << std::endl;
         if (line.find("Content-Disposition: form-data") != std::string::npos) {
             if (createFile(line, dirPath, id) == -1)
               return -1;
