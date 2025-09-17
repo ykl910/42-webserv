@@ -1,54 +1,5 @@
 #include "../../include/Config.hpp"
 
-/* Nginx context tree
-main
-├── events
-│   └── (no subcontexts, only directives)
-
-├── http
-│   ├── server
-│   │   ├── location
-│   │   │   ├── if
-│   │   │   └── limit_except
-│   │   ├── if          (also valid directly inside server)
-│   │   └── limit_except
-│   ├── upstream
-│   ├── map
-│   ├── geo
-│   ├── types
-│   ├── charset_map
-│   ├── log_format
-│   ├── limit_conn_zone
-│   ├── limit_req_zone
-│   ├── include
-│   └── (various directives like sendfile, access_log, etc.)
-
-├── stream               (if compiled with --with-stream)
-│   ├── server
-│   │   └── proxy_pass
-│   ├── upstream
-│   ├── map
-│   ├── geo
-│   ├── log_format
-│   ├── limit_conn_zone
-│   └── include
-
-├── mail                 (if compiled with --with-mail)
-│   ├── server
-│   ├── auth_http
-│   ├── proxy
-│   └── include
-
-├── load_module          (directive, not a block)
-└── include              (directive, includes external config)
-*/
-
-// const char* _contextNameList[5] = {
-//     "server:", "location:", "error_page:", "redirection:", "cgi:"};
-
-// const char* _contextNameList[5] = {
-//     "server:", "location:", "error_page:", "redirection:", "cgi:"};
-
 const char*& Config::getConfigFilePath(void) const {
     return _configFilePath;
 }

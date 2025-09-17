@@ -47,7 +47,8 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
         for (mapit = request.getHeaders().begin();
             mapit != request.getHeaders().end(); ++mapit) {
             if (mapit->first == "Cookie") {
-                std::string req = response.getRequestAttr().method + " " + response.getRequestAttr().path + "\n";
+                std::string req = response.getRequestAttr().method + " "
+                    + response.getRequestAttr().path + "\n";
                 std::string res = response.getStatusLine() + "\n";
                 std::string tot = "request: " + req + "response: " + res;
                 write(fd, tot.c_str(), tot.length());
@@ -164,27 +165,28 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData) const
 
 inline bool    HttpManager::checkPersistance(std::string &rawData)
 {
-    return (rawData.find("Connection: keep-alive") != std::string::npos);
+    return rawData.find("Connection: keep-alive") != std::string::npos;
 }
 
-void    HttpManager::getRequest(int clientFd, int &clientState, bool &persistance) {
+void    HttpManager::getRequest(int clientFd, int &clientState,
+                                bool &persistance) {
 
     char buffer[4096];
 
+    errno = 0;
     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
-    {
-        std::cout
-        << CYAN << "client [" << clientFd << "]: bytes received = "
-        << bytes << DEFAULT << std::endl;
 
-        if (bytes > 0)
-            _buffers[clientFd].append(buffer, bytes);
-        else if (bytes <= 0)
-        {
-            clientState = SENT;
-            persistance = false;
-            return ;
-        }
+    std::cout
+    << CYAN << "client [" << clientFd << "]: bytes received = "
+    << bytes << DEFAULT << std::endl;
+
+    if (bytes > 0)
+        _buffers[clientFd].append(buffer, bytes);
+    else if (bytes <= 0)
+    {
+        clientState = SENT;
+        persistance = false;
+        return ;
     }
 
     if (receivedCompleteRequest(_buffers[clientFd])) {
@@ -198,7 +200,7 @@ void    HttpManager::getRequest(int clientFd, int &clientState, bool &persistanc
         << CYAN << "\n------------------------------\n" << DEFAULT << '\n';
 
         persistance = checkPersistance(_buffers[clientFd]);
-        clientState = RECEIVED;
+        clientState = REQUEST_RECEIVED;
         HttpRequest request(_buffers[clientFd]);
         _request[clientFd] = request;
         _buffers.erase(clientFd);
@@ -206,7 +208,8 @@ void    HttpManager::getRequest(int clientFd, int &clientState, bool &persistanc
     }
 }
 
-bool    HttpManager::solveHost(int clientFd, std::map<int, Server>&  serverMap, t_serv_attr& servAttr)
+bool    HttpManager::solveHost(int clientFd, std::map<int, Server>&  serverMap,
+                               t_serv_attr& servAttr)
 {
     headerMap headers = _request[clientFd].getHeaders();
     headerMap::const_iterator headerIt = headers.find("Host");
@@ -217,28 +220,33 @@ bool    HttpManager::solveHost(int clientFd, std::map<int, Server>&  serverMap, 
     else
         return false;
 
-    for (std::map<int, Server>::iterator it = serverMap.begin(); it != serverMap.end(); ++it) {
+    for (std::map<int, Server>::iterator it = serverMap.begin();
+                                         it != serverMap.end(); ++it) {
             servAttr = it->second.getServerAttribute();
 
             std::string defaultServer = servAttr.host + ":" + servAttr.port;
+
             if (defaultServer == host && servAttr.defaultHost == true)
                 return true;
-            std::string serverName = servAttr.server_name + "." + servAttr.host + ":" + servAttr.port;
+
+            std::string serverName = servAttr.server_name + "."
+                + servAttr.host + ":" + servAttr.port;
+
             if (serverName == host)
                 return true;
-
     }
     return false;
 }
 
-HttpManager::HttpManager(int clientFd, int serverFd, std::map<int, Server>  serverMap,
-                int &clientState, bool &persistance)
+HttpManager::HttpManager(int clientFd, int serverFd,
+                         std::map<int, Server>  serverMap, int &clientState,
+                         bool &persistance)
 {
     (void)serverFd;
     if (clientState == PENDING)
         getRequest(clientFd, clientState, persistance);
 
-    if (clientState == RECEIVED || clientState == RESPONSE_TRUNCATE) {
+    if (clientState == REQUEST_RECEIVED || clientState == RESPONSE_TRUNCATE) {
         t_serv_attr servAttr;
         if (solveHost(clientFd, serverMap, servAttr)) {
             std::cout << BOLD WHITE << servAttr.server_name << DEFAULT << '\n';

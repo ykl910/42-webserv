@@ -29,7 +29,6 @@ void    Config::extractContext(std::ifstream& file, std::string& line, server& s
 {
     _locationNbr = 0;
     _contextIndex = SERVER;
-    std::cout << EXPECTED_CONTEXT << std::endl;
     while (_contextIndex < _configFormat.size()) {
         std::getline(file, line);
         _lineNbr++;
