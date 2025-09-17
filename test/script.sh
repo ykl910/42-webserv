@@ -30,9 +30,9 @@ ports=(
 )
 
 multiplexers=(
-    "select"
-    "poll"
     "epoll"
+    "poll"
+    "select"
 )
 
 main()
@@ -162,11 +162,12 @@ run_siege_test()
     do
         for port in "${ports[@]}";
         do
-            echo -e $multiplexer
             ./webserv $multiplexer &
+            sleep 2
             webserv_pid=$!
-            siege -c 255 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
+            siege -c 1 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
             kill $webserv_pid
+            sleep 10
         done
     done
     popd > /dev/null

@@ -25,7 +25,7 @@ enum e_success_code {
 
 enum e_state {
     PENDING,
-    RECEIVED,
+    REQUEST_RECEIVED,
     RESPONSE_TRUNCATE,
     SENT
 };

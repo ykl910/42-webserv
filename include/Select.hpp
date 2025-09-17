@@ -41,9 +41,11 @@ private:
     fd_set                  _writeFds;
     fd_set                  _exceptFds;
 
+    struct timeval          _timeout;
+
     std::vector<int>        _listenFd;
     std::vector<int>        _clientFd;
-    std::vector<int>        _newClientFd;
+    std::vector<int>        _persistantClientFd;
 
     std::map<int, bool>     _persistance;
     std::map<int, int>      _clientState;
