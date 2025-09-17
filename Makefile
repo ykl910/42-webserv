@@ -38,13 +38,13 @@ SRC                 := config/Config-bool.cpp \
                     http/cgi/CGI-envp.cpp \
                     http/cgi/CGI-exec.cpp \
                     http/cgi/CGI.cpp \
+                    http/method/DELETE.cpp \
+                    http/method/GET.cpp \
+                    http/method/POST.cpp \
                     http/Cookies.cpp \
-                    http/DELETE.cpp \
-                    http/GET.cpp \
                     http/HttpManager.cpp \
                     http/HttpRequest.cpp \
                     http/HttpResponse.cpp \
-                    http/POST.cpp \
                     http/Resolution.cpp \
                     multiplexer/Epoll.cpp \
                     multiplexer/Poll.cpp \

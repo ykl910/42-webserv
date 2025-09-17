@@ -2,7 +2,7 @@
 import os
 
 # Get the list of all files in a directory
-path = './www/post42.net/threads'
+path = './www/post42.net/downloads'
 files = os.listdir(path)
 if files:
     res = "["
