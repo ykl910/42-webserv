@@ -59,7 +59,7 @@
          // Handle delete action
          function deleteSelected() {
             const file = document.getElementById('fileSelect').value;
-            fetch(`/threads/${file}`, { method: 'DELETE' })
+            fetch(`/downloads/${file}`, { method: 'DELETE' })
                .then(res => {
                   if (res.status >= 200 && res.status < 300) {
                      alert(`${file} deleted.`);
