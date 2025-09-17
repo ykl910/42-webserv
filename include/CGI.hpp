@@ -4,12 +4,13 @@
 #include "HttpRequest.hpp"
 #include "utils.hpp"
 #include "Error.hpp"
+
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <vector>
 #include <string>
-#include <sys/time.h>
 
 class HttpResponse;
 class HttpManager;

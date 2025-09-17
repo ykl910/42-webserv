@@ -7,10 +7,6 @@
 #include "Epoll.hpp"
 #include "Poll.hpp"
 
-#define POST42dotNET "./www/post42.net/"
-#define WEBSERVdotNET "./www/webserv.net/"
-// #define POST42dotNET WEBSERVdotNET
-
 typedef std::vector<Server>::iterator serverIterator;
 
 template <class Multiplexer>

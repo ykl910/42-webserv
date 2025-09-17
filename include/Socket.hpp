@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Signal.hpp"
 #include "Config.hpp"
 #include "Error.hpp"
-#include "Signal.hpp"
+
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>

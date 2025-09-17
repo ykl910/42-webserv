@@ -2,14 +2,6 @@
 #include "../../include/HttpManager.hpp"
 #include "../../include/WebServ.hpp"
 
-/*
-    struct pollfd {
-        int   fd;         file descriptor
-        short events;     requested events
-        short revents;    returned events
-    };
-*/
-
 std::vector<Server> Poll::getServer(void) const {
     return _server;
 }
@@ -94,11 +86,11 @@ void    Poll::run()
                         addClientToPoll(clientFd, it->fd);
                     ++it;
                 } else {
-                    Server serv = _serverMap[_clientMap[it->fd]];
-                    // HttpManager(it->fd,
-                    //             serv.getServerAttribute(),
-                    //             _clientState[it->fd],
-                    //             _persistance[it->fd]);
+                    HttpManager(it->fd,
+                                _clientMap[it->fd],
+                                _serverMap,
+                                _clientState[it->fd],
+                                _persistance[it->fd]);
 
                     if (_clientState[it->fd] == RESPONSE_TRUNCATE)
                         enableWriteEvent(it->fd);
@@ -115,11 +107,11 @@ void    Poll::run()
                 }
 
             } else if (it->revents & POLLOUT) {
-                Server serv = _serverMap[_clientMap[it->fd]];
-                // HttpManager(it->fd,
-                //             serv.getServerAttribute(),
-                //             _clientState[it->fd],
-                //             _persistance[it->fd]);
+                    HttpManager(it->fd,
+                                _clientMap[it->fd],
+                                _serverMap,
+                                _clientState[it->fd],
+                                _persistance[it->fd]);
 
                 if (_clientState[it->fd] == SENT)
                 {
@@ -157,6 +149,16 @@ void    Poll::run()
     }
 }
 
+void    Poll::findSocketPort(Socket& socketReference,
+                               std::vector<Server>& servers, std::string port)
+{
+    for (serverIterator it = servers.begin(); it != servers.end(); ++it) {
+       if (it->getServerAttribute().port == port) {
+            socketReference = it->getSocket();
+       }
+    }
+}
+
 void    Poll::initServer(Config& config)
 {
     int fd;
@@ -168,11 +170,24 @@ void    Poll::initServer(Config& config)
         server serverConfig = *it;
         _server.push_back(Server(serverConfig,
             config.getLocationNbr(i), config.getCgiNbr(i)));
-        _server[i].initSocket();
+
+        std::string port(_server[i].getServerAttribute().port);
+
+        if (!_server[i].getSocket().portAlreadyUsed(port)) {
+            _server[i].initSocket();
+            _server[i].getServerAttribute().defaultHost = true;
+            fd = _server[i].getSocketFd();
+            _pollFd.push_back((pollfd){fd, POLLIN | POLLERR, 0});
+
+        } else {
+            Socket socketReference;
+
+            findSocketPort(socketReference, _server, port);
+            _server[i].getServerAttribute().defaultHost = false;
+        }
+
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
-        fd = _server[i].getSocketFd();
-        _pollFd.push_back((pollfd){fd, POLLIN | POLLERR, 0});
         ++i;
     }
 }

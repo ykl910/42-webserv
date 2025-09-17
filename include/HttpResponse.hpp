@@ -1,9 +1,10 @@
 #pragma once
 
-#include "HttpRequest.hpp"
-#include "CGI.hpp"
-#include "Server.hpp"
 #include "textFormatting.hpp"
+#include "HttpRequest.hpp"
+#include "Server.hpp"
+#include "CGI.hpp"
+
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -13,12 +14,12 @@
 #include <cstdlib>
 #include <sstream>
 #include <cstring>
+#include <climits>
 #include <string>
 #include <cstdio>
 #include <cerrno>
 #include <vector>
 #include <map>
-#include <climits>
 
 #define OFF 0
 #define ON 1

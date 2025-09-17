@@ -76,10 +76,11 @@ void    Select::run()
 
         for (size_t i = 0; i < _clientFd.size();) {
             if (FD_ISSET(_clientFd[i], &_readFds)) {
-                    // HttpManager(_clientFd[i],
-                    //             _serverMap[_clientMap[_clientFd[i]]].getServerAttribute(),
-                    //             _clientState[_clientFd[i]],
-                    //             _persistance[_clientFd[i]]);
+                    HttpManager(_clientFd[i],
+                                _clientMap[_clientFd[i]],
+                                _serverMap,
+                                _clientState[_clientFd[i]],
+                                _persistance[_clientFd[i]]);
 
                     if (_clientState[_clientFd[i]] == SENT)
                     {
@@ -94,10 +95,11 @@ void    Select::run()
             }
 
             else if (FD_ISSET(_clientFd[i], &_writeFds)) {
-                // HttpManager(_clientFd[i],
-                //             _serverMap[_clientMap[_clientFd[i]]].getServerAttribute(),
-                //             _clientState[_clientFd[i]],
-                //             _persistance[_clientFd[i]]);
+                HttpManager(_clientFd[i],
+                            _clientMap[_clientFd[i]],
+                            _serverMap,
+                            _clientState[_clientFd[i]],
+                            _persistance[_clientFd[i]]);
 
                 if (_clientState[_clientFd[i]] == SENT)
                 {
@@ -128,6 +130,16 @@ void    Select::run()
     }
 }
 
+void    Select::findSocketPort(Socket& socketReference,
+                               std::vector<Server>& servers, std::string port)
+{
+    for (serverIterator it = servers.begin(); it != servers.end(); ++it) {
+       if (it->getServerAttribute().port == port) {
+            socketReference = it->getSocket();
+       }
+    }
+}
+
 void    Select::initServer(Config& config)
 {
     int fd;
@@ -140,11 +152,24 @@ void    Select::initServer(Config& config)
 
         _server.push_back(Server(serverConfig,
             config.getLocationNbr(i), config.getCgiNbr(i)));
-        _server[i].initSocket();
+
+        std::string port(_server[i].getServerAttribute().port);
+
+        if (!_server[i].getSocket().portAlreadyUsed(port)) {
+            _server[i].initSocket();
+            _server[i].getServerAttribute().defaultHost = true;
+            fd = _server[i].getSocketFd();
+            _listenFd.push_back(fd);
+
+        } else {
+            Socket socketReference;
+
+            findSocketPort(socketReference, _server, port);
+            _server[i].getServerAttribute().defaultHost = false;
+        }
+
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
-        fd = _server[i].getSocketFd();
-        _listenFd.push_back(fd);
         ++i;
     }
 }

@@ -2,6 +2,7 @@
 
 #include "textFormatting.hpp"
 #include "Error.hpp"
+
 #include <fstream>
 #include <string>
 #include <cstdlib>
@@ -12,7 +13,10 @@
 #define VALUE 1
 #define CONTEXT_NUMBER 1
 #define GETTING_ALL_SERVERS 1
+#define LOCATION_STRING_LENGTH 9 // location:
 #define DIRECTIVE_NAME_LENGTH _configFormat[_contextIndex][_directiveIndex][NAME].length()
+#define EXPECTED_DIRECTIVE _configFormat[_contextIndex][_directiveIndex][0]
+#define EXPECTED_CONTEXT _contextNameList[_contextIndex]
 
 enum e_context_list {
     SERVER,
@@ -93,9 +97,9 @@ public:
     bool rightIndentation(const std::string& line, uint32_t indentSize);
     bool directiveFormatValid(const std::string& line, int indentSize);
 
-    void extractServer(std::ifstream& file, std::string& line, server& server);
     void extractContext(std::ifstream& file, std::string& line, server& server);
-    void extractDirective(std::string& line, directiveValue& newDirective, int indentSize);
+    void extractDirective(std::ifstream& file, std::string& line, server& server);
+    void getDirective(std::string& line, directiveValue& newDirective, int indentSize);
 
     void parseConfigFile(void);
     void initConfigFormat(void);
@@ -116,4 +120,5 @@ private:
     configParser        _configParser;
     configFormat        _configFormat;
     const char*&        _configFilePath;
+    // const char*         _contextNameList[5];
 };

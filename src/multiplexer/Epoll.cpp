@@ -94,11 +94,11 @@ void Epoll::eventManager(epoll_ev &event)
         }
         else
         {
-        HttpManager(event.data.fd,
-                    _clientMap[event.data.fd],
-                    _serverMap,
-                    _clientState[event.data.fd],
-                    _persistance[event.data.fd]);
+            HttpManager(event.data.fd,
+                        _clientMap[event.data.fd],
+                        _serverMap,
+                        _clientState[event.data.fd],
+                        _persistance[event.data.fd]);
 
             if (_clientState[event.data.fd] == RESPONSE_TRUNCATE)
                 enableWriteEvent(event.data.fd);
@@ -180,13 +180,14 @@ void    Epoll::initServer(Config& config)
         if (!_server[i].getSocket().portAlreadyUsed(port)) {
             _server[i].initSocket();
             _server[i].getServerAttribute().defaultHost = true;
-        }
-        else {
+
+        } else {
             Socket socketReference;
 
             findSocketPort(socketReference, _server, port);
             _server[i].getServerAttribute().defaultHost = false;
         }
+
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
         fd = _server[i].getSocketFd();

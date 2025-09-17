@@ -1,6 +1,7 @@
 #pragma once
 
 #include "textFormatting.hpp"
+
 #include <stdexcept>
 #include <iostream>
 #include <csignal>

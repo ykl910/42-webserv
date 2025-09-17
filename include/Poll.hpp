@@ -4,6 +4,7 @@
 #include "Socket.hpp"
 #include "Server.hpp"
 #include "Error.hpp"
+
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <vector>
@@ -24,6 +25,8 @@ public:
     void initServer(Config& config);
     void enableWriteEvent(int clientFd);
     void disableWriteEvent(int clientFd);
+    void findSocketPort(Socket& socketReference,
+                            std::vector<Server>& servers, std::string port);
     void removeClientFromPoll(pollIterator& it);
     void addClientToPoll(int clientFd, int serverFd);
 

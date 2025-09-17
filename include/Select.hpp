@@ -5,8 +5,9 @@
 #include "Config.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
-#include "utils.hpp"
 #include "Signal.hpp"
+#include "utils.hpp"
+
 #include <sys/select.h>
 #include <algorithm>
 #include <vector>
@@ -24,6 +25,8 @@ public:
 
     void run();
     void initServer(Config& config);
+    void findSocketPort(Socket& socketReference,
+                               std::vector<Server>& servers, std::string port);
     void addClientToSelect(int clientFd, int serverFd);
     void removeClientFromSelect(int client, size_t& i);
     inline bool isSocketFd(int fd) const;
