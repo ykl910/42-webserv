@@ -49,13 +49,16 @@ HTTPS
 REDIRECT_STATUS
 */
 
-void Cgi::generateErrorMsg(HttpResponse &response)
+void Cgi::generateErrorMsg(HttpResponse &response, int exitCode)
 {
-    std::string msg = "Oops, something went wrong :(";
-    response.setStatusLine(response.getRequestAttr().httpVersion, 500, "Internal error");
+    std::string msg;
+
+    if(exitCode == 9  || exitCode == 15)
+        response.setStatusLine(response.getRequestAttr().httpVersion, 408, "Request Timeout");
+    else
+        response.setStatusLine(response.getRequestAttr().httpVersion, 500, "Internal Error");
     response.setHeaders("Content-Type", "text/plain");
-    response.setHeaders("Content-Length", itos(msg.size()));
-    response.setBody(msg);
+    response.setHeaders("Content-Length", itos(0));
 }
 
 void Cgi::generateResponse(HttpResponse &response)
@@ -113,19 +116,24 @@ long Cgi::getTimeStamp()
 void Cgi::watchdog(pid_t pid, int &status)
 {
     long startTime = getTimeStamp();
-
+    std::cout << BOLD RED << "Entering watchdog" << DEFAULT << std::endl;
     while(true)
     {
         pid_t r = waitpid(pid, &status, WNOHANG);
         if(r == pid)
+        {
+            std::cout << BOLD ORANGE << "CGI ok" << DEFAULT << std::endl;
             return;
+        }
         else if (r == -1)
         {
+            std::cout << BOLD ORANGE << "waitpid error" << DEFAULT << std::endl;
             printError();
             return;
         }
         if(getTimeStamp() - startTime >= 3000)
         {
+            std::cout << BOLD ORANGE << "CGI timeout" << DEFAULT << std::endl;
             kill(pid, SIGKILL);
             waitpid(pid, &status, 0);
             return;

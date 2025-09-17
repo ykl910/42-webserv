@@ -33,7 +33,12 @@ int Cgi::execFromGet()
         int status;
         watchdog(pid, status);
         extractOutput(fds);
-        return WEXITSTATUS(status);
+        if(WIFSIGNALED(status))
+            return WTERMSIG(status);
+        else if(WIFEXITED(status))
+            return WEXITSTATUS(status);
+        else
+            return EXIT_FAILURE;
     }
 }
 
@@ -84,22 +89,28 @@ int Cgi::execFromPost(HttpRequest &request)
         int status;
         watchdog(pid, status);
         extractOutput(outputPipe);
-        return WEXITSTATUS(status);
+        if(WIFSIGNALED(status))
+            return WTERMSIG(status);
+        else if(WIFEXITED(status))
+            return WEXITSTATUS(status);
+        else
+            return EXIT_FAILURE;
     }
 }
 
 void Cgi::execute(HttpRequest &request, HttpResponse &response)
 {
-    if (response.getRequestAttr().method == "GET") {
-        if(execFromGet() == EXIT_FAILURE)
-            generateErrorMsg(response);
-        else
-            generateResponse(response);
-    }
-    if (response.getRequestAttr().method == "POST") {
-        if(execFromPost(request) == EXIT_FAILURE)
-            generateErrorMsg(response);
-        else
-            generateResponse(response);
-    }
+
+    int exitCode;
+
+    if (response.getRequestAttr().method == "GET")
+        exitCode = execFromGet();
+    else
+        exitCode = execFromPost(request);
+
+    std::cout << BOLD ORANGE << "CGI exitCode: " << exitCode << DEFAULT << std::endl;
+    if(exitCode != EXIT_SUCCESS)
+        generateErrorMsg(response, exitCode);
+    else
+        generateResponse(response);
 }
