@@ -115,10 +115,10 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     << "totalBytesSent after loop = " << totalBytesSent
     << DEFAULT << std::endl;
 
-    if (totalBytesSent != responseLen)
+    if (totalBytesSent < responseLen)
     {
         clientState = RESPONSE_TRUNCATE;
-        _pendingResponse[clientFd] = totalBytesSent;
+        _pendingResponse[clientFd] += totalBytesSent;
     }
     else
     {
