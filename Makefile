@@ -12,7 +12,6 @@ FLAGS               = -g -Wall -Wextra -Werror -std=c++98
 INCLUDE_DIR         := include
 INCLUDE             := CGI.hpp \
                     Config.hpp \
-                    Cookies.hpp \
                     Epoll.hpp \
                     Error.hpp \
                     HttpManager.hpp \
@@ -41,7 +40,6 @@ SRC                 := config/Config-bool.cpp \
                     http/method/DELETE.cpp \
                     http/method/GET.cpp \
                     http/method/POST.cpp \
-                    http/Cookies.cpp \
                     http/HttpManager.cpp \
                     http/HttpRequest.cpp \
                     http/HttpResponse.cpp \
