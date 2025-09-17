@@ -13,6 +13,8 @@
     };
 */
 
+std::vector<std::string> Socket::_portsUsed;
+
 int Socket::getSocketFd() const
 {
     return _socketFd;
@@ -22,15 +24,7 @@ int Socket::acceptClient(void)
 {
     errno = 0;
     int clientFd = accept(_socketFd, NULL, NULL);
-    /*
-       The  accept() system call is used with connection-based socket types
-       (SOCK_STREAM, SOCK_SEQPACKET).  It extracts the first connection request
-       on the queue of pending  connections  for the  listening  socket,
-       sockfd,  creates a new connected socket, and returns a new file
-       descriptor referring to that socket.  The newly created socket is not in
-       the listening  state. The original socket sockfd is unaffected by this
-       call.
-    */
+
     if (clientFd == -1)
         printErrorAndThrow("accept");
 
@@ -47,11 +41,7 @@ void Socket::setSocketOpt()
         printErrorAndThrow("setsockopt");
 
     int flags = fcntl(_socketFd, F_GETFL, 0);
-    /*
-        F_GETFL (void)
-            Return  (as  the function result) the file access mode and the file
-            status flags; arg is ignored.
-    */
+
     if (flags == -1)
         printErrorAndThrow("fcntl()");
 
@@ -62,8 +52,19 @@ void Socket::setSocketOpt()
         printErrorAndThrow("fcntl()");
 }
 
-void Socket::createSocket(const char* host, const char* port)
+bool    Socket::portAlreadyUsed(const std::string& port)
 {
+    for (size_t i = 0; i < _portsUsed.size(); ++i) {
+        if (_portsUsed[i] == port)
+            return true;
+    }
+    return false;
+}
+
+void Socket::createSocket(const char* host, const char* port, bool state)
+{
+    if (state == ALREADY_USED)
+        return;
     bzero(&_hints, sizeof(_hints));
     _hints.ai_flags = AI_PASSIVE;
     _hints.ai_family = AF_INET;
@@ -76,13 +77,7 @@ void Socket::createSocket(const char* host, const char* port)
 
     struct addrinfo *servInfosLst = NULL;
     int status;
-    /*
-       The getaddrinfo() function allocates and initializes a linked list of
-       addrinfo  structures, one for each network address that matches node and
-       service, subject to any restrictions imposed by hints, and returns a
-       pointer to the start of the list in res.   The  items  in  the linked
-       list are linked by the ai_next field.
-    */
+
     status = getaddrinfo(host, port, &_hints, &servInfosLst);
     if (status != 0)
         printGaiErrorAndThrow("getaddrinfo", status);
@@ -104,26 +99,14 @@ void Socket::createSocket(const char* host, const char* port)
 
     setSocketOpt();
 
-    /*
-       When  a socket is created with socket(2), it exists in a name space
-       (address family) but has no address assigned to it.  bind() assigns the
-       address specified by addr to the  socket  referred  to  by the file
-       descriptor sockfd.  addrlen specifies the size, in bytes, of the address
-       structure pointed to by addr.  Traditionally, this operation is  called
-       “assigning  a name to a socket”.
-    */
     if (bind(_socketFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
         printErrorAndThrow("bind");
 
     freeaddrinfo(servInfosLst);
 
-    /*
-    listen()  marks  the  socket referred to by sockfd as a passive socket,
-    that is, as a socket that will be used to accept incoming connection
-    requests using accept(2).
-    */
     if (listen(_socketFd, SOMAXCONN) == -1)
         printErrorAndThrow("listen");
+    _portsUsed.push_back(port);
 }
 
 Socket::Socket() {}

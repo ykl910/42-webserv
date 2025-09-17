@@ -3,7 +3,7 @@
 #include "textFormatting.hpp"
 #include "HttpResponse.hpp"
 #include "HttpRequest.hpp"
-#include "ServerTypes.hpp"
+#include "Server.hpp"
 #include "utils.hpp"
 #include <sys/epoll.h>
 #include <iostream>
@@ -29,6 +29,8 @@ enum e_state {
     SENT
 };
 
+typedef struct s_serv_attr t_serv_attr;
+
 class HttpResponse;
 
 class HttpManager {
@@ -47,13 +49,14 @@ public:
     const std::string &getContent() const;
     const std::string &getHttpVersion() const;
     const t_request_attr& getRequestAttr() const;
-    const std::map<std::string, std::string> &getHeaders() const;
     void extractRequest(const std::string &request);
     inline bool checkPersistance(std::string &request);
+    bool solveHost(int clientFd, std::map<int, Server>&  serverMap, t_serv_attr& servAttr);
 
 
     HttpManager() {}
-    HttpManager(int clientFd, t_serv_attr &serverAttr, int &clientState, bool &persistance);
+    HttpManager(int clientFd, int serverFd, std::map<int, Server>  serverMap,
+                int &clientState, bool &persistance);
     ~HttpManager();
 
 private:

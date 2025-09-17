@@ -2,7 +2,7 @@
 
 #include "HttpRequest.hpp"
 #include "CGI.hpp"
-#include "ServerTypes.hpp"
+#include "Server.hpp"
 #include "textFormatting.hpp"
 #include <netinet/in.h>
 #include <sys/types.h>
@@ -28,6 +28,7 @@
 #define DELETE 2
 
 typedef struct s_request_attr t_request_attr;
+// typedef struct s_serv_attr t_serv_attr;
 
 class HttpManager;
 

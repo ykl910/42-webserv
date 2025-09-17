@@ -32,6 +32,7 @@ public:
     void addClientToEpoll(int clientFd, int serverFd);
     void removeClientFromEpoll(int clientFd);
     void printFdError(int clientFd);
+    void findSocketPort(Socket& socketReference, std::vector<Server>& servers, std::string port);
 
     void initServer(Config& config);
     void eventManager(epoll_ev &event);

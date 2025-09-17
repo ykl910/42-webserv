@@ -39,7 +39,7 @@ public:
     const std::string &getContent() const;
     const std::string &getHttpVersion() const;
     const t_request_attr& getRequestAttr() const;
-    const std::map<std::string, std::string> &getHeaders() const;
+    const std::map<std::string, std::string> &getHeaders();
 
     void extractRequest(const std::string &request);
 

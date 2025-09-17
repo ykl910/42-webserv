@@ -1,6 +1,6 @@
-#include "../../include/textFormatting.hpp"
-#include "../../include/HttpResponse.hpp"
-#include "../../include/WebServ.hpp"
+#include "../../../include/textFormatting.hpp"
+#include "../../../include/HttpResponse.hpp"
+#include "../../../include/WebServ.hpp"
 
 void HttpResponse::handleError(std::stringstream *buffer, int success, std::string type)
 {
@@ -63,7 +63,7 @@ int HttpResponse::handleHtml(std::stringstream *buffer)
     std::ifstream file(_request.path.c_str());
 
     struct stat file_stat;
-    bool is_directory = 
+    bool is_directory =
     (stat(_request.path.c_str(), &file_stat) == 0 && S_ISDIR(file_stat.st_mode)) ;
 
     if (is_directory && _isIndex == true && _isAutoIndex == false)

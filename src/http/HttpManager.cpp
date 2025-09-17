@@ -206,14 +206,45 @@ void    HttpManager::getRequest(int clientFd, int &clientState, bool &persistanc
     }
 }
 
-HttpManager::HttpManager(int clientFd, t_serv_attr &serverAttr,
-                         int &clientState, bool &persistance)
+bool    HttpManager::solveHost(int clientFd, std::map<int, Server>&  serverMap, t_serv_attr& servAttr)
 {
+    headerMap headers = _request[clientFd].getHeaders();
+    headerMap::const_iterator headerIt = headers.find("Host");
+    std::string host;
+
+    if (headerIt != headers.end())
+        host = headerIt->second;
+    else
+        return false;
+
+    for (std::map<int, Server>::iterator it = serverMap.begin(); it != serverMap.end(); ++it) {
+            servAttr = it->second.getServerAttribute();
+
+            std::string defaultServer = servAttr.host + ":" + servAttr.port;
+            if (defaultServer == host && servAttr.defaultHost == true)
+                return true;
+            std::string serverName = servAttr.server_name + "." + servAttr.host + ":" + servAttr.port;
+            if (serverName == host)
+                return true;
+
+    }
+    return false;
+}
+
+HttpManager::HttpManager(int clientFd, int serverFd, std::map<int, Server>  serverMap,
+                int &clientState, bool &persistance)
+{
+    (void)serverFd;
     if (clientState == PENDING)
         getRequest(clientFd, clientState, persistance);
 
-    if (clientState == RECEIVED || clientState == RESPONSE_TRUNCATE)
-        sendResponse(clientFd, _request[clientFd], serverAttr, clientState);
+    if (clientState == RECEIVED || clientState == RESPONSE_TRUNCATE) {
+        t_serv_attr servAttr;
+        if (solveHost(clientFd, serverMap, servAttr)) {
+            std::cout << BOLD WHITE << servAttr.server_name << DEFAULT << '\n';
+            sendResponse(clientFd, _request[clientFd], servAttr, clientState);
+        }
+    }
 }
 
 HttpManager::~HttpManager() {}

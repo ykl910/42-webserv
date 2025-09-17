@@ -76,10 +76,10 @@ void    Select::run()
 
         for (size_t i = 0; i < _clientFd.size();) {
             if (FD_ISSET(_clientFd[i], &_readFds)) {
-                    HttpManager(_clientFd[i],
-                                _serverMap[_clientMap[_clientFd[i]]].getServerAttribute(),
-                                _clientState[_clientFd[i]],
-                                _persistance[_clientFd[i]]);
+                    // HttpManager(_clientFd[i],
+                    //             _serverMap[_clientMap[_clientFd[i]]].getServerAttribute(),
+                    //             _clientState[_clientFd[i]],
+                    //             _persistance[_clientFd[i]]);
 
                     if (_clientState[_clientFd[i]] == SENT)
                     {
@@ -94,10 +94,10 @@ void    Select::run()
             }
 
             else if (FD_ISSET(_clientFd[i], &_writeFds)) {
-                HttpManager(_clientFd[i],
-                            _serverMap[_clientMap[_clientFd[i]]].getServerAttribute(),
-                            _clientState[_clientFd[i]],
-                            _persistance[_clientFd[i]]);
+                // HttpManager(_clientFd[i],
+                //             _serverMap[_clientMap[_clientFd[i]]].getServerAttribute(),
+                //             _clientState[_clientFd[i]],
+                //             _persistance[_clientFd[i]]);
 
                 if (_clientState[_clientFd[i]] == SENT)
                 {

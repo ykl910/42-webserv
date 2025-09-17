@@ -58,7 +58,7 @@ const std::string &HttpRequest::getHttpVersion() const {
     return _http_version;
 }
 
-const std::map<std::string, std::string> &HttpRequest::getHeaders() const {
+const std::map<std::string, std::string> &HttpRequest::getHeaders() {
     return _headers;
 }
 

@@ -35,7 +35,9 @@ SRC                 := config/Config-bool.cpp \
                     config/Config-print.cpp \
                     config/Config.cpp \
                     http/autoindex.cpp \
-                    http/CGI.cpp \
+                    http/cgi/CGI-envp.cpp \
+                    http/cgi/CGI-exec.cpp \
+                    http/cgi/CGI.cpp \
                     http/Cookies.cpp \
                     http/DELETE.cpp \
                     http/GET.cpp \

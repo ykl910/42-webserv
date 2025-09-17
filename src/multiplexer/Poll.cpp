@@ -95,10 +95,10 @@ void    Poll::run()
                     ++it;
                 } else {
                     Server serv = _serverMap[_clientMap[it->fd]];
-                    HttpManager(it->fd,
-                                serv.getServerAttribute(),
-                                _clientState[it->fd],
-                                _persistance[it->fd]);
+                    // HttpManager(it->fd,
+                    //             serv.getServerAttribute(),
+                    //             _clientState[it->fd],
+                    //             _persistance[it->fd]);
 
                     if (_clientState[it->fd] == RESPONSE_TRUNCATE)
                         enableWriteEvent(it->fd);
@@ -116,10 +116,10 @@ void    Poll::run()
 
             } else if (it->revents & POLLOUT) {
                 Server serv = _serverMap[_clientMap[it->fd]];
-                HttpManager(it->fd,
-                            serv.getServerAttribute(),
-                            _clientState[it->fd],
-                            _persistance[it->fd]);
+                // HttpManager(it->fd,
+                //             serv.getServerAttribute(),
+                //             _clientState[it->fd],
+                //             _persistance[it->fd]);
 
                 if (_clientState[it->fd] == SENT)
                 {

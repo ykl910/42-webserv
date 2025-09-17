@@ -125,9 +125,9 @@ void Server::storeCgi(server& config, size_t locationNbr, size_t cgiNbr)
     total += cgiNbr;
 }
 
-void    Server::initSocket(void)
+void    Server::initSocket()
 {
-    _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str());
+    _socket.createSocket(_attribute.host.c_str(), _attribute.port.c_str(), 0);
 }
 
 Server::Server(server& config, size_t locationNbr, size_t cgiNbr) : _socket()

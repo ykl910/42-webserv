@@ -1,7 +1,7 @@
-#include "../../include/textFormatting.hpp"
-#include "../../include/HttpResponse.hpp"
-#include "../../include/Cookies.hpp"
-#include "../../include/WebServ.hpp"
+#include "../../../include/textFormatting.hpp"
+#include "../../../include/HttpResponse.hpp"
+#include "../../../include/Cookies.hpp"
+#include "../../../include/WebServ.hpp"
 
 # define DIRPATH "www/post42.net/threads/"
 

@@ -94,11 +94,11 @@ void Epoll::eventManager(epoll_ev &event)
         }
         else
         {
-            Server serv = _serverMap[_clientMap[event.data.fd]];
-            HttpManager(event.data.fd,
-                        serv.getServerAttribute(),
-                        _clientState[event.data.fd],
-                        _persistance[event.data.fd]);
+        HttpManager(event.data.fd,
+                    _clientMap[event.data.fd],
+                    _serverMap,
+                    _clientState[event.data.fd],
+                    _persistance[event.data.fd]);
 
             if (_clientState[event.data.fd] == RESPONSE_TRUNCATE)
                 enableWriteEvent(event.data.fd);
@@ -113,9 +113,9 @@ void Epoll::eventManager(epoll_ev &event)
     }
     else if (event.events & EPOLLOUT)
     {
-        Server serv = _serverMap[_clientMap[event.data.fd]];
         HttpManager(event.data.fd,
-                    serv.getServerAttribute(),
+                    _clientMap[event.data.fd],
+                    _serverMap,
                     _clientState[event.data.fd],
                     _persistance[event.data.fd]);
 
@@ -154,6 +154,15 @@ void Epoll::run()
     }
 }
 
+void    Epoll::findSocketPort(Socket& socketReference, std::vector<Server>& servers, std::string port)
+{
+    for (serverIterator it = servers.begin(); it != servers.end(); ++it) {
+       if (it->getServerAttribute().port == port) {
+            socketReference = it->getSocket();
+       }
+    }
+}
+
 void    Epoll::initServer(Config& config)
 {
     int fd;
@@ -165,7 +174,19 @@ void    Epoll::initServer(Config& config)
         server serverConfig = *it;
         _server.push_back(Server(serverConfig,
             config.getLocationNbr(i), config.getCgiNbr(i)));
-        _server[i].initSocket();
+
+        std::string port(_server[i].getServerAttribute().port);
+
+        if (!_server[i].getSocket().portAlreadyUsed(port)) {
+            _server[i].initSocket();
+            _server[i].getServerAttribute().defaultHost = true;
+        }
+        else {
+            Socket socketReference;
+
+            findSocketPort(socketReference, _server, port);
+            _server[i].getServerAttribute().defaultHost = false;
+        }
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
         fd = _server[i].getSocketFd();
@@ -185,7 +206,8 @@ Epoll::Epoll(Config& config) : _eventsQueue(MAXEVENTS)
         epoll_ev server_ev;
         server_ev.events = EPOLLIN;
         server_ev.data.fd = it->getSocketFd();
-        if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)
+        if (it->getServerAttribute().defaultHost == true
+            && epoll_ctl(_epollFd, EPOLL_CTL_ADD, server_ev.data.fd, &server_ev) == -1)
             printErrorAndThrow("epoll_ctl");
     }
 }
