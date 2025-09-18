@@ -28,7 +28,7 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
         _clientMap.insert(
             std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
 
-        std::cout << BOLD WHITE << "Epoll: new client accepted with fd "
+        std::cout << BOLD GREEN << "Epoll: new client accepted with fd "
         << BOLD BLUE << newClient.data.fd << DEFAULT << std::endl;
         _clientState[clientFd] = PENDING;
         _persistance[clientFd] = false;
@@ -38,7 +38,7 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
 void Epoll::removeClientFromEpoll(int clientFd)
 {
     std::cout
-    << RED << "client [" << clientFd << "]: Connection closed"
+    << BOLD RED << "client [" << clientFd << "]: Connection closed"
     << DEFAULT << '\n';
 
     epoll_ctl(_epollFd, EPOLL_CTL_DEL, clientFd, NULL);
@@ -49,10 +49,6 @@ void Epoll::removeClientFromEpoll(int clientFd)
 
 void Epoll::enableWriteEvent(int clientFd)
 {
-    std::cout
-    << GREEN << "client [" << clientFd << "]: Write event enabled"
-    << DEFAULT << '\n';
-
     epoll_ev ev;
     ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLOUT;
     ev.data.fd = clientFd;
@@ -62,10 +58,6 @@ void Epoll::enableWriteEvent(int clientFd)
 
 void Epoll::disableWriteEvent(int clientFd)
 {
-    std::cout
-    << GREEN << "client [" << clientFd << "]: Write event disabled"
-    << DEFAULT << '\n';
-
     epoll_ev ev;
     ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR;
     ev.data.fd = clientFd;

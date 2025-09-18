@@ -59,7 +59,6 @@ int HttpResponse::handleRedirect()
 
 int HttpResponse::handleHtml(std::stringstream *buffer)
 {
-    std::cout << BOLD BLUE << _request.path << DEFAULT << std::endl;
     std::ifstream file(_request.path.c_str());
 
     struct stat file_stat;
