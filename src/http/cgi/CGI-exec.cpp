@@ -42,11 +42,8 @@ int Cgi::execFromGet()
         close(fds[0]);
         close(fds[1]);
 
-
         if(chdir(getBinDir(_argv.front()).c_str()) == -1)
             exit(126);
-
-        std::cerr << BOLD ORANGE << "script path: " << argvStr.front() << DEFAULT << std::endl;
 
         execve(getBinName(argvStr.front()).c_str(), argvStr.data(), envpStr.data());
         printError();
@@ -104,7 +101,6 @@ int Cgi::execFromPost(HttpRequest &request)
         if(chdir(getBinDir(_argv.front()).c_str()) == -1)
            exit(126);
 
-        std::cerr << BOLD ORANGE << "script path: " << argvStr.front() << DEFAULT << std::endl;
         execve(getBinName(argvStr.front()).c_str(), argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
