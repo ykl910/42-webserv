@@ -158,18 +158,18 @@ run_siege_test()
     echo -e "$BOLD$ITALIC${YELLOW}Siege test$DEFAULT"
     mkdir -p $log_dir/siege
     pushd .. > /dev/null
-    for multiplexer in "${multiplexers[@]}";
-    do
-        for port in "${ports[@]}";
+    if make &> /dev/null; then
+        for multiplexer in "${multiplexers[@]}";
         do
-            ./webserv $multiplexer &
-            sleep 2
-            webserv_pid=$!
-            siege -c 1 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
-            kill $webserv_pid
-            sleep 10
+            for port in "${ports[@]}";
+            do
+                ./webserv $multiplexer &
+                webserv_pid=$!
+                siege -c 1 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
+                kill $webserv_pid
+            done
         done
-    done
+    fi
     popd > /dev/null
 }
 
@@ -192,22 +192,24 @@ run_curl_test()
 
     mkdir -p $log_dir/curl
     pushd .. > /dev/null
-    for multiplexer in "${multiplexers[@]}";
-    do
-        for port in "${ports[@]}";
+    if make &> /dev/null; then
+        for multiplexer in "${multiplexers[@]}";
         do
-            ./webserv $multiplexer &
-            webserv_pid=$!
-            for test in "${tests[@]}"
+            for port in "${ports[@]}";
             do
-                curl "$test" http://$host:$port
-                if [ $? -ne 0 ]; then
-                    echo -e "Error curl"
-                fi
+                ./webserv $multiplexer &
+                webserv_pid=$!
+                for test in "${tests[@]}"
+                do
+                    curl "$test" http://$host:$port
+                    if [ $? -ne 0 ]; then
+                        echo -e "Error curl"
+                    fi
+                done
+                kill $webserv_pid
             done
-            kill $webserv_pid
         done
-    done
+    fi
     popd > dev/null
 }
 
