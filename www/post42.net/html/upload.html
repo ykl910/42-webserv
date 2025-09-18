@@ -57,12 +57,12 @@
          const file = this.files[0];
          if (file) {
             fileChosen.textContent = file.name;
-            const maxSize = 2 * 1024 * 1024;
-            if (file.size > maxSize) {
-               alert("File is too large. Maximum size allowed is 2MB.");
-               this.value = "";
-               fileChosen.textContent = "No file chosen";
-            }
+            // const maxSize = 2 * 1024 * 1024;
+            // if (file.size > maxSize) {
+            //    alert("File is too large. Maximum size allowed is 2MB.");
+            //    this.value = "";
+            //    fileChosen.textContent = "No file chosen";
+            // }
          } else {
             fileChosen.textContent = 'No file chosen';
          }
