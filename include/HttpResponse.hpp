@@ -67,15 +67,15 @@ public:
     bool isImage();
     bool isDirectory();
     bool isAutoIndex();
-
-    std::string getBoundary(std::string &line);
-    int createDirectory(std::string dirPath);
-    bool directoryExist(std::string dirPath);
-    int downloadFiles(HttpRequest &request, std::string boundary);
-    int createFile(std::string &content, std::string &dirPath, int id);
-    int createFd(std::string dir, std::string filename);
-    bool canAccessFile(std::string& file);
     inline bool isFormData(std::string &contentType) const;
+
+    int createDirectory(std::string dirPath);
+    int createFd(std::string dir, std::string filename);
+    int createFile(std::string &content, std::string &dirPath, int id);
+
+    bool directoryExist(std::string dirPath);
+    std::string getBoundary(std::string &line);
+    int downloadFiles(HttpRequest &request, std::string boundary);
     bool isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const;
 
     HttpResponse() {}

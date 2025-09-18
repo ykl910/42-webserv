@@ -7,11 +7,12 @@ std::map<int, bool>          HttpManager::_gotFullRequest;
 std::map<int, int>           HttpManager::_pendingResponse;
 std::map<int, HttpResponse>  HttpManager::_responses;
 
-bool HttpManager::hasCompletedResponse(int clientFd) {
+bool HttpManager::hasCompletedResponse(int clientFd)
+{
     return _pendingResponse.find(clientFd) == _pendingResponse.end();
 }
 
-void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
+void HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
 {
     std::map<std::string, std::string>::const_iterator mapit;
     std::string sessionId;
@@ -59,12 +60,12 @@ void    HttpManager::writeUserInfo(HttpRequest &request, HttpResponse &response)
     }
 }
 
-void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
-                                  t_serv_attr& servAttr, int &clientState) {
+void HttpManager::sendResponse(int clientFd, HttpRequest& request,
+                               t_serv_attr& servAttr, int &clientState)
+{
     std::string response;
 
-    if (!_gotResponse[clientFd])
-    {
+    if (!_gotResponse[clientFd]) {
         std::cout
         << MAGENTA << "client [" << clientFd << "]: No pending response"
         << DEFAULT << std::endl;
@@ -74,9 +75,8 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
         response = Response.getResponse();
         _responses[clientFd] = Response;
         _gotResponse[clientFd] = true;
-    }
-    else
-    {
+
+    } else {
         std::cout
         << MAGENTA << "client [" << clientFd << "]: pending response"
         << DEFAULT << std::endl;
@@ -87,8 +87,7 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     size_t totalBytesSent = _pendingResponse[clientFd];
     size_t responseLen = response.length();
 
-    while (totalBytesSent < responseLen)
-    {
+    while (totalBytesSent < responseLen) {
         ssize_t bytesSent = send(clientFd, response.c_str() + totalBytesSent,
                                  responseLen - totalBytesSent, 0);
 
@@ -97,13 +96,11 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
         totalBytesSent += bytesSent;
     }
 
-    if (totalBytesSent < responseLen)
-    {
+    if (totalBytesSent < responseLen) {
         clientState = RESPONSE_TRUNCATE;
         _pendingResponse[clientFd] += totalBytesSent;
-    }
-    else
-    {
+
+    } else {
 
         std::cout
         << MAGENTA << "client [" << clientFd << "]: Response: \n"
@@ -120,7 +117,7 @@ void    HttpManager::sendResponse(int clientFd, HttpRequest& request,
     }
 }
 
-bool    HttpManager::receivedCompleteRequest(std::string &rawData) const
+bool HttpManager::receivedCompleteRequest(std::string &rawData) const
 {
     size_t headerEnd = rawData.find("\r\n\r\n");
     if (headerEnd == std::string::npos)
@@ -141,13 +138,13 @@ bool    HttpManager::receivedCompleteRequest(std::string &rawData) const
     return bodyLengh >= static_cast<size_t>(contentLength);
 }
 
-inline bool    HttpManager::checkPersistance(std::string &rawData)
+inline bool HttpManager::checkPersistance(std::string &rawData)
 {
     return rawData.find("Connection: keep-alive") != std::string::npos;
 }
 
-void    HttpManager::getRequest(int clientFd, int &clientState,
-                                bool &persistance) {
+void HttpManager::getRequest(int clientFd, int &clientState,
+                             bool &persistance) {
 
     char buffer[4096];
 
@@ -156,8 +153,8 @@ void    HttpManager::getRequest(int clientFd, int &clientState,
 
     if (bytes > 0)
         _buffers[clientFd].append(buffer, bytes);
-    else if (bytes <= 0)
-    {
+
+    else if (bytes <= 0) {
         clientState = SENT;
         persistance = false;
         return ;
@@ -212,11 +209,9 @@ bool    HttpManager::solveHost(int clientFd, std::map<int, Server>&  serverMap,
     return false;
 }
 
-HttpManager::HttpManager(int clientFd, int serverFd,
-                         std::map<int, Server>  serverMap, int &clientState,
-                         bool &persistance)
+HttpManager::HttpManager(int clientFd, std::map<int, Server>  serverMap,
+                         int &clientState, bool &persistance)
 {
-    (void)serverFd;
     if (clientState == PENDING)
         getRequest(clientFd, clientState, persistance);
 

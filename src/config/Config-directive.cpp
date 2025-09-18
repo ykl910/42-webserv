@@ -47,7 +47,8 @@ void    Config::getDirective(std::string& line,
         line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1));
 }
 
-void    Config::extractDirective(std::ifstream& file, std::string& line, server& server)
+void    Config::extractDirective(std::ifstream& file, std::string& line,
+                                 server& server)
 {
     int indentSize;
 

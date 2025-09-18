@@ -2,7 +2,8 @@
 #include "../../include/HttpManager.hpp"
 #include "../../include/WebServ.hpp"
 
-std::vector<Server> Epoll::getServer(void) const {
+std::vector<Server> Epoll::getServer(void) const
+{
     return _server;
 }
 
@@ -24,6 +25,7 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, clientFd, &newClient) == -1) {
         printErrorAndThrow("epoll_ctl");
         close(clientFd);
+
     } else {
         _clientMap.insert(
             std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
@@ -76,18 +78,14 @@ inline bool Epoll::isSocketFd(int fd) const
 
 void Epoll::eventManager(epoll_ev &event)
 {
-    if (event.events & EPOLLIN)
-    {
-        if (isSocketFd(event.data.fd))
-        {
+    if (event.events & EPOLLIN) {
+        if (isSocketFd(event.data.fd)) {
             int clientFd = _serverMap[event.data.fd].getSocket().acceptClient();
             if (clientFd)
                 addClientToEpoll(clientFd, event.data.fd);
-        }
-        else
-        {
+
+        } else {
             HttpManager(event.data.fd,
-                        _clientMap[event.data.fd],
                         _serverMap,
                         _clientState[event.data.fd],
                         _persistance[event.data.fd]);
@@ -102,33 +100,27 @@ void Epoll::eventManager(epoll_ev &event)
                     _clientState[event.data.fd] = PENDING;
             }
         }
-    }
-    else if (event.events & EPOLLOUT)
-    {
+
+    } else if (event.events & EPOLLOUT) {
         HttpManager(event.data.fd,
-                    _clientMap[event.data.fd],
                     _serverMap,
                     _clientState[event.data.fd],
                     _persistance[event.data.fd]);
 
-        if (_clientState[event.data.fd] == SENT)
-        {
+        if (_clientState[event.data.fd] == SENT) {
             if (!_persistance[event.data.fd])
                 removeClientFromEpoll(event.data.fd);
-            else
-            {
+            else {
                 disableWriteEvent(event.data.fd);
                 _clientState[event.data.fd] = PENDING;
             }
         }
-    }
-    else if (event.events & EPOLLERR)
-    {
+
+    } else if (event.events & EPOLLERR) {
         printFdError(event.data.fd);
         removeClientFromEpoll(event.data.fd);
-    }
-    else if (event.events & EPOLLHUP || event.events & EPOLLRDHUP)
-    {
+
+    } else if (event.events & EPOLLHUP || event.events & EPOLLRDHUP) {
         removeClientFromEpoll(event.data.fd);
     }
 }
@@ -146,7 +138,8 @@ void Epoll::run()
     }
 }
 
-void    Epoll::findSocketPort(Socket& socketReference, std::vector<Server>& servers, std::string port)
+void    Epoll::findSocketPort(Socket& socketReference,
+                              std::vector<Server>& servers, std::string port)
 {
     for (serverIterator it = servers.begin(); it != servers.end(); ++it) {
        if (it->getServerAttribute().port == port) {

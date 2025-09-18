@@ -15,10 +15,10 @@ void Cgi::createEnvp(HttpRequest &request, HttpResponse &response)
 
     _envp.push_back("REQUEST_METHOD=" + method);
     _envp.push_back("SCRIPT_NAME=" + response.getRequestAttr().path);
-    if(method == "GET")
+    if (method == "GET")
         _envp.push_back("QUERY_STRING=" + extractQuery(response));
-    else
-    {
+
+    else {
         std::map<std::string, std::string> header = request.getHeaders();
 
         _envp.push_back("CONTENT_LENGTH=" + header["Content-Length"]);
@@ -28,7 +28,7 @@ void Cgi::createEnvp(HttpRequest &request, HttpResponse &response)
 
 void Cgi::createEnvpStr(std::vector<char*> &envp)
 {
-    for(size_t i = 0; i < _envp.size(); ++i)
+    for (size_t i = 0; i < _envp.size(); ++i)
         envp.push_back(const_cast<char*>(_envp[i].c_str()));
     envp.push_back(NULL);
 }

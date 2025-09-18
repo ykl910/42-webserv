@@ -25,7 +25,8 @@ bool    Config::contextFormatValid(const std::string& line)
     return true;
 }
 
-void    Config::extractContext(std::ifstream& file, std::string& line, server& server)
+void    Config::extractContext(std::ifstream& file, std::string& line,
+                               server& server)
 {
     _locationNbr = 0;
     _contextIndex = SERVER;

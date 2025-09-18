@@ -1,22 +1,5 @@
 #include "../../include/HttpResponse.hpp"
 
-bool    HttpResponse::canAccessFile(std::string& fullPath)
-{
-    struct stat fileStat;
-
-    if (stat(fullPath.c_str(), &fileStat) != 0) {
-        std::cout << BOLD RED << "Can't find requested file\n" << DEFAULT;
-        return false;
-    }
-
-    if (!(fileStat.st_mode & S_IRUSR)) {
-        std::cout << BOLD RED << "Don't have read permissions\n" << DEFAULT;
-        return false;
-    }
-
-    return true;
-}
-
 bool    HttpResponse::isDirectory()
 {
     std::cout << BOLD WHITE << _request.path << DEFAULT << std::endl;
@@ -47,7 +30,9 @@ void    HttpResponse::buildIndex()
         std::ostringstream  output;
 
         output << "<html>\n"
-               << "<head><title>Index of " << _request.path << "</title></head>\n"
+               << "<head><title>Index of "
+               << _request.path
+               << "</title></head>\n"
                << "<body>\n"
                << "<h1>Index of " << _request.path << "</h1>\n"
                << "<hr><ul>\n";
@@ -71,7 +56,9 @@ void    HttpResponse::buildIndex()
                 {
                     if (S_ISDIR(fileStat.st_mode))
                         name += "/";
-                    output << "<li><a href=\"" << name << "\">" << name << "</a></li>\n";
+                    output
+                    << "<li><a href=\""
+                    << name << "\">" << name << "</a></li>\n";
                 }
             }
             std::cout << BOLD WHITE << fullPath << DEFAULT << '\n';
@@ -85,4 +72,3 @@ void    HttpResponse::buildIndex()
         closedir(indexDir);
     }
 }
-

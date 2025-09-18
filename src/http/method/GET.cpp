@@ -7,16 +7,20 @@ void HttpResponse::handleError(std::stringstream *buffer, int success, std::stri
     std::string fullPath;
     std::string body;
     if (type == "html") {
+
         if (success == 404) {
             fullPath = _server.error_page.err_404;
             setStatusLine(_request.httpVersion, 404, "Not Found");
+
         } else if (success == 403) {
             fullPath = _server.error_page.err_403;
             setStatusLine(_request.httpVersion, 403, "Forbidden");
+
         } else {
             fullPath = _server.error_page.err_500;
             setStatusLine(_request.httpVersion, 500, "Internal error");
         }
+
         std::ifstream file(fullPath.c_str());
         *buffer << file.rdbuf();
         body = buffer->str();
@@ -46,8 +50,8 @@ int HttpResponse::handleRedirect()
         setHeaders("Content-Length", "0");
         setBody("");
         return 0;
-    } else if (_request.path == _server.redirection.redir_302[0])
-    {
+
+    } else if (_request.path == _server.redirection.redir_302[0]) {
         setStatusLine(_request.httpVersion, 302, "Moved Temporarily");
         setHeaders("Location", _server.redirection.redir_302[1]);
         setHeaders("Content-Length", "0");
@@ -63,7 +67,7 @@ int HttpResponse::handleHtml(std::stringstream *buffer)
 
     struct stat file_stat;
     bool is_directory =
-    (stat(_request.path.c_str(), &file_stat) == 0 && S_ISDIR(file_stat.st_mode)) ;
+    (stat(_request.path.c_str(), &file_stat) == 0 && S_ISDIR(file_stat.st_mode));
 
     if (is_directory && _isIndex == true && _isAutoIndex == false)
         return 403;
@@ -119,6 +123,7 @@ int HttpResponse::handleImage()
     while (file.read(temp, sizeof(temp))) {
         data.insert(data.end(), temp, temp + file.gcount());
     }
+
     if (file.gcount() > 0)
         data.insert(data.end(), temp, temp + file.gcount());
 
@@ -137,18 +142,22 @@ void HttpResponse::handleGET()
     std::stringstream buffer;
     if (!handleRedirect())
         return;
+
     if (_extension == "html" || _extension == "htm" || _extension == "") {
         state = handleHtml(&buffer);
         if (state != 200)
             handleError(&buffer, state, "html");
+
     } else if (_extension == "css") {
         state = handleCss(&buffer);
         if (state != 200)
             handleError(&buffer, state, "css");
+
     } else if (isImage()) {
         state = handleImage();
         if (state != 200)
             handleError(&buffer, state, "img");
+
     } else
         handleError(&buffer, 500, "html");
 }

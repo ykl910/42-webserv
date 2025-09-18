@@ -16,7 +16,6 @@ h1:hover {
     filter: blur(2px);
 }
 
-
 a {
     color: inherit;
     text-decoration: none;
@@ -31,17 +30,14 @@ a {
     filter: blur(2px);
 }
 
+.container {
+  display: flex;
+  min-height: 100vh; /* full screen height */
+}
+
 .column {
-    /* column-count: 2; */
-    /* display: flexbox; */
-}
-
-.left-column {
-    flex: 1;
-    /* justify-content: left; */
-}
-
-.right-column {
-    flex: 1;
-    /* justify-content: right; */
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #000;
+  box-sizing: border-box; /* prevent padding from breaking layout */
 }

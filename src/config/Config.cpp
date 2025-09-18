@@ -1,10 +1,12 @@
 #include "../../include/Config.hpp"
 
-const char*& Config::getConfigFilePath(void) const {
+const char*& Config::getConfigFilePath(void) const
+{
     return _configFilePath;
 }
 
-configParser&   Config::getConfigParser(void) {
+configParser&   Config::getConfigParser(void)
+{
     return _configParser;
 }
 
@@ -23,7 +25,8 @@ size_t Config::getCgiTotal(void)
     return _cgiTotal;
 }
 
-bool    Config::rightIndentation(const std::string& line, uint32_t indentSize) {
+bool    Config::rightIndentation(const std::string& line, uint32_t indentSize)
+{
     return line.length() > indentSize
         && line.substr(0, indentSize).find_first_not_of(" ");
 }
@@ -38,8 +41,8 @@ bool    Config::gotAnotherServer(std::ifstream& file, std::string& line)
     if (file.eof())
         return false;
 
-    std::ifstream::pos_type streamPos = file.tellg();
     size_t i = _lineNbr;
+    std::ifstream::pos_type streamPos = file.tellg();
     while (std::getline(file, line)) {
         if (line == "server:") {
             file.seekg(streamPos);
@@ -50,6 +53,7 @@ bool    Config::gotAnotherServer(std::ifstream& file, std::string& line)
             manageConfigError(line, "", "format between servers not valid.", i);
         ++i;
     }
+
     if (file.eof() || line.length() == 0)
         return false;
     return true;

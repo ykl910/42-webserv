@@ -38,11 +38,11 @@ class HttpManager {
 public:
     void getRequest(int clientFd, int &clientState, bool &persistance);
     bool receivedCompleteRequest(std::string &rawData) const;
-    void sendResponse(int clientFd, HttpRequest& request, t_serv_attr & servAttr, int &clientState);
+    void sendResponse(int clientFd, HttpRequest& request,
+                      t_serv_attr & servAttr, int &clientState);
     void writeUserInfo(HttpRequest &request, HttpResponse &response);
     static bool hasCompletedResponse(int clientFd);
 
-    // Request methods
     const bool &getState() const;
     const std::string &getPath() const;
     const std::string &getBody() const;
@@ -52,11 +52,12 @@ public:
     const t_request_attr& getRequestAttr() const;
     void extractRequest(const std::string &request);
     inline bool checkPersistance(std::string &request);
-    bool solveHost(int clientFd, std::map<int, Server>&  serverMap, t_serv_attr& servAttr);
+    bool solveHost(int clientFd, std::map<int, Server>&  serverMap,
+                   t_serv_attr& servAttr);
 
 
     HttpManager() {}
-    HttpManager(int clientFd, int serverFd, std::map<int, Server>  serverMap,
+    HttpManager(int clientFd, std::map<int, Server>  serverMap,
                 int &clientState, bool &persistance);
     ~HttpManager();
 

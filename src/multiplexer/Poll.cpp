@@ -87,7 +87,6 @@ void    Poll::run()
                     ++it;
                 } else {
                     HttpManager(it->fd,
-                                _clientMap[it->fd],
                                 _serverMap,
                                 _clientState[it->fd],
                                 _persistance[it->fd]);
@@ -108,7 +107,6 @@ void    Poll::run()
 
             } else if (it->revents & POLLOUT) {
                     HttpManager(it->fd,
-                                _clientMap[it->fd],
                                 _serverMap,
                                 _clientState[it->fd],
                                 _persistance[it->fd]);

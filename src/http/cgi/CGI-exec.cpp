@@ -7,10 +7,12 @@ int Cgi::execFromGet()
         printError();
         return EXIT_FAILURE;
     }
+
     pid_t pid = fork();
     if (pid == -1) {
         printError();
         return EXIT_FAILURE;
+
     } else if (pid == 0) {
 
         std::vector<char*> envpStr;
@@ -29,6 +31,7 @@ int Cgi::execFromGet()
         execve(argvStr.front(), argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
+
     } else {
         int status;
         watchdog(pid, status);
@@ -47,12 +50,13 @@ int Cgi::execFromPost(HttpRequest &request)
     int inputPipe[2];
     int outputPipe[2];
 
-    if(pipe(inputPipe) == -1 || pipe(outputPipe) == -1) {
+    if (pipe(inputPipe) == -1 || pipe(outputPipe) == -1) {
         printError();
         return EXIT_FAILURE;
     }
+
     pid_t pid = fork();
-    if(pid == -1) {
+    if (pid == -1) {
         printError();
         return EXIT_FAILURE;
 
@@ -63,11 +67,12 @@ int Cgi::execFromPost(HttpRequest &request)
 
         createEnvpStr(envpStr);
         createArgvStr(argvStr);
-        if(dup2(inputPipe[0], STDIN_FILENO) == -1) {
+        if (dup2(inputPipe[0], STDIN_FILENO) == -1) {
             printError();
             exit(EXIT_FAILURE);
         }
-        if(dup2(outputPipe[1], STDOUT_FILENO) == -1) {
+
+        if (dup2(outputPipe[1], STDOUT_FILENO) == -1) {
             printError();
             exit(EXIT_FAILURE);
         }
@@ -79,6 +84,7 @@ int Cgi::execFromPost(HttpRequest &request)
         execve(argvStr.front(), argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
+
     } else {
         std::string body = request.getBody();
 
@@ -100,7 +106,6 @@ int Cgi::execFromPost(HttpRequest &request)
 
 void Cgi::execute(HttpRequest &request, HttpResponse &response)
 {
-
     int exitCode;
 
     if (response.getRequestAttr().method == "GET")
@@ -108,8 +113,7 @@ void Cgi::execute(HttpRequest &request, HttpResponse &response)
     else
         exitCode = execFromPost(request);
 
-    std::cout << BOLD ORANGE << "CGI exitCode: " << exitCode << DEFAULT << std::endl;
-    if(exitCode != EXIT_SUCCESS)
+    if (exitCode != EXIT_SUCCESS)
         generateErrorMsg(response, exitCode);
     else
         generateResponse(response);

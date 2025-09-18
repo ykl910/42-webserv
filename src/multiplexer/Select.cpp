@@ -83,7 +83,6 @@ void    Select::run()
         for (size_t i = 0; i < _clientFd.size();) {
             if (FD_ISSET(_clientFd[i], &_readFds)) {
                     HttpManager(_clientFd[i],
-                                _clientMap[_clientFd[i]],
                                 _serverMap,
                                 _clientState[_clientFd[i]],
                                 _persistance[_clientFd[i]]);
@@ -102,7 +101,6 @@ void    Select::run()
 
             else if (FD_ISSET(_clientFd[i], &_writeFds)) {
                 HttpManager(_clientFd[i],
-                            _clientMap[_clientFd[i]],
                             _serverMap,
                             _clientState[_clientFd[i]],
                             _persistance[_clientFd[i]]);

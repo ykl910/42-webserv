@@ -33,12 +33,12 @@ Warning
 WWW-Authenticate
 */
 
-void HttpResponse::setStatusLine(const std::string version, int code, const std::string& reason)
+void HttpResponse::setStatusLine(const std::string version, int code,
+                                 const std::string& reason)
 {
     std::ostringstream oss;
     oss << code;
     _statusLine = version + " " + oss.str() + " " + reason + "\r\n";
-    // _response = _statusLine;
 }
 
 void HttpResponse::setHeaders(const std::string &key, const std::string &value)
@@ -50,7 +50,6 @@ void HttpResponse::setBody(const std::string &body)
 {
     _body = body;
     _responseHead = _response;
-    // _response += body;
 }
 
 std::string HttpResponse::getStatusLine() const
@@ -106,14 +105,15 @@ bool HttpResponse::isCgi()
    return _server.cgi.find(fileExtention) != _server.cgi.end();
 }
 
-bool HttpResponse::isValidBodySize(HttpRequest &request, t_serv_attr &serverAttr) const
+bool HttpResponse::isValidBodySize(HttpRequest &request,
+                                   t_serv_attr &serverAttr) const
 {
     std::map<std::string, std::string>header = request.getHeaders();
     std::map<std::string, std::string>::iterator it = header.find("Content-Length");
     if (it->second.empty())
         return true;
-    else
-    {
+
+    else {
         int bodySize =  std::atoi(header["Content-Length"].c_str());
         return bodySize < serverAttr.client_max_body_size;
     }
@@ -124,20 +124,19 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
 {
     if (!isValidBodySize(request, serverAttr))
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
-    
+
     solvePath();
     if (isAutoIndex())
         buildIndex();
     else if (isCgi())
         Cgi cgi(request, *this);
-    else if (_request.method == "GET" && _allowedMethod & (1 << GET))
+    else if (_request.method == "GET" && _allowedMethod & 1 << GET)
         handleGET();
-    else if (_request.method == "POST" && _allowedMethod & (1 << POST))
+    else if (_request.method == "POST" && _allowedMethod & 1 << POST)
         handlePOST(request);
-    else if (_request.method == "DELETE" && _allowedMethod & (1 << DELETE))
+    else if (_request.method == "DELETE" && _allowedMethod & 1 << DELETE)
         handleDELETE();
-    else
-    {
+    else {
         std::stringstream buffer;
         std::string body;
         std::ifstream file(_server.error_page.err_405.c_str());

@@ -25,16 +25,21 @@ int HttpResponse::createFile(std::string &content, std::string &dirPath, int id)
     std::string filename;
     size_t titleStart = content.find("name=") + 6;
     size_t titleEnd = content.find("\"", titleStart);
-    if(content.find("Content-Type: image") != std::string::npos)
-        filename = content.substr(titleStart, titleEnd - titleStart) + itos(id) + ".png";
+    if (content.find("Content-Type: image") != std::string::npos)
+        filename = content.substr(titleStart, titleEnd - titleStart)
+                    + itos(id) + ".png";
     else
-        filename = content.substr(titleStart, titleEnd - titleStart) + itos(id) + ".txt";
+        filename = content.substr(titleStart, titleEnd - titleStart)
+                    + itos(id) + ".txt";
+
     int fd = createFd(dirPath, filename);
-    if(fd == -1)
+    if (fd == -1)
         return -1;
+
     size_t contentStartPos = content.find("\r\n\r\n") + 4;
     size_t contentEndPos = content.size() - 2;
-    std::string txt = content.substr(contentStartPos, contentEndPos - contentStartPos);
+    std::string txt = content.substr(contentStartPos,
+                                     contentEndPos - contentStartPos);
     write(fd, txt.c_str(), txt.size());
     close(fd);
     return 0;
@@ -81,7 +86,8 @@ int HttpResponse::downloadFiles(HttpRequest &request, std::string boundary)
         }
     }
     id++;
-    if(id == INT_MAX)
+
+    if (id == INT_MAX)
         id = 0;
     return 0;
 }
@@ -90,6 +96,7 @@ void HttpResponse::buildResponse(int code, std::string msg)
 {
     setStatusLine(getRequestAttr().httpVersion, code, msg);
     setHeaders("Content-Type", "text/html");
+
     std::string path;
     if (code == 201)
         setStatusLine(_request.httpVersion, 201, "ok");
@@ -99,6 +106,7 @@ void HttpResponse::buildResponse(int code, std::string msg)
         path = _server.error_page.err_500;
     else
         path = _server.error_page.err_404;
+
     std::ifstream file(path.c_str());
     std::stringstream buffer;
     buffer << file.rdbuf();

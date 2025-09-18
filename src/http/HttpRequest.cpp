@@ -1,39 +1,6 @@
 #include "../../include/HttpRequest.hpp"
 #include "../../include/textFormatting.hpp"
 
-/* REQUEST HEADERS
-Accept
-Accept-Charset
-Accept-Encoding
-Accept-Language
-Authorization
-Cache-Control
-Connection
-Content-Length
-Content-Type
-Cookie
-Date
-Expect
-From
-Host
-If-Match
-If-Modified-Since
-If-None-Match
-If-Range
-If-Unmodified-Since
-Max-Forwards
-Origin
-Pragma
-Proxy-Authorization
-Range
-Referer
-TE
-Upgrade
-User-Agent
-Via
-Warning
-*/
-
 const bool &HttpRequest::getState() const {
     return _state;
 }

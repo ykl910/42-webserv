@@ -18,6 +18,7 @@ int Socket::acceptClient(void)
     int flags = fcntl(clientFd, F_GETFL, 0);
     if (flags == -1 || fcntl(clientFd, F_SETFL, flags | O_NONBLOCK) == -1)
         printErrorAndThrow("fcntl");
+
     return clientFd;
 }
 

@@ -1,6 +1,7 @@
 #include "../../include/Config.hpp"
 
-void    Config::printServer(const server& srv) const {
+void    Config::printServer(const server& srv) const
+{
     std::cout << "server:\n";
     for (contextIterator it = srv.begin(); it != srv.end(); ++it) {
         for (directiveIterator it2 = it->second.begin();
@@ -12,7 +13,8 @@ void    Config::printServer(const server& srv) const {
     }
 }
 
-void    Config::printConfig(void) const {
+void    Config::printConfig(void) const
+{
     std::cout << "\n----- Print config -----\n";
     for (configParserIterator it = _configParser.begin();
                         it != _configParser.end(); ++it) {

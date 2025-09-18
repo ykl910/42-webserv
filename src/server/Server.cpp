@@ -1,18 +1,22 @@
 #include "../../include/Server.hpp"
 
-Socket& Server::getSocket(void) {
+Socket& Server::getSocket(void)
+{
     return _socket;
 }
 
-int Server::getSocketFd(void) const {
+int Server::getSocketFd(void) const
+{
     return _socket.getSocketFd();
 }
 
-t_serv_attr& Server::getServerAttribute(void) {
+t_serv_attr& Server::getServerAttribute(void)
+{
     return _attribute;
 }
 
-int Server::getClientMaxBodySize(const std::string& input) {
+int Server::getClientMaxBodySize(const std::string& input)
+{
     return std::atoi(input.substr(0, input.length() - 1).c_str());
 }
 
