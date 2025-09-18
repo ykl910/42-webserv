@@ -56,18 +56,14 @@ void    Select::run()
 
         for (size_t i = 0; i < _clientFd.size(); ++i) {
             FD_SET(_clientFd[i], &_readFds);
+            FD_SET(_clientFd[i], &_writeFds);
             FD_SET(_clientFd[i], &_exceptFds);
-
-            if (_persistance[_clientFd[i]]
-                || _clientState[_clientFd[i]] == RESPONSE_TRUNCATE)
-                FD_SET(_clientFd[i], &_writeFds);
-
             if (_clientFd[i] > _maxFd)
                 _maxFd = _clientFd[i];
         }
 
         errno = 0;
-        _activity = select(_maxFd + 1, &_readFds, &_writeFds, &_exceptFds, &_timeout);
+        _activity = select(_maxFd + 1, &_readFds, &_writeFds, &_exceptFds, NULL);
         if (g_signal == SIGINT)
             return;
         else if (_activity == -1)
@@ -85,27 +81,23 @@ void    Select::run()
         }
 
         for (size_t i = 0; i < _clientFd.size();) {
-
             if (FD_ISSET(_clientFd[i], &_readFds)) {
-                HttpManager(_clientFd[i],
-                            _clientMap[_clientFd[i]],
-                            _serverMap,
-                            _clientState[_clientFd[i]],
-                            _persistance[_clientFd[i]]);
+                    HttpManager(_clientFd[i],
+                                _clientMap[_clientFd[i]],
+                                _serverMap,
+                                _clientState[_clientFd[i]],
+                                _persistance[_clientFd[i]]);
 
-                if (_clientState[_clientFd[i]] == SENT)
-                {
-                    if (!_persistance[_clientFd[i]]) {
-                        removeClientFromSelect(_clientFd[i], i);
-                        // continue;
-                    }
-                    else {
-                        _clientState[_clientFd[i]] = PENDING;
-                        std::cout
-                        << BOLD YELLOW << "PENDING\n" << DEFAULT << '\n';
-                    }
-                } else
-                    ++i;
+                    if (_clientState[_clientFd[i]] == SENT)
+                    {
+                        if (!_persistance[_clientFd[i]])
+                            removeClientFromSelect(_clientFd[i], i);
+                        else {
+                            _clientState[_clientFd[i]] = PENDING;
+                            ++i;
+                        }
+                    } else
+                        ++i;
             }
 
             else if (FD_ISSET(_clientFd[i], &_writeFds)) {
@@ -117,26 +109,21 @@ void    Select::run()
 
                 if (_clientState[_clientFd[i]] == SENT)
                 {
-                    if (!_persistance[_clientFd[i]]) {
+                    if (!_persistance[_clientFd[i]])
                         removeClientFromSelect(_clientFd[i], i);
-                        // continue;
-                    }
                     else
                     {
-                        std::cout
-                        << BOLD BLUE << "PENDING\n" << DEFAULT << '\n';
                         _clientState[_clientFd[i]] = PENDING;
+                        ++i;
                     }
                 } else
                     ++i;
             }
 
-
             else if (FD_ISSET(_clientFd[i], &_exceptFds)) {
-                std::cerr << "Select: error catched for client fd "
+                std::cout << "Select: error catched for client fd "
                 << _clientFd[i] << "\n";
                 removeClientFromSelect(_clientFd[i], i);
-                // continue;
             }
             else
                 ++i;
