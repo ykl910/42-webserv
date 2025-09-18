@@ -17,23 +17,27 @@ class HttpManager;
 
 class Cgi {
 public:
+    void createArgv(HttpResponse &response);
+    void createEnvpStr(std::vector<char*>&envp);
+    void createArgvStr(std::vector<char*>&argv);
+    void createEnvp(HttpRequest &request, HttpResponse &response);
+
+    int execFromGet();
+    void extractOutput(int *fd);
+    int execFromPost(HttpRequest &request);
+    void execute(HttpRequest &request, HttpResponse &response);
+
+    long getTimeStamp(void);
+    void watchdog(pid_t pid, int &status);
+    std::string extractQuery(HttpResponse &response);
+
+    void generateResponse(HttpResponse &response);
+    void generateErrorMsg(HttpResponse &response, int statusCode);
+
     Cgi(HttpRequest &request, HttpResponse &response);
     ~Cgi();
 
 private:
-    void createEnvp(HttpRequest &request, HttpResponse &response);
-    void createArgv(HttpResponse &response);
-    void execute(HttpRequest &request, HttpResponse &response);
-    int execFromGet();
-    int execFromPost(HttpRequest &request);
-    void createEnvpStr(std::vector<char*>&envp);
-    void createArgvStr(std::vector<char*>&argv);
-    std::string extractQuery(HttpResponse &response);
-    void extractOutput(int *fd);
-    void generateErrorMsg(HttpResponse &response, int statusCode);
-    void generateResponse(HttpResponse &response);
-    void watchdog(pid_t pid, int &status);
-    long getTimeStamp(void);
     std::string _stdout;
     std::vector<std::string>_envp;
     std::vector<std::string>_argv;

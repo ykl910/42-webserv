@@ -26,14 +26,18 @@ public:
     typedef std::map<int, HttpRequest>::iterator requestsIt;
 
     std::vector<Server> getServer(void) const;
+
     void run();
+    void printFdError(int clientFd);
+
     void enableWriteEvent(int clientFd);
     void disableWriteEvent(int clientFd);
+
     inline bool isSocketFd(int fd) const;
-    void addClientToEpoll(int clientFd, int serverFd);
     void removeClientFromEpoll(int clientFd);
-    void printFdError(int clientFd);
-    void findSocketPort(Socket& socketReference, std::vector<Server>& servers, std::string port);
+    void addClientToEpoll(int clientFd, int serverFd);
+    void findSocketPort(Socket& socketReference,
+                        std::vector<Server>& servers, std::string port);
 
     void initServer(Config& config);
     void eventManager(epoll_ev &event);
