@@ -1,23 +1,22 @@
 #include "../../include/Config.hpp"
 
-bool    Config::directiveFormatValid(const std::string& line, int indentSize)
+bool    Config::directiveFormatValid(const std::string& line, size_t indentSize)
 {
-    int lineLength = line.length();
+    size_t lineLength = line.length();
 
     if (lineLength == 0)
         manageConfigError(line, EXPECTED_DIRECTIVE,
             "line empty when expecting a directive.", _lineNbr);
 
     else if (lineLength < indentSize
-          || lineLength < indentSize + static_cast<int>(DIRECTIVE_NAME_LENGTH))
+          || lineLength < indentSize + DIRECTIVE_NAME_LENGTH)
         manageConfigError(line, EXPECTED_DIRECTIVE,
             "config not well formatted.", _lineNbr);
 
-    else if (!rightIndentation(line, indentSize))
+    else if (!correctlyIndended(line, indentSize))
         manageConfigError(line, EXPECTED_DIRECTIVE,
             "wrong indentation.", _lineNbr);
 
-    // is directive name format valid
     else if (_configFormat[_contextIndex][_directiveIndex][NAME]
             != line.substr(indentSize, DIRECTIVE_NAME_LENGTH))
         manageConfigError(line, EXPECTED_DIRECTIVE,
@@ -26,7 +25,7 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
     std::string tmp = line.substr(indentSize + DIRECTIVE_NAME_LENGTH);
     if (!std::isspace(tmp[0]))
         manageConfigError(line, EXPECTED_DIRECTIVE,
-            "no space between directive name and directive value.", _lineNbr);
+            "missing space between directive name and directive value.", _lineNbr);
 
     else if (_contextIndex == LOCATION && tmp.length() < 2
         && (!tmp[1] || tmp[1] != '/'))
@@ -41,10 +40,46 @@ bool    Config::directiveFormatValid(const std::string& line, int indentSize)
 }
 
 void    Config::getDirective(std::string& line,
-                                 directiveValue& newDirective, int indentSize)
+                                 directiveValue& newDirective, size_t indentSize)
 {
-    newDirective.push_back(line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
+    std::string directiveValue(
+        line.substr(indentSize + DIRECTIVE_NAME_LENGTH + 1,
         line.length() - indentSize - DIRECTIVE_NAME_LENGTH - 1));
+
+    if (directiveValue.empty()) {
+        manageConfigError(line, "",
+            "directive value cannot be empty.", _lineNbr);
+
+    } else if (_contextIndex == SERVER
+        && _directiveIndex == CLIENT_MAX_BODY_SIZE) {
+
+        size_t length(directiveValue.length());
+
+        for (size_t i = 0; directiveValue[i]; ++i) {
+            if (!std::isdigit(directiveValue[i])) {
+                if (length - i > 1
+                    || directiveValue.substr(i, length).
+                        find_first_not_of(" kKmMgG") != std::string::npos)
+                    manageConfigError(line,
+                        "client max body size format must be:\n"
+                        + std::string("[number][k,K,m,M,g,G]"),
+                        "max body size not well formatted.", _lineNbr);
+                break;
+            }
+        }
+
+    } else if (_contextIndex == SERVER && _directiveIndex == LISTEN) {
+        if (directiveValue.find_first_not_of("0123456789") != std::string::npos)
+            manageConfigError(line, "a port range between 0-65535",
+                "port number not well formatted.", _lineNbr);
+
+      else if (directiveValue.length() > MAX_PORT_VALUE_LENGTH
+        || std::atol(directiveValue.c_str()) > MAX_PORT_VALUE)
+        manageConfigError(line, "a port range between 0-65535",
+            "port number not valid.", _lineNbr);
+    }
+
+    newDirective.push_back(directiveValue);
 }
 
 void    Config::extractDirective(std::ifstream& file, std::string& line,
@@ -56,6 +91,7 @@ void    Config::extractDirective(std::ifstream& file, std::string& line,
         indentSize = 4;
     else
         indentSize = 8;
+
     _directiveIndex = 0;
     while (_directiveIndex < _configFormat[_contextIndex].size()
         || _contextIndex == CGI) {

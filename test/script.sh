@@ -165,7 +165,7 @@ run_siege_test()
             do
                 ./webserv $multiplexer &
                 webserv_pid=$!
-                siege -c 1 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
+                siege -c 255 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
                 kill $webserv_pid
             done
         done

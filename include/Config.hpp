@@ -7,12 +7,15 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
+#include <algorithm>
 #include <map>
 
 #define NAME 0
 #define VALUE 1
 #define CONTEXT_NUMBER 1
 #define GETTING_ALL_SERVERS 1
+#define MAX_PORT_VALUE 65535
+#define MAX_PORT_VALUE_LENGTH 5
 #define LOCATION_STRING_LENGTH 9 // location:
 #define DIRECTIVE_NAME_LENGTH _configFormat[_contextIndex][_directiveIndex][NAME].length()
 #define EXPECTED_DIRECTIVE _configFormat[_contextIndex][_directiveIndex][0]
@@ -94,12 +97,12 @@ public:
     bool contextFormatValid(const std::string& line);
     bool gotAnotherServer(std::ifstream& file, std::string& line);
     bool isEndOfConfigFile(std::ifstream& file, std::string& line);
-    bool rightIndentation(const std::string& line, uint32_t indentSize);
-    bool directiveFormatValid(const std::string& line, int indentSize);
+    bool correctlyIndended(const std::string& line, size_t indentSize);
+    bool directiveFormatValid(const std::string& line, size_t indentSize);
 
     void extractContext(std::ifstream& file, std::string& line, server& server);
     void extractDirective(std::ifstream& file, std::string& line, server& server);
-    void getDirective(std::string& line, directiveValue& newDirective, int indentSize);
+    void getDirective(std::string& line, directiveValue& newDirective, size_t indentSize);
 
     void parseConfigFile(void);
     void initConfigFormat(void);

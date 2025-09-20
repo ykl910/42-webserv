@@ -17,7 +17,24 @@ t_serv_attr& Server::getServerAttribute(void)
 
 int Server::getClientMaxBodySize(const std::string& input)
 {
-    return std::atoi(input.substr(0, input.length() - 1).c_str());
+    size_t result;
+
+    if (input.find_first_of("kKmMgG") != std::string::npos) {
+        char unit(input.substr(input.length() - 1, 1)[0]);
+
+        result = std::atol(input.substr(0, input.length() - 1).c_str());
+        if (unit == 'k' || unit == 'K')
+            result *= 1024;
+        else if (unit == 'm' || unit == 'M')
+            result *= 1024 * 1024;
+        else if (unit == 'g' || unit == 'G')
+            result *= 1024 * 1024 * 1024;
+
+    } else
+        result = std::atol(input.substr(0, input.length()).c_str());
+
+    std::cout << BOLD YELLOW << result << DEFAULT << '\n';
+    return result;
 }
 
 void Server::storeErrorPage(server& config, size_t locationNbr) {
@@ -96,11 +113,6 @@ void Server::storeLocation(server& config, size_t locationNbr)
         _attribute.locMap.insert(
             std::pair<std::string, t_location>(newLocation.path, newLocation));
     }
-}
-
-bool isValidCgiExtension(void)
-{
-    return true;
 }
 
 void Server::storeCgi(server& config, size_t locationNbr, size_t cgiNbr)

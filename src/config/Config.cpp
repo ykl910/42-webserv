@@ -25,7 +25,7 @@ size_t Config::getCgiTotal(void)
     return _cgiTotal;
 }
 
-bool    Config::rightIndentation(const std::string& line, uint32_t indentSize)
+bool    Config::correctlyIndended(const std::string& line, size_t indentSize)
 {
     return line.length() > indentSize
         && line.substr(0, indentSize).find_first_not_of(" ");
@@ -44,11 +44,14 @@ bool    Config::gotAnotherServer(std::ifstream& file, std::string& line)
     size_t i = _lineNbr;
     std::ifstream::pos_type streamPos = file.tellg();
     while (std::getline(file, line)) {
+
         if (line == "server:") {
             file.seekg(streamPos);
             return true;
+
         } else if (line.length() == 0) {
             streamPos = file.tellg();
+
         } else if (line.length() > 0 && line != "server:")
             manageConfigError(line, "", "format between servers not valid.", i);
         ++i;
@@ -66,6 +69,7 @@ void    Config::parseConfigFile(void)
 
     if (!file)
         manageConfigError(line, "", "can't open config file", _lineNbr);
+
     _serverIndex = 0;
     while (GETTING_ALL_SERVERS) {
         server  server;

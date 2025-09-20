@@ -9,12 +9,14 @@ bool    Config::contextFormatValid(const std::string& line)
 
     if (_contextIndex > 0)
         indentSize = 4;
+
     if (_contextIndex == LOCATION) {
         if (line.length() <= LOCATION_STRING_LENGTH + indentSize)
             manageConfigError(line, EXPECTED_CONTEXT,
                 "location context format not valid.", _lineNbr);
         else
             return true;
+
     } else if (line.empty()
         || std::strlen(_contextNameList[_contextIndex]) + indentSize
                 != line.length()
@@ -22,6 +24,7 @@ bool    Config::contextFormatValid(const std::string& line)
                                                   line.length() - indentSize))
         manageConfigError(line, EXPECTED_CONTEXT,
             "context format not valid.", _lineNbr);
+
     return true;
 }
 
@@ -31,6 +34,7 @@ void    Config::extractContext(std::ifstream& file, std::string& line,
     _locationNbr = 0;
     _contextIndex = SERVER;
     while (_contextIndex < _configFormat.size()) {
+
         std::getline(file, line);
         _lineNbr++;
         if (file.eof())

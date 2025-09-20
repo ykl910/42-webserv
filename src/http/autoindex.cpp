@@ -65,10 +65,10 @@ void    HttpResponse::buildIndex()
         }
         output << "</ul><hr></body></html>";
         int len = output.str().length();
-        this->setBody(output.str());
-        this->setHeaders("Content-Type", "text/html");
-        this->setHeaders("Content-Length", itos(len));
-        this->setStatusLine(_request.httpVersion, 200, "ok");
+        setBody(output.str());
+        setHeaders("Content-Type", "text/html");
+        setHeaders("Content-Length", itos(len));
+        setStatusLine(_request.httpVersion, 200, "ok");
         closedir(indexDir);
     }
 }
