@@ -12,7 +12,7 @@ inline bool Poll::isSocketFd(int fd) const
     return it != _serverMap.end();
 }
 
-void    Poll::addClientToPoll(int clientFd, int serverFd)
+void    Poll::addClientToPoll(int clientFd)
 {
     struct pollfd newClient;
 
@@ -23,8 +23,6 @@ void    Poll::addClientToPoll(int clientFd, int serverFd)
     _newClientFd.push_back(newClient);
     _pollFdMap.insert(
         std::pair<int, struct pollfd>(clientFd, newClient));
-    _clientMap.insert(
-        std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
 
     std::cout << BOLD WHITE << "Poll: new client accepted with fd "
     << BOLD BLUE << clientFd << DEFAULT << "\n";
@@ -39,7 +37,6 @@ void    Poll::removeClientFromPoll(pollIterator& it)
     << DEFAULT << '\n';
 
     close(it->fd);
-    _clientMap.erase(it->fd);
     _pollFdMap.erase(it->fd);
     _persistance.erase(it->fd);
     _clientState.erase(it->fd);
@@ -69,7 +66,7 @@ void    Poll::run()
     while (g_signal != SIGINT) {
 
         errno = 0;
-        _activity = poll(&_pollFd[0], _pollFd.size(), -1);
+        _activity = poll(&_pollFd[0], _pollFd.size(), 0);
         if (g_signal == SIGINT)
             return;
         else if (_activity == -1)
@@ -83,8 +80,9 @@ void    Poll::run()
                     int clientFd = _serverMap[it->fd].getSocket().acceptClient();
 
                     if (clientFd)
-                        addClientToPoll(clientFd, it->fd);
+                        addClientToPoll(clientFd);
                     ++it;
+
                 } else {
                     HttpManager(it->fd,
                                 _serverMap,
@@ -203,4 +201,6 @@ Poll::~Poll()
         if (it->fd)
             close(it->fd);
     }
+    for (size_t i = 0; i < _newClientFd.size(); ++i)
+        close(_newClientFd[i].fd);
 }

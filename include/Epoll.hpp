@@ -9,6 +9,7 @@
 
 #include <sys/epoll.h>
 #include <vector>
+#include <set>
 
 #define MAXEVENTS 4096
 #define GOT_FULL_REQUEST 1
@@ -35,7 +36,7 @@ public:
 
     inline bool isSocketFd(int fd) const;
     void removeClientFromEpoll(int clientFd);
-    void addClientToEpoll(int clientFd, int serverFd);
+    void addClientToEpoll(int clientFd);
     void findSocketPort(Socket& socketReference,
                         std::vector<Server>& servers, std::string port);
 
@@ -46,15 +47,15 @@ public:
     ~Epoll();
 
 private:
-    int                         _epollFd;
-    int                         _nbEvents;
-    vector                      _eventsQueue;
+    int                     _epollFd;
+    int                     _nbEvents;
+    vector                  _eventsQueue;
 
-    std::map<int, bool>         _persistance;
-    std::map<int, int>          _clientState;
+    std::map<int, bool>     _persistance;
+    std::map<int, int>      _clientState;
 
-    std::vector<Server>         _server;
-    std::vector<int>            _listenFd;
-    std::map<int, int>          _clientMap;
-    std::map<int, Server>       _serverMap;
+    std::vector<Server>     _server;
+    std::vector<int>        _listenFd;
+    std::set<int>           _clientFd;
+    std::map<int, Server>   _serverMap;
 };

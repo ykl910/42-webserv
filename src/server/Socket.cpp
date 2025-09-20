@@ -53,6 +53,7 @@ void Socket::createSocket(const char* host, const char* port, bool state)
 {
     if (state == ALREADY_USED)
         return;
+
     bzero(&_hints, sizeof(_hints));
     _hints.ai_flags = AI_PASSIVE;
     _hints.ai_family = AF_INET;
@@ -82,21 +83,27 @@ void Socket::createSocket(const char* host, const char* port, bool state)
         } else
             break;
     }
-    if (!chosenAddr)
+    if (!chosenAddr) {
+        close(_socketFd);
         printErrorAndThrow("socket");
+    }
 
     setSocketOpt();
 
-    if (bind(_socketFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1)
+    if (bind(_socketFd, chosenAddr->ai_addr, chosenAddr->ai_addrlen) == -1) {
+        close(_socketFd);
         printErrorAndThrow("bind");
+    }
 
     freeaddrinfo(servInfosLst);
 
-    if (listen(_socketFd, SOMAXCONN) == -1)
+    if (listen(_socketFd, SOMAXCONN) == -1) {
+        close(_socketFd);
         printErrorAndThrow("listen");
+    }
     _portsUsed.push_back(port);
 }
 
-Socket::Socket() {}
+Socket::Socket() : _socketFd(0) {}
 
 Socket::~Socket() {}

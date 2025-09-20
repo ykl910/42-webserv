@@ -27,7 +27,7 @@ public:
     void initServer(Config& config);
     void findSocketPort(Socket& socketReference,
                                std::vector<Server>& servers, std::string port);
-    void addClientToSelect(int clientFd, int serverFd);
+    void addClientToSelect(int clientFd);
     void removeClientFromSelect(int client, size_t& i);
     inline bool isSocketFd(int fd) const;
 

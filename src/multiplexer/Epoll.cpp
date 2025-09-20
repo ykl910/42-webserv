@@ -16,7 +16,7 @@ void Epoll::printFdError(int clientFd)
         printError();
 }
 
-void Epoll::addClientToEpoll(int clientFd, int serverFd)
+void Epoll::addClientToEpoll(int clientFd)
 {
     epoll_ev newClient;
     newClient.events = EPOLLIN | EPOLLRDHUP | EPOLLERR;
@@ -27,11 +27,10 @@ void Epoll::addClientToEpoll(int clientFd, int serverFd)
         close(clientFd);
 
     } else {
-        _clientMap.insert(
-            std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
-
         std::cout << BOLD GREEN << "Epoll: new client accepted with fd "
         << BOLD BLUE << newClient.data.fd << DEFAULT << std::endl;
+
+        _clientFd.insert(newClient.data.fd);
         _clientState[clientFd] = PENDING;
         _persistance[clientFd] = false;
     }
@@ -43,8 +42,11 @@ void Epoll::removeClientFromEpoll(int clientFd)
     << BOLD RED << "client [" << clientFd << "]: Connection closed"
     << DEFAULT << '\n';
 
-    epoll_ctl(_epollFd, EPOLL_CTL_DEL, clientFd, NULL);
+    if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, clientFd, NULL) == -1)
+        printErrorAndThrow("epoll_ctl(removeClient)");
+
     close(clientFd);
+    _clientFd.erase(clientFd);
     _persistance.erase(clientFd);
     _clientState.erase(clientFd);
 }
@@ -54,6 +56,7 @@ void Epoll::enableWriteEvent(int clientFd)
     epoll_ev ev;
     ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR | EPOLLOUT;
     ev.data.fd = clientFd;
+
     if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
         printErrorAndThrow("epoll_ctl(enableWriteEvent)");
 }
@@ -63,6 +66,7 @@ void Epoll::disableWriteEvent(int clientFd)
     epoll_ev ev;
     ev.events = EPOLLIN | EPOLLRDHUP | EPOLLERR;
     ev.data.fd = clientFd;
+
     if (epoll_ctl(_epollFd, EPOLL_CTL_MOD, clientFd, &ev) == -1)
         printErrorAndThrow("epoll_ctl(disableWriteEvent)");
 }
@@ -82,7 +86,7 @@ void Epoll::eventManager(epoll_ev &event)
         if (isSocketFd(event.data.fd)) {
             int clientFd = _serverMap[event.data.fd].getSocket().acceptClient();
             if (clientFd)
-                addClientToEpoll(clientFd, event.data.fd);
+                addClientToEpoll(clientFd);
 
         } else {
             HttpManager(event.data.fd,
@@ -165,6 +169,8 @@ void    Epoll::initServer(Config& config)
         if (!_server[i].getSocket().portAlreadyUsed(port)) {
             _server[i].initSocket();
             _server[i].getServerAttribute().defaultHost = true;
+            fd = _server[i].getSocketFd();
+            _listenFd.push_back(fd);
 
         } else {
             Socket socketReference;
@@ -175,8 +181,6 @@ void    Epoll::initServer(Config& config)
 
         _serverMap.insert(
             std::pair<int, Server>(_server[i].getSocketFd(), _server[i]));
-        fd = _server[i].getSocketFd();
-        _listenFd.push_back(fd);
         ++i;
     }
 }
@@ -202,4 +206,9 @@ Epoll::~Epoll()
 {
     if (_epollFd)
         close(_epollFd);
+    for (size_t i = 0; i < _listenFd.size(); ++i)
+        close(_listenFd[i]);
+    for (std::set<int>::iterator it = _clientFd.begin();
+                                 it != _clientFd.end(); ++it)
+        close(*it);
 }

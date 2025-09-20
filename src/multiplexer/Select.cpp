@@ -11,14 +11,13 @@ std::vector<Server> Select::getServer(void) const {
     return _server;
 }
 
-void    Select::addClientToSelect(int clientFd, int serverFd)
+void    Select::addClientToSelect(int clientFd)
 {
     FD_SET(clientFd, &_readFds);
     FD_SET(clientFd, &_exceptFds);
 
     _clientFd.push_back(clientFd);
-    _clientMap.insert(
-        std::pair<int, int>(clientFd, _serverMap[serverFd].getSocketFd()));
+
     std::cout
     << BOLD WHITE << "Select: new client accepted with fd "
     << BOLD BLUE << clientFd << DEFAULT << "\n";
@@ -31,8 +30,11 @@ void    Select::addClientToSelect(int clientFd, int serverFd)
 
 void    Select::removeClientFromSelect(int clientFd, size_t& i)
 {
+    std::cout
+    << BOLD RED << "client [" << clientFd << "]: Connection closed"
+    << DEFAULT << '\n';
+
     close(clientFd);
-    _clientMap.erase(clientFd);
     _persistance.erase(clientFd);
     _clientState.erase(clientFd);
     _clientFd.erase(_clientFd.begin() + i);
@@ -54,16 +56,19 @@ void    Select::run()
                 _maxFd = _listenFd[i];
         }
 
+        if (_clientFd.size() > 0)
+            std::cout << "clientFd size : " << _clientFd.size() << std::endl;
         for (size_t i = 0; i < _clientFd.size(); ++i) {
             FD_SET(_clientFd[i], &_readFds);
             FD_SET(_clientFd[i], &_writeFds);
             FD_SET(_clientFd[i], &_exceptFds);
             if (_clientFd[i] > _maxFd)
                 _maxFd = _clientFd[i];
+            std::cout << i << std::endl;
         }
 
         errno = 0;
-        _activity = select(_maxFd + 1, &_readFds, &_writeFds, &_exceptFds, NULL);
+        _activity = select(_maxFd + 1, &_readFds, &_writeFds, &_exceptFds, &_timeout);
         if (g_signal == SIGINT)
             return;
         else if (_activity == -1)
@@ -73,7 +78,7 @@ void    Select::run()
             if (FD_ISSET(_listenFd[i], &_readFds)) {
                 int clientFd = _serverMap[_listenFd[i]].getSocket().acceptClient();
                 if (clientFd)
-                    addClientToSelect(clientFd, _listenFd[i]);
+                    addClientToSelect(clientFd);
             }
             else if (FD_ISSET(_listenFd[i], &_exceptFds))
                 std::cout << "Select: error catched for server fd "
@@ -82,6 +87,9 @@ void    Select::run()
 
         for (size_t i = 0; i < _clientFd.size();) {
             if (FD_ISSET(_clientFd[i], &_readFds)) {
+                    std::cout
+                    << "client " << BOLD WHITE << _clientFd[i]
+                    << " " << BOLD GREEN << "read\n" << DEFAULT;
                     HttpManager(_clientFd[i],
                                 _serverMap,
                                 _clientState[_clientFd[i]],
@@ -100,6 +108,9 @@ void    Select::run()
             }
 
             else if (FD_ISSET(_clientFd[i], &_writeFds)) {
+                std::cout
+                << "client " << BOLD WHITE << _clientFd[i]
+                << " " << BOLD MAGENTA << "write\n" << DEFAULT;
                 HttpManager(_clientFd[i],
                             _serverMap,
                             _clientState[_clientFd[i]],
@@ -109,8 +120,7 @@ void    Select::run()
                 {
                     if (!_persistance[_clientFd[i]])
                         removeClientFromSelect(_clientFd[i], i);
-                    else
-                    {
+                    else {
                         _clientState[_clientFd[i]] = PENDING;
                         ++i;
                     }
@@ -183,7 +193,8 @@ Select::Select(Config& config) : _activity(0)
 
 Select::~Select()
 {
-    for (selectIterator it = _clientFd.begin();
-         it != _clientFd.end(); ++it)
-        close(*it);
+    for (size_t i = 0; i < _listenFd.size(); ++i)
+        close(_listenFd[i]);
+    for (size_t i = 0; i < _clientFd.size(); ++i)
+        close(_clientFd[i]);
 }

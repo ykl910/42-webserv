@@ -59,7 +59,7 @@ void    Config::getDirective(std::string& line,
             if (!std::isdigit(directiveValue[i])) {
                 if (length - i > 1
                     || directiveValue.substr(i, length).
-                        find_first_not_of(" kKmMgG") != std::string::npos)
+                        find_first_not_of("kKmMgG") != std::string::npos)
                     manageConfigError(line,
                         "client max body size format must be:\n"
                         + std::string("[number][k,K,m,M,g,G]"),

@@ -33,7 +33,6 @@ int Server::getClientMaxBodySize(const std::string& input)
     } else
         result = std::atol(input.substr(0, input.length()).c_str());
 
-    std::cout << BOLD YELLOW << result << DEFAULT << '\n';
     return result;
 }
 
@@ -77,7 +76,7 @@ void Server::storeRedirection(server& config, size_t locationNbr)
 
 bool Server::methodAlreadyDefined(uint8_t mask, size_t method)
 {
-    return mask &= 1 << method;
+    return mask & 1 << method;
 }
 
 void Server::storeLocation(server& config, size_t locationNbr)

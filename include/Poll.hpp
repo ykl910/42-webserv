@@ -28,7 +28,7 @@ public:
     void findSocketPort(Socket& socketReference,
                             std::vector<Server>& servers, std::string port);
     void removeClientFromPoll(pollIterator& it);
-    void addClientToPoll(int clientFd, int serverFd);
+    void addClientToPoll(int clientFd);
 
     Poll(Config& config);
     ~Poll();

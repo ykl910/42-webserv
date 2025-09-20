@@ -161,13 +161,9 @@ run_siege_test()
     if make &> /dev/null; then
         for multiplexer in "${multiplexers[@]}";
         do
-            for port in "${ports[@]}";
-            do
-                ./webserv $multiplexer &
-                webserv_pid=$!
-                siege -c 255 -t 2s http://$host:$port > "$log_dir/siege/$multiplexer.log"
-                kill $webserv_pid
-            done
+            ./webserv $multiplexer &
+            webserv_pid=$!
+            siege -c 255 -t 5s http://$host:$port > "$log_dir/siege/$multiplexer.log"
         done
     fi
     popd > /dev/null
