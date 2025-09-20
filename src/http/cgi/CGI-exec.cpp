@@ -1,5 +1,18 @@
 #include "../../../include/CGI.hpp"
 
+std::string Cgi::getBinDir(std::string binPath)
+{
+    size_t substrEndPos = binPath.rfind("/") + 1;
+    return binPath.substr(0, substrEndPos);
+}
+
+std::string Cgi::getBinName(std::string binPath)
+{
+    size_t substrStartPos = binPath.rfind("/");
+
+    return "." + binPath.substr(substrStartPos, binPath.size() - substrStartPos);
+}
+
 int Cgi::execFromGet()
 {
     int fds[2];
@@ -28,7 +41,11 @@ int Cgi::execFromGet()
 
         close(fds[0]);
         close(fds[1]);
-        execve(argvStr.front(), argvStr.data(), envpStr.data());
+
+        if(chdir(getBinDir(_argv.front()).c_str()) == -1)
+            exit(126);
+
+        execve(getBinName(argvStr.front()).c_str(), argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
 
@@ -81,7 +98,10 @@ int Cgi::execFromPost(HttpRequest &request)
         close(outputPipe[0]);
         close(outputPipe[1]);
 
-        execve(argvStr.front(), argvStr.data(), envpStr.data());
+        if(chdir(getBinDir(_argv.front()).c_str()) == -1)
+           exit(126);
+
+        execve(getBinName(argvStr.front()).c_str(), argvStr.data(), envpStr.data());
         printError();
         exit(EXIT_FAILURE);
 

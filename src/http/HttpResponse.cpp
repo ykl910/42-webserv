@@ -109,12 +109,13 @@ bool HttpResponse::isValidBodySize(HttpRequest &request,
                                    t_serv_attr &serverAttr) const
 {
     std::map<std::string, std::string>header = request.getHeaders();
-    std::map<std::string, std::string>::iterator it = header.find("Content-Length");
-    if (it->second.empty())
+    if(header.find("Content-Length") == header.end())
         return true;
 
     else {
         int bodySize =  std::atoi(header["Content-Length"].c_str());
+        if(serverAttr.client_max_body_size == 0)
+            return true;
         return bodySize < serverAttr.client_max_body_size;
     }
 }
@@ -123,8 +124,12 @@ HttpResponse::HttpResponse(HttpRequest& request, t_serv_attr &serverAttr)
     : _server(serverAttr), _request(request.getRequestAttr())
 {
     if (!isValidBodySize(request, serverAttr))
+    {
         setStatusLine(_request.httpVersion, 413, "Content Too Large");
-
+        setHeaders("Content-Type", "text/plain");
+        setHeaders("Content-Length", "0");
+        return ;
+    }
     solvePath();
     if (isAutoIndex())
         buildIndex();

@@ -31,6 +31,10 @@ public:
     void watchdog(pid_t pid, int &status);
     std::string extractQuery(HttpResponse &response);
 
+
+    std::string getBinDir(std::string binPath);
+    std::string getBinName(std::string binPath);
+
     void generateResponse(HttpResponse &response);
     void generateErrorMsg(HttpResponse &response, int statusCode);
 

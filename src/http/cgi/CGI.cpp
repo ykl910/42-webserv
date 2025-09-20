@@ -6,10 +6,12 @@ void Cgi::generateErrorMsg(HttpResponse &response, int exitCode)
 
     if(exitCode == 9  || exitCode == 15)
         response.setStatusLine(response.getRequestAttr().httpVersion, 408, "Request Timeout");
+    else if (exitCode == 126)
+        response.setStatusLine(response.getRequestAttr().httpVersion, 404, "Not Found");
     else
         response.setStatusLine(response.getRequestAttr().httpVersion, 500, "Internal Error");
     response.setHeaders("Content-Type", "text/plain");
-    response.setHeaders("Content-Length", itos(0));
+    response.setHeaders("Content-Length", "0");
 }
 
 void Cgi::generateResponse(HttpResponse &response)
