@@ -1,5 +1,5 @@
-#include "../../include/HttpRequest.hpp"
-#include "../../include/textFormatting.hpp"
+#include "../../../include/HttpRequest.hpp"
+#include "../../../include/textFormatting.hpp"
 
 const bool &HttpRequest::getState() const {
     return _state;

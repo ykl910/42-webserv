@@ -34,7 +34,6 @@ SRC                 := config/Config-context.cpp \
                     config/Config-directive.cpp \
                     config/Config-print.cpp \
                     config/Config.cpp \
-                    http/autoindex.cpp \
                     http/cgi/CGI-argv.cpp \
                     http/cgi/CGI-envp.cpp \
                     http/cgi/CGI-exec.cpp \
@@ -42,10 +41,11 @@ SRC                 := config/Config-context.cpp \
                     http/method/DELETE.cpp \
                     http/method/GET.cpp \
                     http/method/POST.cpp \
+                    http/request/HttpRequest.cpp \
+                    http/response/autoindex.cpp \
+                    http/response/HttpResponse.cpp \
+                    http/response/Resolution.cpp \
                     http/HttpManager.cpp \
-                    http/HttpRequest.cpp \
-                    http/HttpResponse.cpp \
-                    http/Resolution.cpp \
                     multiplexer/Epoll.cpp \
                     multiplexer/Poll.cpp \
                     multiplexer/Select.cpp \

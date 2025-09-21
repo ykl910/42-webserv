@@ -1,37 +1,5 @@
-#include "../../include/HttpResponse.hpp"
-#include "../../include/Server.hpp"
-
-/* RESPONSE HEADERS
-Accept-Ranges
-Age
-Allow
-Cache-Control
-Connection
-Content-Disposition
-Content-Encoding
-Content-Language
-Content-Length
-Content-Location
-Content-Range
-Content-Type
-Date
-ETag
-Expires
-Last-Modified
-Link
-Location
-Pragma
-Proxy-Authenticate
-Retry-After
-Server
-Set-Cookie
-Trailer
-Transfer-Encoding
-Vary
-Via
-Warning
-WWW-Authenticate
-*/
+#include "../../../include/HttpResponse.hpp"
+#include "../../../include/Server.hpp"
 
 void HttpResponse::setStatusLine(const std::string version, int code,
                                  const std::string& reason)
