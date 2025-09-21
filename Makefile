@@ -20,7 +20,7 @@ INCLUDE             := CGI.hpp \
                     Poll.hpp \
                     Select.hpp \
                     Server.hpp \
-                    Signal.hpp \
+                    signal.hpp \
                     Socket.hpp \
                     textFormatting.hpp \
                     WebServ.hpp

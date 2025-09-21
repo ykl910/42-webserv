@@ -3,6 +3,7 @@
 #include "HttpManager.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
+#include "signal.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WebServ.hpp"
+#include "signal.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
 #include "Error.hpp"

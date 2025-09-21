@@ -2,6 +2,7 @@
 
 #include "HttpManager.hpp"
 #include "WebServ.hpp"
+#include "signal.hpp"
 #include "Config.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
