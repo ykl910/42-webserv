@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Signal.hpp"
 #include "Config.hpp"
 #include "Error.hpp"
 

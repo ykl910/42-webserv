@@ -5,7 +5,6 @@
 #include "Config.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
-#include "Signal.hpp"
 #include "utils.hpp"
 
 #include <sys/select.h>

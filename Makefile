@@ -44,15 +44,15 @@ SRC                 := config/Config-context.cpp \
                     http/request/HttpRequest.cpp \
                     http/response/autoindex.cpp \
                     http/response/HttpResponse.cpp \
-                    http/response/Resolution.cpp \
+                    http/response/resolution.cpp \
                     http/HttpManager.cpp \
                     multiplexer/Epoll.cpp \
                     multiplexer/Poll.cpp \
                     multiplexer/Select.cpp \
                     server/Server.cpp \
                     server/Socket.cpp \
-                    utils/Error.cpp \
-                    utils/Signal.cpp \
+                    utils/error.cpp \
+                    utils/signal.cpp \
                     utils/utils.cpp \
                     main.cpp
 
