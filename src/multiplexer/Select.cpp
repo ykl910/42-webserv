@@ -60,7 +60,7 @@ void    Select::run()
             FD_SET(_clientFd[i], &_readFds);
             FD_SET(_clientFd[i], &_writeFds);
             FD_SET(_clientFd[i], &_exceptFds);
-            std::cout << i << std::endl;
+
             if (_clientFd[i] > _maxFd)
                 _maxFd = _clientFd[i];
         }
