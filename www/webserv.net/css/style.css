@@ -4,9 +4,6 @@ body {
     height: 60vh;
 }
 
-nav {}
-
-
 h1 {
     text-align: center;
     animation-duration: 1s;
@@ -32,12 +29,19 @@ a {
 
 .container {
   display: flex;
-  min-height: 100vh; /* full screen height */
+  min-height: 100vh;
 }
 
 .column {
   flex: 1;
   padding: 20px;
-  border: 1px solid #000;
-  box-sizing: border-box; /* prevent padding from breaking layout */
+  box-sizing: border-box;
+}
+
+#left {
+    background-color: rgb(215, 245, 255);
+}
+
+#right {
+    background-color: rgb(137, 140, 173);
 }

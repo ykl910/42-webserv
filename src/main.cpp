@@ -1,5 +1,5 @@
 #include "../include/WebServ.hpp"
-#include "../include/Signal.hpp"
+#include "../include/signal.hpp"
 
 #define DEFAULT_PATH "config/webserv.conf"
 

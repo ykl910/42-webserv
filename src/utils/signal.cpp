@@ -1,4 +1,5 @@
-#include "../../include/Signal.hpp"
+#include "../../include/signal.hpp"
+
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
