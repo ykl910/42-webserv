@@ -2,7 +2,8 @@
 import os
 
 # Get the list of all files in a directory
-path = './www/post42.net/downloads'
+path = '../../downloads'
+
 if os.path.exists(path):
     files = os.listdir(path)
     if files:
@@ -15,3 +16,4 @@ if os.path.exists(path):
 else:
     res = ""
 print(res)
+
