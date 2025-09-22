@@ -151,8 +151,6 @@ void HttpManager::getRequest(int clientFd, int &clientState,
     errno = 0;
     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
 
-    std::cout
-    << BOLD CYAN << "bytes: " << bytes << DEFAULT << _buffers[clientFd] << std::endl;;
     if (bytes == -1)
         perror("");
     if (bytes > 0)
@@ -216,9 +214,6 @@ bool    HttpManager::solveHost(int clientFd, std::map<int, Server>&  serverMap,
 HttpManager::HttpManager(int clientFd, std::map<int, Server>  serverMap,
                          int &clientState, bool &persistance)
 {
-    std::cout
-    << BOLD YELLOW << "HttpManager "
-    << DEFAULT << "client " << clientFd << " state: " << clientState << '\n';
     if (clientState == PENDING)
         getRequest(clientFd, clientState, persistance);
 

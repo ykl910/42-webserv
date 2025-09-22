@@ -87,9 +87,6 @@ void    Select::run()
 
         for (size_t i = 0; i < _clientFd.size();) {
             if (FD_ISSET(_clientFd[i], &_readFds)) {
-                    std::cout
-                    << "client " << BOLD WHITE << _clientFd[i]
-                    << " " << BOLD GREEN << "read\n" << DEFAULT;
                     HttpManager(_clientFd[i],
                                 _serverMap,
                                 _clientState[_clientFd[i]],
@@ -108,9 +105,6 @@ void    Select::run()
             }
 
             else if (FD_ISSET(_clientFd[i], &_writeFds)) {
-                std::cout
-                << "client " << BOLD WHITE << _clientFd[i]
-                << " " << BOLD MAGENTA << "write\n" << DEFAULT;
                 HttpManager(_clientFd[i],
                             _serverMap,
                             _clientState[_clientFd[i]],
