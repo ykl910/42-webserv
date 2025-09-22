@@ -151,12 +151,10 @@ void HttpManager::getRequest(int clientFd, int &clientState,
     errno = 0;
     int bytes = recv(clientFd, buffer, sizeof(buffer), 0);
 
-    if (bytes == -1)
-        perror("");
     if (bytes > 0)
         _buffers[clientFd].append(buffer, bytes);
 
-    else if (bytes <= 0) {
+    else if (bytes == 0) {
         clientState = SENT;
         persistance = false;
         return ;
